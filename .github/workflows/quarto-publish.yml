@@ -1,5 +1,5 @@
 name: Render and Publish Quarto Book
-
+run: quarto render --to html
 on:
   push:
     branches: [ main ]

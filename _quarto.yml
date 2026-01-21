@@ -29,8 +29,4 @@ format:
     toc: true
     number-sections: true
     html-math-method: katex
-  pdf:
-    pdf-engine: xelatex
-    documentclass: scrreprt
-    number-sections: true
 
