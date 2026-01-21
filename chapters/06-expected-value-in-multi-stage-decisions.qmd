@@ -1,0 +1,112 @@
+---
+title: "Expected Value in Multi-Stage Decisions"
+chapter-id: "ch06"
+part: "Part II: Probability, Expectation, and Belief Updating"
+poker-topics:
+  - "1 Expected Value (EV)"
+  - "4 Equity and Realization"
+  - "5 Multi-Stage Decision Making"
+  - "17 Pot Odds and Threshold Decisions"
+applications:
+  - "business strategy (sequential investments)"
+  - "environmental policy (choices with future uncertainty)"
+  - "AI (planning under uncertainty)"
+sidebar:
+  lens: "Moral philosophy"
+  title: "Short-Term Pain, Long-Term Gain"
+  theme: "Ethical frameworks that emphasize long-run consequences—and when maximizing long-run value can conflict with other values."
+---
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part II: Probability, Expectation, and Belief Updating
+- **Poker topics:** 1 Expected Value (EV), 4 Equity and Realization, 5 Multi-Stage Decision Making, 17 Pot Odds and Threshold Decisions
+- **Beyond poker:** business strategy (sequential investments), environmental policy (choices with future uncertainty), AI (planning under uncertainty)
+
+:::
+
+## Motivating Example
+
+A call looks unprofitable immediately, but it keeps open future betting opportunities that can make the overall line profitable.
+
+**Guiding question.** How do we evaluate decisions whose consequences unfold over multiple stages?
+
+- Situation: A call looks unprofitable immediately, but it keeps open future betting opportunities that can make the overall line profitable.
+- Why it matters: this introduces 1 Expected Value (EV), 4 Equity and Realization.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+- Decision trees for poker streets
+- Conditional expectation along the tree
+- Pot odds and break-even thresholds
+- Equity realization across streets
+
+### Definitions
+
+**expected value of an action.** *[Definition.]*
+
+**conditional expectation.** *[Definition.]*
+
+**break-even probability.** *[Definition.]*
+
+**equity.** *[Definition.]*
+
+### Core concepts
+
+- decision trees
+- multi-stage uncertainty
+- threshold decision rules
+- equity realization
+
+### Core results
+
+**law of total expectation (total expectation).** *[Statement / proof placeholder.]*
+
+**dominance principle (informal).** *[Statement / proof placeholder.]*
+
+### Worked example ideas
+
+- Turn decision with river consequences; compute EV by conditioning on river outcomes
+
+### Computation notes
+
+['Monte Carlo to estimate multi-street EV when the tree is large']
+
+## Beyond Poker
+
+These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+
+Possible directions:
+
+- business strategy (sequential investments)
+- environmental policy (choices with future uncertainty)
+- AI (planning under uncertainty)
+
+## Liberal Arts Sidebar
+
+**Short-Term Pain, Long-Term Gain**
+
+*Lens:* Moral philosophy
+
+*Theme:* Ethical frameworks that emphasize long-run consequences—and when maximizing long-run value can conflict with other values.
+
+> Is maximizing long-run value always ethically justified? What other values might matter?
+
+## Homework Problems
+
+Use these as problem prompts to develop a full set:
+
+1. Compute with definitions and formulas
+2. Explain a concept in words
+3. Short proof or justification (when appropriate)
+
+1. *[Problem to be written.]*
+2. *[Problem to be written.]*
+3. *[Problem to be written.]*
+
+## Extension Activity
+
+Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+

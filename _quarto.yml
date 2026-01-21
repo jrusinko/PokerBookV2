@@ -1,0 +1,36 @@
+project:
+  type: book
+book:
+  title: Mathematics of Poker
+  chapters:
+  - index.qmd
+  - chapters/01-poker-games-structure-and-language.qmd
+  - chapters/02-counting-hands-and-boards.qmd
+  - chapters/03-poker-as-a-probability-space.qmd
+  - chapters/04-random-variables-expectation-and-variance.qmd
+  - chapters/05-conditional-probability-and-bayes-rule.qmd
+  - chapters/06-expected-value-in-multi-stage-decisions.qmd
+  - chapters/07-inference-with-discrete-distributions-ranges-and-blockers.qmd
+  - chapters/08-zero-sum-games-and-mixed-strategies.qmd
+  - chapters/09-nash-equilibrium-and-indifference-conditions.qmd
+  - chapters/10-exploitative-play-vs-equilibrium-thinking.qmd
+  - chapters/11-betting-as-optimization.qmd
+  - chapters/12-the-value-of-information.qmd
+  - chapters/13-tournament-poker-and-icm-optimization-with-nonlinear-utility.qmd
+  - chapters/14-game-trees-and-abstraction.qmd
+  - chapters/15-learning-equilibria-regret-minimization-and-solvers.qmd
+  - chapters/16-alternative-solver-perspectives-lp-qre-and-regularization.qmd
+  - chapters/17-variance-bankroll-and-risk-of-ruin.qmd
+  - chapters/18-randomness-shuffling-rngs-and-verification.qmd
+  - chapters/19-learning-from-data-hand-histories-and-statistical-inference.qmd
+  - chapters/20-detecting-cheating-and-collusion.qmd
+format:
+  html:
+    toc: true
+    number-sections: true
+    html-math-method: katex
+  pdf:
+    pdf-engine: xelatex
+    documentclass: scrreprt
+    number-sections: true
+

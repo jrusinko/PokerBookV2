@@ -1,0 +1,108 @@
+---
+title: "Randomness, Shuffling, RNGs, and Verification"
+chapter-id: "ch18"
+part: "Part VI: Randomness, Variance, and Statistical Judgment"
+poker-topics:
+  - "24 Randomness and Fair Dealing"
+applications:
+  - "cryptography (secure randomness)"
+  - "elections (audits and fairness)"
+  - "scientific integrity (randomization)"
+sidebar:
+  lens: "Political science"
+  title: "Trust in Institutions"
+  theme: "Societies rely on trusted randomness. When trust erodes, legitimacy collapses—how do institutions earn trust?"
+---
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part VI: Randomness, Variance, and Statistical Judgment
+- **Poker topics:** 24 Randomness and Fair Dealing
+- **Beyond poker:** cryptography (secure randomness), elections (audits and fairness), scientific integrity (randomization)
+
+:::
+
+## Motivating Example
+
+Players suspect an online site’s shuffling is biased; the site claims it’s fair. What would ‘evidence’ look like?
+
+**Guiding question.** How can randomness be tested, trusted, or verified?
+
+- Situation: Players suspect an online site’s shuffling is biased; the site claims it’s fair. What would ‘evidence’ look like?
+- Why it matters: this introduces 24 Randomness and Fair Dealing.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+- What it means to be 'random'
+- PRNGs vs true randomness
+- Testing randomness and limitations
+- Audits and transparency
+
+### Definitions
+
+**random permutation.** *[Definition.]*
+
+**pseudorandom number generator (PRNG).** *[Definition.]*
+
+**test statistic.** *[Definition.]*
+
+**audit.** *[Definition.]*
+
+### Core concepts
+
+- fairness
+- independence
+- limits of statistical testing
+
+### Core results
+
+**uniformity over permutations (conceptual).** *[Statement / proof placeholder.]*
+
+**limits of hypothesis tests (interpretive).** *[Statement / proof placeholder.]*
+
+### Worked example ideas
+
+- Basic randomness diagnostic on a short sequence (conceptual)
+
+### Computation notes
+
+['Optional: generate PRNG samples and run simple diagnostics']
+
+## Beyond Poker
+
+These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+
+Possible directions:
+
+- cryptography (secure randomness)
+- elections (audits and fairness)
+- scientific integrity (randomization)
+
+## Liberal Arts Sidebar
+
+**Trust in Institutions**
+
+*Lens:* Political science
+
+*Theme:* Societies rely on trusted randomness. When trust erodes, legitimacy collapses—how do institutions earn trust?
+
+> How do institutions earn trust in randomness and fairness?
+
+## Homework Problems
+
+Use these as problem prompts to develop a full set:
+
+1. Compute with definitions and formulas
+2. Explain a concept in words
+3. Short proof or justification (when appropriate)
+
+1. *[Problem to be written.]*
+2. *[Problem to be written.]*
+3. *[Problem to be written.]*
+
+## Extension Activity
+
+Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+

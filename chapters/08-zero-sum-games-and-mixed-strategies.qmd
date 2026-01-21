@@ -1,0 +1,113 @@
+---
+title: "Zero-Sum Games and Mixed Strategies"
+chapter-id: "ch08"
+part: "Part III: Game Theory (Intro / Toy Models)"
+poker-topics:
+  - "11 Zero-Sum Interaction"
+  - "12 Mixed Strategies"
+applications:
+  - "sports strategy (penalty kicks/play calling)"
+  - "cybersecurity (attack–defense)"
+  - "military strategy (adversarial planning)"
+sidebar:
+  lens: "History / ethics"
+  title: "War, Games, and Human Cost"
+  theme: "Game theory’s military origins and critiques of zero-sum framing that can dehumanize opponents or obscure moral stakes."
+---
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part III: Game Theory (Intro / Toy Models)
+- **Poker topics:** 11 Zero-Sum Interaction, 12 Mixed Strategies
+- **Beyond poker:** sports strategy (penalty kicks/play calling), cybersecurity (attack–defense), military strategy (adversarial planning)
+
+:::
+
+## Motivating Example
+
+If you always bluff, you get snapped; if you never bluff, you get overfolded against. Randomizing feels irrational—but can be optimal.
+
+**Guiding question.** Why would a rational strategy ever involve deliberate randomness?
+
+- Situation: If you always bluff, you get snapped; if you never bluff, you get overfolded against. Randomizing feels irrational—but can be optimal.
+- Why it matters: this introduces 11 Zero-Sum Interaction, 12 Mixed Strategies.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+- From poker situations to payoff matrices
+- Mixed strategies and expected payoffs
+- Why randomization prevents exploitation
+- Toy poker-inspired games
+
+### Definitions
+
+**player.** *[Definition.]*
+
+**strategy.** *[Definition.]*
+
+**pure strategy.** *[Definition.]*
+
+**mixed strategy.** *[Definition.]*
+
+**payoff matrix.** *[Definition.]*
+
+**zero-sum game.** *[Definition.]*
+
+### Core concepts
+
+- strategic interaction
+- expected payoff under mixing
+- randomization as strategy
+
+### Core results
+
+**expected payoff formula for mixed strategies.** *[Statement / proof placeholder.]*
+
+**minimax principle (informal statement).** *[Statement / proof placeholder.]*
+
+### Worked example ideas
+
+- Solve a 2x2 bluff/call toy game; find optimal mixing
+
+### Computation notes
+
+['Optional: simulate exploitability when deviating from mix']
+
+## Beyond Poker
+
+These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+
+Possible directions:
+
+- sports strategy (penalty kicks/play calling)
+- cybersecurity (attack–defense)
+- military strategy (adversarial planning)
+
+## Liberal Arts Sidebar
+
+**War, Games, and Human Cost**
+
+*Lens:* History / ethics
+
+*Theme:* Game theory’s military origins and critiques of zero-sum framing that can dehumanize opponents or obscure moral stakes.
+
+> When is it dangerous to view the world as zero-sum? What gets lost in that framing?
+
+## Homework Problems
+
+Use these as problem prompts to develop a full set:
+
+1. Compute with definitions and formulas
+2. Explain a concept in words
+3. Short proof or justification (when appropriate)
+
+1. *[Problem to be written.]*
+2. *[Problem to be written.]*
+3. *[Problem to be written.]*
+
+## Extension Activity
+
+Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+

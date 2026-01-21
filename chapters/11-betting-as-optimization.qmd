@@ -1,0 +1,111 @@
+---
+title: "Betting as Optimization"
+chapter-id: "ch11"
+part: "Part IV: Optimization"
+poker-topics:
+  - "16 Bet Sizing as Optimization"
+  - "3 Risk vs Reward Tradeoffs"
+applications:
+  - "engineering design (optimize under constraints)"
+  - "portfolio allocation (risk/return)"
+  - "resource allocation (budgets/scheduling)"
+sidebar:
+  lens: "Philosophy"
+  title: "Optimization and the Good Life"
+  theme: "Critiques of reducing life to objective functions; what should not be optimized (or cannot be)."
+---
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part IV: Optimization
+- **Poker topics:** 16 Bet Sizing as Optimization, 3 Risk vs Reward Tradeoffs
+- **Beyond poker:** engineering design (optimize under constraints), portfolio allocation (risk/return), resource allocation (budgets/scheduling)
+
+:::
+
+## Motivating Example
+
+You think you’re ahead. Do you bet small to get called, or large to deny equity? Bet sizing is an optimization problem.
+
+**Guiding question.** How do we choose bet sizes that balance value, fold equity, and risk?
+
+- Situation: You think you’re ahead. Do you bet small to get called, or large to deny equity? Bet sizing is an optimization problem.
+- Why it matters: this introduces 16 Bet Sizing as Optimization, 3 Risk vs Reward Tradeoffs.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+- Objective functions for bet sizing (EV/utility)
+- Constraints (stack sizes, pot, ranges)
+- Tradeoffs: fold equity vs value
+- Sizing heuristics and check strategies
+
+### Definitions
+
+**objective function.** *[Definition.]*
+
+**constraint.** *[Definition.]*
+
+**feasible set.** *[Definition.]*
+
+**optimal solution.** *[Definition.]*
+
+**marginal value.** *[Definition.]*
+
+### Core concepts
+
+- tradeoffs
+- risk vs reward as constraints/objectives
+- sizing as maximizing expected value (or utility)
+
+### Core results
+
+**finite optimization principle (argmax).** *[Statement / proof placeholder.]*
+
+**marginal analysis principle (informal).** *[Statement / proof placeholder.]*
+
+### Worked example ideas
+
+- Choose a bet size maximizing EV in a simplified model with fold/call/raise frequencies
+
+### Computation notes
+
+['Optional: plot EV vs bet size over a parameter grid']
+
+## Beyond Poker
+
+These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+
+Possible directions:
+
+- engineering design (optimize under constraints)
+- portfolio allocation (risk/return)
+- resource allocation (budgets/scheduling)
+
+## Liberal Arts Sidebar
+
+**Optimization and the Good Life**
+
+*Lens:* Philosophy
+
+*Theme:* Critiques of reducing life to objective functions; what should not be optimized (or cannot be).
+
+> What should not be optimized? Where does optimization break down as a worldview?
+
+## Homework Problems
+
+Use these as problem prompts to develop a full set:
+
+1. Compute with definitions and formulas
+2. Explain a concept in words
+3. Short proof or justification (when appropriate)
+
+1. *[Problem to be written.]*
+2. *[Problem to be written.]*
+3. *[Problem to be written.]*
+
+## Extension Activity
+
+Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+

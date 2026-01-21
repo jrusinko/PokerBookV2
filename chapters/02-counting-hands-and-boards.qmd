@@ -1,0 +1,954 @@
+---
+title: "Counting Hands and Boards"
+chapter-id: "ch02"
+part: "Part I: Poker Foundations & Counting"
+---
+
+
+## Motivating Example
+
+![](images/clipboard-962570957.png)
+
+### A Vivid Historical Puzzle: Straights, Flushes, and How Poker Learned to Count
+
+In the 1830s and 1840s, a poker game in New Orleans, St. Louis, or on a Mississippi riverboat did not begin with a shared rule sheet. It began with a deck of cards, a table, and a set of assumptions negotiated—sometimes explicitly, sometimes by habit—among the people sitting down to play. What counted as a “strong” hand depended less on abstract theory than on what players had learned, by repetition, to fear.
+
+Many of these games were not played with the now-standard 52-card deck. In **20-card poker**, still common on riverboats and in frontier settings, only the tens through aces were used. Four players received five cards each, and the deck was exhausted every hand. In this environment, the mathematics of patterns is stark. There are no low cards to extend sequences, and suit structure plays almost no role at all. Straights are extremely limited, flushes effectively meaningless, and the drama of the game centers on matched ranks. A player showing strength is signaling *duplication*, not order or color. When later generations encountered full-deck poker, they did so carrying habits formed in this earlier, rank-dominated world.
+
+As poker spread inland and westward, decks expanded to 32 cards and then to the full 52. Five-card draw emerged as a dominant format, particularly in Southern and Midwestern gambling culture. These were not static games. Players drew cards, discarded, and bet again. What mattered most was not how a hand would rank if completed, but how it might *improve*. A player holding four cards to a hand was visibly dangerous.
+
+Here the straight–flush controversy becomes vivid. A player with four consecutive ranks—say 7-8-9-10—could complete a straight with any six or jack, in any suit: eight possible cards. A player with four hearts needed any remaining heart: nine possible cards. Around the table, this difference was felt immediately. Flushes arrived more often *from the draw*. In saloons from Natchez to Memphis, players noticed this and drew conclusions. If a flush is easier to make, why should it beat a straight?
+
+Some regional rule sets answered: it shouldn’t. In parts of the South, straights were sometimes ranked above flushes, especially when ace-high sequences were involved. Other tables compromised, declaring straights and flushes equal, with ties broken by high card alone. Still others introduced special cases: ace-high flushes were premium, but lesser flushes could lose to high straights. These were not theoretical debates. They were practical responses to what players saw unfold hand after hand.
+
+Further west, especially during the California Gold Rush, poker tables mixed players from radically different traditions. Eastern card-room players, accustomed to games like **brag** and **primero**, brought with them an emphasis on fixed, categorical hand values. In these games, rarity and symbolic hierarchy mattered more than draw dynamics. A hand either *was* a certain type or it was not. This perspective made flushes feel more substantial: they required uniformity across suits, a feature not easily replicated by chance.
+
+Even the definition of a straight was unstable. In some games, the ace could appear only above a king. In others, it could wrap around to form A-2-3-4-5. Some tables allowed both, some neither. The number of ways to make a straight—and thus its perceived strength—shifted accordingly. Flushes, by contrast, were insensitive to rank conventions but highly sensitive to deck composition and redraw rules. Depending on local choices, the balance could tip either way.
+
+What ultimately resolved the debate was not improved intuition but a change in perspective. As poker moved into casinos and formal tournaments in the late nineteenth and early twentieth centuries, games increasingly involved strangers who needed shared expectations. Rulebooks sought consistency across formats, not just fairness at a single table. This forced a different mathematical question to the foreground: among all possible five-card hands, which patterns are genuinely rarer?
+
+When counted globally—rather than experienced locally from four-card near-misses—flushes occur less often than straights. The nine-versus-eight draw comparison, so vivid in five-card draw, conditions on a specific partial holding. The overall frequency calculation does not. The modern hierarchy silently encodes this shift from *situational probability* to *combinatorial frequency*.
+
+This historical arc gives substance to what might otherwise seem like an arbitrary rule. Flushes outrank straights not because early players failed to notice how draws worked, but because poker eventually learned to privilege total rarity over local ease. The disagreement itself is the point. It marks the moment where intuition, experience, and mathematics begin to pull apart—and where careful counting becomes necessary to hold the game together.
+
+That tension will guide the mathematics of this chapter. Before we count, we must understand why counting was not always the obvious thing to do.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+-   Counting principles (sum/product)
+-   Counting poker hands (5-card and Hold'em contexts)
+-   Complement and inclusion–exclusion
+-   From counting to probabilities
+
+## Combinations and Permutations
+
+A standard deck of playing cards contains 52 distinct objects. This simple fact hides a subtle mathematical question that will recur throughout this chapter:
+
+> *In how many essentially different ways can cards be selected or arranged?*
+
+Poker forces us to confront this question immediately, because not all distinctions between cards matter equally. Sometimes the *order* in which cards appear is crucial; sometimes it is irrelevant. The mathematics of permutations and combinations formalizes this distinction.
+
+### A Motivating Example: Dealing Cards
+
+Imagine a dealer distributing five cards, one at a time, face down, to a single player. From the dealer’s perspective, the order of the cards matters: receiving the ace of spades first and the king of hearts second is a different physical process than receiving them in the opposite order. If we were to record the deal step by step, each outcome would be an *ordered sequence* of five distinct cards drawn from the deck.
+
+By contrast, from the player’s perspective, the order is immaterial.A hand containing
+
+$$ {\text{A}\spadesuit, \text{K}\heartsuit, \text{7}\diamondsuit, \text{7}\clubsuit, \text{2}\spadesuit} $$
+
+is the same hand regardless of the sequence in which those cards were dealt.Poker hand rankings depend only on *which cards* are present, not on how they arrived.
+
+This tension—between processes that care about order and outcomes that do not—is exactly what separates permutations from combinations.
+
+### Permutations: Counting Ordered Outcomes
+
+We begin with the most order-sensitive setting.
+
+**Definition (Permutation).**\
+A *permutation* of (k) objects chosen from a set of (n) distinct objects is an ordered selection of (k) distinct elements.
+
+Returning to the dealing example, suppose we want to count the number of possible *five-card sequences* that could be dealt from a 52-card deck, without replacement. The first card can be any of 52 cards. After it is dealt, 51 remain for the second card, then 50 for the third, and so on. By the multiplication principle, the total number of such sequences is
+
+$$ 52 \cdot 51 \cdot 50 \cdot 49 \cdot 48. $$
+
+To streamline notation, we introduce factorials.
+
+**Definition (Factorial).**\
+For a positive integer (n), the factorial of (n), denoted (n!), is defined by $$ n! = n \cdot (n-1) \cdot (n-2) \cdots 2 \cdot 1, $$
+
+with the convention (0! = 1).
+
+Using factorials, the number of permutations of (k) objects chosen from (n) distinct objects is
+
+$$ P(n,k) = \frac{n!}{(n-k)!}. $$
+
+In our example,
+
+$$ P(52,5) = \frac{52!}{47!} = 52 \cdot 51 \cdot 50 \cdot 49 \cdot 48, $$
+
+which counts all possible ordered five-card deals.
+
+Permutations are the natural counting tool whenever *order reflects meaningful information*: shuffling a deck, dealing cards sequentially, or seating players around a table.
+
+### Combinations: Counting Unordered Selections
+
+Poker hands, however, do not remember order. The hand is defined only by its contents.
+
+**Definition (Combination).**\
+A *combination* of (k) objects chosen from a set of (n) distinct objects is an unordered selection of (k) distinct elements.
+
+To count five-card poker hands, we must correct for overcounting. Each unordered hand corresponds to many different ordered sequences—one for each possible ordering of its five cards. Since there are (5!) ways to order five distinct cards, every poker hand is counted (5!) times in the permutation count (P(52,5)).
+
+Dividing out this redundancy yields the number of distinct five-card hands:
+
+$$
+\binom{52}{5} = \frac{52!}{5! \, 47!}. 
+$$
+
+The notation $\binom{n}{k}$, read “(n) choose (k),” denotes the number of combinations of (k) objects selected from (n).
+
+More generally,
+
+$$ 
+\binom{n}{k} = \frac{n!}{k!(n-k)!}. 
+$$
+
+This expression is symmetric in (k) and (n-k), reflecting a simple but powerful idea: choosing (k) cards to include is equivalent to choosing (n-k) cards to exclude.
+
+### Why This Distinction Matters in Poker
+
+The difference between permutations and combinations is not a technicality—it determines which questions we are answering.
+
+-   When we analyze *procedures* (shuffling, dealing, drawing), permutations naturally arise.
+-   When we analyze *outcomes* (hand rankings, probabilities of flushes or straights), combinations are the appropriate tool.
+
+Much of the historical confusion surrounding hand values can be traced to implicit shifts between these perspectives. Players reasoned from the lived experience of draws—ordered processes unfolding over time—while hand rankings ultimately depend on unordered collections of cards.
+
+In the sections that follow, we will use combinations to count specific classes of poker hands and to compare their frequencies. The formulas introduced here will serve as our basic counting language. What remains is to learn how to deploy them carefully—and how to recognize when naïve counting obscures more structure than it reveals.
+
+### Worked example ideas
+
+### Worked Example: Counting All Deals and Runouts in 6-Handed Texas Hold’em
+
+Fix a six-handed table with labeled seats (for example: UTG, HJ, CO, BTN, SB, BB). We ask:
+
+> How many distinct ways can the dealer assign hole cards to all six players and then deal a flop, turn, and river?
+
+We assume: - A standard 52-card deck. - Each player receives 2 private cards. - The flop consists of 3 community cards (unordered as a set). - The turn is a single card, then the river is a single card (these streets occur in order).
+
+#### Step 1: Deal hole cards to six labeled players
+
+Start with 52 cards.
+
+-   UTG receives $\binom{52}{2}$ possible hole-card sets.
+-   HJ then receives $\binom{50}{2}$.
+-   CO receives $\binom{48}{2}$.
+-   BTN receives $\binom{46}{2}$.
+-   SB receives $\binom{44}{2}$.
+-   BB receives $\binom{42}{2}$.
+
+After hole cards are dealt, $52-12=40$ cards remain.
+
+So the number of hole-card assignments is $$
+\binom{52}{2}\binom{50}{2}\binom{48}{2}\binom{46}{2}\binom{44}{2}\binom{42}{2}.
+$$
+
+#### Step 2: Deal the board (flop, turn, river)
+
+From the remaining 40 cards:
+
+-   Flop: choose 3 cards, $\binom{40}{3}$.
+-   Turn: choose 1 from the remaining 37 cards, giving a factor of $37$.
+-   River: choose 1 from the remaining 36 cards, giving a factor of $36$.
+
+So the number of possible runouts is $$
+\binom{40}{3}\cdot 37 \cdot 36.
+$$
+
+#### Step 3: Multiply
+
+Multiplying hole-card assignments by board runouts gives the total number of distinct “full deals” (six labeled players + flop/turn/river): $$
+\binom{52}{2}\binom{50}{2}\binom{48}{2}\binom{46}{2}\binom{44}{2}\binom{42}{2}
+\;\binom{40}{3}\;37\;36.
+$$
+
+A direct computation gives $$
+\binom{52}{2}\binom{50}{2}\binom{48}{2}\binom{46}{2}\binom{44}{2}\binom{42}{2}
+\;\binom{40}{3}\;37\;36
+= 20{,}327{,}525{,}731{,}521{,}460{,}932{,}480{,}000,
+$$ which is about $2.03\times 10^{25}$ possibilities.
+
+#### Optional variant: if you care about the *exact dealing order* of the 17 cards
+
+Sometimes we want to treat the entire deal as an ordered sequence of cards: the first hole card to UTG, second hole card to UTG, ..., down to the river. That counts **ordered sequences** of 17 distinct cards: $$
+P(52,17)=\frac{52!}{35!}.
+$$
+
+This number is larger because it distinguishes: - the order of the two hole cards within each player’s hand (a factor of $(2!)^6$), and - the order of the three flop cards (a factor of $3!$).
+
+Indeed, $$
+P(52,17)
+=
+\left(\binom{52}{2}\binom{50}{2}\cdots\binom{42}{2}\binom{40}{3}37\cdot 36\right)\,(2!)^6(3!).
+$$ Numerically, this is approximately
+
+$$
+P(52,17) \approx 7.4 \times 10^{28},
+$$
+
+which is larger than the previous count because it distinguishes the internal order of each player’s hole cards and the order of cards within the flop. This keeps the comparison sharp, quantitative, and conceptually aligned with the chapter’s emphasis on modeling choices (ordered processes versus unordered outcomes), without reopening the derivation.
+
+### Worked Example: Counting via the Complement
+
+In many counting problems, a collection of objects can be described in multiple ways. Some descriptions lead naturally to complicated casework, while others suggest a much simpler approach.
+
+A powerful technique in such situations is **counting via the complement**.
+
+#### The Complement Principle (Counting Form)
+
+Let $U$ be a finite set, and let $A \subseteq U$. If $A^c$ denotes the complement of $A$ in $U$ (that is, all elements of $U$ not in $A$), then
+
+$$
+|A| = |U| - |A^c|.
+$$
+
+The usefulness of this principle depends entirely on which of $A$ or $A^c$ is easier to describe and count.
+
+------------------------------------------------------------------------
+
+### Example: Counting Five-Card Hands with At Least One Pair
+
+We count the number of five-card poker hands that contain **at least one repeated rank**. Rather than counting such hands directly, we count their complement.
+
+#### Step 1: Count all five-card hands
+
+The set of all five-card hands drawn from a standard 52-card deck has size
+
+$$
+|U| = \binom{52}{5}.
+$$
+
+#### Step 2: Describe the complement
+
+The complement consists of all five-card hands in which **all ranks are distinct**. That is, no rank appears more than once.
+
+This description includes: - high-card hands, - straights, - flushes, - straight flushes,
+
+but excludes every hand containing a pair or better.
+
+#### Step 3: Count the complement
+
+To count hands with all distinct ranks:
+
+1.  Choose $5$ distinct ranks from the $13$ available: $$
+    \binom{13}{5}.
+    $$
+
+2.  For each chosen rank, independently choose one of $4$ suits: $$
+    4^5.
+    $$
+
+Thus, the number of five-card hands with no repeated ranks is
+
+$$
+|A^c| = \binom{13}{5} \cdot 4^5.
+$$
+
+#### Step 4: Subtract
+
+The number of five-card hands containing **at least one pair** is therefore
+
+$$
+|A|
+=
+\binom{52}{5}
+-
+\binom{13}{5} \cdot 4^5.
+$$
+
+------------------------------------------------------------------------
+
+### Structural Insight
+
+A direct count of hands with at least one pair would require separate enumeration of: - exactly one pair, - two pair, - three of a kind, - full house, - four of a kind.
+
+The complement method avoids this case-by-case explosion by identifying a simpler description of what is *not* allowed.
+
+This technique will recur throughout the chapter. Whenever a counting problem threatens to fragment into many overlapping cases, the first question to ask is not “how do I count this directly?” but rather
+
+> *What is the simplest collection of objects that I can count instead?*
+
+## Inclusion–Exclusion: Correcting Overcounts
+
+Counting by the complement avoids difficult casework by counting what *does not* happen. Inclusion–exclusion addresses a different but equally common problem: **overcounting**.
+
+It arises whenever objects may satisfy more than one condition simultaneously.
+
+------------------------------------------------------------------------
+
+### Motivating Example: One Exclusion Step
+
+#### Example: Hands Containing at Least One Ace
+
+Let $U$ be the set of all five-card poker hands. Let $A \subseteq U$ be the set of hands that contain at least one ace.
+
+Hands with **no aces** are formed entirely from the remaining $48$ non-ace cards, so there are $\binom{48}{5}$ such hands. Since $|U|=\binom{52}{5}$, we obtain
+
+$$
+|A|
+=
+|U| - |U \setminus A|
+=
+\binom{52}{5}
+-
+\binom{48}{5}.
+$$
+
+This is inclusion–exclusion with a single exclusion: count everything, then exclude what violates the condition.
+
+------------------------------------------------------------------------
+
+### Two Exclusion Steps: Overlapping Conditions
+
+#### Example: Hands Containing an Ace *or* a King
+
+Let $U$ again denote the set of all five-card hands. Define subsets - $A \subseteq U$: hands containing at least one ace, - $K \subseteq U$: hands containing at least one king.
+
+We want to count the hands containing an ace or a king, that is, the union $A \cup K$.
+
+A natural first step is to add $|A|$ and $|K|$, but then any hand that contains both an ace and a king has been counted twice. This suggests the correction
+
+$$
+|A \cup K|
+=
+|A| + |K| - |A \cap K|.
+$$
+
+To compute each term by subtraction from $|U|$, observe:
+
+-   As before, $$
+    |A| = \binom{52}{5} - \binom{48}{5},
+    \qquad
+    |K| = \binom{52}{5} - \binom{48}{5}.
+    $$
+
+-   The intersection $A \cap K$ consists of hands containing at least one ace *and* at least one king. Its complement in $U$ is the set of hands containing **no aces and no kings**, which are chosen from the remaining $44$ cards. Hence $$
+    |A \cap K|
+    =
+    |U| - \binom{44}{5}
+    =
+    \binom{52}{5} - \binom{44}{5}.
+    $$
+
+Substituting into the union formula gives $$
+|A \cup K|
+=
+\left(\binom{52}{5}-\binom{48}{5}\right)
++
+\left(\binom{52}{5}-\binom{48}{5}\right)
+-
+\left(\binom{52}{5}-\binom{44}{5}\right)
+=
+\binom{52}{5} - 2\binom{48}{5} + \binom{44}{5}.
+$$
+
+This example shows the pattern that will generalize: unions are counted by adding single-set sizes and then subtracting overlaps to correct the overcount.
+
+------------------------------------------------------------------------
+
+### The General Inclusion–Exclusion Principle
+
+Let $U$ be a finite set, and let $A_1, A_2, \dots, A_n$ be subsets of $U$. Then
+
+$$
+\left| \bigcup_{i=1}^n A_i \right|
+=
+\sum_{i=1}^n |A_i|
+-
+\sum_{1 \le i < j \le n} |A_i \cap A_j|
++
+\sum_{1 \le i < j < k \le n} |A_i \cap A_j \cap A_k|
+-
+\cdots
++
+(-1)^{n+1} |A_1 \cap \cdots \cap A_n|.
+$$
+
+The signs alternate. Intuitively, each element lying in several sets gets added multiple times in the first sum, then subtracted multiple times in the second sum, and so on, with the alternating corrections eventually leaving each element counted exactly once.
+
+------------------------------------------------------------------------
+
+### Proof by Induction
+
+We prove the inclusion–exclusion formula by induction on $n$.
+
+#### Base case: $n=1$
+
+If $n=1$, then $\bigcup_{i=1}^1 A_i = A_1$, and the formula reduces to $$
+|A_1| = |A_1|,
+$$ which is true.
+
+#### Inductive step
+
+Assume the formula holds for $n-1$ sets. Let $A_1,\dots,A_{n-1},A_n$ be subsets of $U$.
+
+Write $$
+\bigcup_{i=1}^n A_i
+=
+\left(\bigcup_{i=1}^{n-1} A_i\right)\cup A_n.
+$$
+
+Using the two-set counting identity $$
+|X \cup Y| = |X| + |Y| - |X \cap Y|,
+$$ with $X=\bigcup_{i=1}^{n-1}A_i$ and $Y=A_n$, we obtain $$
+\left|\bigcup_{i=1}^n A_i\right|
+=
+\left|\bigcup_{i=1}^{n-1} A_i\right|
++
+|A_n|
+-
+\left|\left(\bigcup_{i=1}^{n-1} A_i\right)\cap A_n\right|.
+$$
+
+Next, distribute the intersection over the union: $$
+\left(\bigcup_{i=1}^{n-1} A_i\right)\cap A_n
+=
+\bigcup_{i=1}^{n-1} (A_i \cap A_n).
+$$
+
+Now apply the induction hypothesis to the $n-1$ sets $$
+A_1\cap A_n,\ A_2\cap A_n,\ \dots,\ A_{n-1}\cap A_n.
+$$
+
+This yields $$
+\left|\left(\bigcup_{i=1}^{n-1} A_i\right)\cap A_n\right|
+=
+\sum_{i=1}^{n-1} |A_i\cap A_n|
+-
+\sum_{1\le i<j\le n-1} |A_i\cap A_j\cap A_n|
++
+\cdots
++
+(-1)^{n} |A_1\cap\cdots\cap A_{n-1}\cap A_n|.
+$$
+
+Also, by the induction hypothesis applied to $A_1,\dots,A_{n-1}$, $$
+\left|\bigcup_{i=1}^{n-1} A_i\right|
+=
+\sum_{i=1}^{n-1} |A_i|
+-
+\sum_{1 \le i < j \le n-1} |A_i \cap A_j|
++
+\cdots
++
+(-1)^{n} |A_1 \cap \cdots \cap A_{n-1}|.
+$$
+
+Substitute both expansions into $$
+\left|\bigcup_{i=1}^n A_i\right|
+=
+\left|\bigcup_{i=1}^{n-1} A_i\right|
++
+|A_n|
+-
+\left|\left(\bigcup_{i=1}^{n-1} A_i\right)\cap A_n\right|.
+$$
+
+The first two terms contribute all intersections *not involving* $A_n$ (plus the single term $|A_n|$). The final subtraction contributes exactly the intersections *involving* $A_n$, with the alternating signs reversed by the leading minus sign, producing
+
+-   subtraction of all pairwise intersections $A_i\cap A_n$,
+-   addition of all triple intersections $A_i\cap A_j\cap A_n$,
+-   and so on,
+-   ending with $(-1)^{n+1}|A_1\cap\cdots\cap A_n|$.
+
+Collecting terms yields precisely the inclusion–exclusion formula for $n$ sets. This completes the induction. \## Inclusion–Exclusion: Correcting Overcounts
+
+Counting by the complement avoids difficult casework by counting what *does not* happen. Inclusion–exclusion addresses a different but equally common problem: **overcounting**.
+
+It arises whenever objects may satisfy more than one condition simultaneously.
+
+------------------------------------------------------------------------
+
+### Motivating Example: One Exclusion Step
+
+#### Example: Hands Containing at Least One Ace
+
+Let $U$ be the set of all five-card poker hands. Let $A \subseteq U$ be the set of hands that contain at least one ace.
+
+Hands with **no aces** are formed entirely from the remaining $48$ non-ace cards, so there are $\binom{48}{5}$ such hands. Since $|U|=\binom{52}{5}$, we obtain
+
+$$
+|A|
+=
+|U| - |U \setminus A|
+=
+\binom{52}{5}
+-
+\binom{48}{5}.
+$$
+
+This is inclusion–exclusion with a single exclusion: count everything, then exclude what violates the condition.
+
+------------------------------------------------------------------------
+
+### Two Exclusion Steps: Overlapping Conditions
+
+#### Example: Hands Containing an Ace *or* a King
+
+Let $U$ again denote the set of all five-card hands. Define subsets - $A \subseteq U$: hands containing at least one ace, - $K \subseteq U$: hands containing at least one king.
+
+We want to count the hands containing an ace or a king, that is, the union $A \cup K$.
+
+A natural first step is to add $|A|$ and $|K|$, but then any hand that contains both an ace and a king has been counted twice. This suggests the correction
+
+$$
+|A \cup K|
+=
+|A| + |K| - |A \cap K|.
+$$
+
+To compute each term by subtraction from $|U|$, observe:
+
+-   As before, $$
+    |A| = \binom{52}{5} - \binom{48}{5},
+    \qquad
+    |K| = \binom{52}{5} - \binom{48}{5}.
+    $$
+
+-   The intersection $A \cap K$ consists of hands containing at least one ace *and* at least one king. Its complement in $U$ is the set of hands containing **no aces and no kings**, which are chosen from the remaining $44$ cards. Hence $$
+    |A \cap K|
+    =
+    |U| - \binom{44}{5}
+    =
+    \binom{52}{5} - \binom{44}{5}.
+    $$
+
+Substituting into the union formula gives $$
+|A \cup K|
+=
+\left(\binom{52}{5}-\binom{48}{5}\right)
++
+\left(\binom{52}{5}-\binom{48}{5}\right)
+-
+\left(\binom{52}{5}-\binom{44}{5}\right)
+=
+\binom{52}{5} - 2\binom{48}{5} + \binom{44}{5}.
+$$
+
+This example shows the pattern that will generalize: unions are counted by adding single-set sizes and then subtracting overlaps to correct the overcount.
+
+------------------------------------------------------------------------
+
+### The General Inclusion–Exclusion Principle
+
+Let $U$ be a finite set, and let $A_1, A_2, \dots, A_n$ be subsets of $U$. Then
+
+$$
+\left| \bigcup_{i=1}^n A_i \right|
+=
+\sum_{i=1}^n |A_i|
+-
+\sum_{1 \le i < j \le n} |A_i \cap A_j|
++
+\sum_{1 \le i < j < k \le n} |A_i \cap A_j \cap A_k|
+-
+\cdots
++
+(-1)^{n+1} |A_1 \cap \cdots \cap A_n|.
+$$
+
+The signs alternate. Intuitively, each element lying in several sets gets added multiple times in the first sum, then subtracted multiple times in the second sum, and so on, with the alternating corrections eventually leaving each element counted exactly once.
+
+------------------------------------------------------------------------
+
+### Proof by Induction
+
+We prove the inclusion–exclusion formula by induction on $n$.
+
+#### Base case: $n=1$
+
+If $n=1$, then $\bigcup_{i=1}^1 A_i = A_1$, and the formula reduces to $$
+|A_1| = |A_1|,
+$$ which is true.
+
+#### Inductive step
+
+Assume the formula holds for $n-1$ sets. Let $A_1,\dots,A_{n-1},A_n$ be subsets of $U$.
+
+Write $$
+\bigcup_{i=1}^n A_i
+=
+\left(\bigcup_{i=1}^{n-1} A_i\right)\cup A_n.
+$$
+
+Using the two-set counting identity $$
+|X \cup Y| = |X| + |Y| - |X \cap Y|,
+$$ with $X=\bigcup_{i=1}^{n-1}A_i$ and $Y=A_n$, we obtain $$
+\left|\bigcup_{i=1}^n A_i\right|
+=
+\left|\bigcup_{i=1}^{n-1} A_i\right|
++
+|A_n|
+-
+\left|\left(\bigcup_{i=1}^{n-1} A_i\right)\cap A_n\right|.
+$$
+
+Next, distribute the intersection over the union: $$
+\left(\bigcup_{i=1}^{n-1} A_i\right)\cap A_n
+=
+\bigcup_{i=1}^{n-1} (A_i \cap A_n).
+$$
+
+Now apply the induction hypothesis to the $n-1$ sets $$
+A_1\cap A_n,\ A_2\cap A_n,\ \dots,\ A_{n-1}\cap A_n.
+$$
+
+This yields $$
+\left|\left(\bigcup_{i=1}^{n-1} A_i\right)\cap A_n\right|
+=
+\sum_{i=1}^{n-1} |A_i\cap A_n|
+-
+\sum_{1\le i<j\le n-1} |A_i\cap A_j\cap A_n|
++
+\cdots
++
+(-1)^{n} |A_1\cap\cdots\cap A_{n-1}\cap A_n|.
+$$
+
+Also, by the induction hypothesis applied to $A_1,\dots,A_{n-1}$, $$
+\left|\bigcup_{i=1}^{n-1} A_i\right|
+=
+\sum_{i=1}^{n-1} |A_i|
+-
+\sum_{1 \le i < j \le n-1} |A_i \cap A_j|
++
+\cdots
++
+(-1)^{n} |A_1 \cap \cdots \cap A_{n-1}|.
+$$
+
+Substitute both expansions into $$
+\left|\bigcup_{i=1}^n A_i\right|
+=
+\left|\bigcup_{i=1}^{n-1} A_i\right|
++
+|A_n|
+-
+\left|\left(\bigcup_{i=1}^{n-1} A_i\right)\cap A_n\right|.
+$$
+
+The first two terms contribute all intersections *not involving* $A_n$ (plus the single term $|A_n|$). The final subtraction contributes exactly the intersections *involving* $A_n$, with the alternating signs reversed by the leading minus sign, producing
+
+-   subtraction of all pairwise intersections $A_i\cap A_n$,
+-   addition of all triple intersections $A_i\cap A_j\cap A_n$,
+-   and so on,
+-   ending with $(-1)^{n+1}|A_1\cap\cdots\cap A_n|$.
+
+Collecting terms yields precisely the inclusion–exclusion formula for $n$ sets. This completes the induction. \### Remark: Why the Alternating Signs Work
+
+The inclusion–exclusion formula can be understood by tracking how many times a single element is counted.
+
+Fix an element $x \in U$, and suppose $x$ belongs to exactly $m$ of the sets among $A_1, A_2, \dots, A_n$.
+
+-   In the first sum, $x$ is counted once for each set containing it, so it is counted $m$ times.
+-   In the second sum, $x$ is subtracted once for each pair of sets containing it, so it is subtracted $\binom{m}{2}$ times.
+-   In the third sum, it is added back $\binom{m}{3}$ times.
+-   This continues, alternating signs, until the final intersection term.
+
+Altogether, the total contribution of $x$ is
+
+$$
+\binom{m}{1} - \binom{m}{2} + \binom{m}{3} - \cdots + (-1)^{m+1}\binom{m}{m}.
+$$
+
+A standard binomial identity shows that this sum equals $1$ whenever $m \ge 1$, and $0$ when $m=0$.
+
+Thus: - elements that belong to at least one set are counted exactly once, - elements that belong to none of the sets are not counted at all.
+
+This bookkeeping perspective explains both the structure of the formula and the necessity of the alternating signs.
+
+### Worked Example: Counting Hands Containing an Ace and a Heart
+
+We count five-card poker hands that satisfy **two simultaneous conditions**: - the hand contains *at least one ace*, and - the hand contains *at least one heart*.
+
+This example illustrates inclusion–exclusion in a setting where rank-based and suit-based conditions overlap.
+
+#### Step 1: Define the sets
+
+Let $U$ be the set of all five-card poker hands. Define: - $A \subseteq U$: hands containing at least one ace, - $H \subseteq U$: hands containing at least one heart.
+
+We seek to count the size of the intersection $A \cap H$.
+
+Rather than counting this intersection directly, we count it by subtracting complements.
+
+#### Step 2: Count the individual complements
+
+-   Hands with **no aces** are chosen from the remaining $48$ cards: $$
+    |U \setminus A| = \binom{48}{5}.
+    $$
+
+-   Hands with **no hearts** are chosen from the $39$ non-heart cards: $$
+    |U \setminus H| = \binom{39}{5}.
+    $$
+
+-   Hands with **neither aces nor hearts** are chosen from the cards that are neither aces nor hearts. There are $36$ such cards: $$
+    |U \setminus (A \cup H)| = \binom{36}{5}.
+    $$
+
+#### Step 3: Apply inclusion–exclusion
+
+The hands that contain at least one ace and at least one heart are exactly those in
+
+$$
+A \cap H
+=
+U
+\setminus
+\bigl((U \setminus A) \cup (U \setminus H)\bigr).
+$$
+
+Taking sizes and applying inclusion–exclusion to the union of complements gives
+
+$$
+|A \cap H|
+=
+|U|
+-
+|U \setminus A|
+-
+|U \setminus H|
++
+|U \setminus (A \cup H)|.
+$$
+
+Substituting the counts above,
+
+$$
+|A \cap H|
+=
+\binom{52}{5}
+-
+\binom{48}{5}
+-
+\binom{39}{5}
++
+\binom{36}{5}.
+$$
+
+------------------------------------------------------------------------
+
+### Structural Insight
+
+This example shows why inclusion–exclusion is indispensable when conditions interact.
+
+Counting hands with an ace and counting hands with a heart are both easy in isolation. Counting hands with **both** is not, because the ace of hearts lies in the overlap of the two conditions.
+
+Inclusion–exclusion systematically corrects for this overlap. It provides a framework for combining constraints without losing track of how they interfere with one another—a recurring issue in poker counting problems involving ranks, suits, and board textures.
+
+## Beyond Poker: Counting Structure in the Wild
+
+The counting principles developed in this chapter are not artifacts of card games.\
+They arise whenever a system is built from discrete components, subject to overlapping constraints, and interpreted through human categories. Poker simply makes these features visible.
+
+What follows are three settings—genetics, consumer analytics, and computer science—in which the same combinatorial ideas appear almost unchanged.
+
+------------------------------------------------------------------------
+
+### Genetics: Counting Genotypes, Not Organisms
+
+In introductory genetics, a genotype is often described as a “combination of alleles.”\
+That language is precise in a mathematical sense.
+
+Suppose a single gene has two possible alleles, $A$ and $a$. An individual carries two copies. The possible genotypes are $$
+\{AA,\ Aa,\ aa\}.
+$$ Order does not matter: $Aa$ and $aA$ represent the same genotype. This is already a combinations problem.
+
+As the number of genes increases, the counting problem scales rapidly. With $n$ independent genes, each with two alleles, the number of possible genotypes is $3^n$.\
+Now consider constraints: genotypes that contain *at least one* recessive allele, or *no* dominant alleles at all. These are complements.
+
+More complicated traits overlap. A genotype might satisfy multiple conditions simultaneously: carrying a recessive allele at gene 1 *and* a dominant allele at gene 3. Counting such populations requires inclusion–exclusion to avoid double-counting individuals who satisfy several criteria at once.
+
+The mathematics is identical to poker hands: - alleles replace cards, - genes replace ranks, - and genotypes replace hands.
+
+What changes is interpretation, not structure.
+
+------------------------------------------------------------------------
+
+### Consumer Analytics: Overlapping Categories and Invisible Overcounts
+
+Modern marketing routinely asks questions of the form: - How many customers are under 30? - How many shop online? - How many do both?
+
+These are not rhetorical questions—they determine budgets, inventory, and policy.
+
+Suppose a company tracks customers in three categories: - $A$: subscribed to a loyalty program, - $B$: made a purchase this month, - $C$: opened a promotional email.
+
+Naïvely adding $|A|+|B|+|C|$ overcounts customers who appear in multiple lists. The overlap is not a bug in the data—it is a feature of human behavior.
+
+Inclusion–exclusion corrects this systematically: $$
+|A \cup B \cup C|
+=
+|A|+|B|+|C|
+-
+|A \cap B|
+-
+|A \cap C|
+-
+|B \cap C|
++
+|A \cap B \cap C|.
+$$
+
+This is exactly the same bookkeeping problem encountered when counting poker hands that satisfy multiple rank or suit constraints. The mathematics enforces intellectual discipline: categories overlap, and counting must respect that reality.
+
+Here, counting errors do not merely misstate probabilities; they distort narratives about people.
+
+------------------------------------------------------------------------
+
+### Computer Science: Valid States in a Sea of Possibilities
+
+In computer science, counting often begins with a vast theoretical universe and then systematically removes what is not allowed.
+
+Consider a system with $n$ binary switches. There are $2^n$ possible configurations.\
+Now impose constraints: - switch 1 and switch 2 cannot both be on, - switch 4 must be on if switch 7 is off, - at least one switch in a given subset must be active.
+
+Each constraint excludes a family of configurations. Constraints overlap. Some configurations violate multiple rules at once.
+
+Counting *valid* states becomes a problem of: - defining forbidden sets, - counting them, - correcting overlaps via inclusion–exclusion.
+
+This is the same logic used earlier in the chapter to count hands with repeated ranks, or boards with overlapping suit patterns. The stakes are different—system safety, computational feasibility, correctness—but the structure is the same.
+
+Poker asks, “How many hands survive these rules?”\
+Computer science asks, “How many states survive these constraints?”
+
+------------------------------------------------------------------------
+
+### A Shared Mathematical Spine
+
+Across these examples, the same questions recur:
+
+-   What distinctions matter?
+-   Which collections are easiest to count directly?
+-   When do constraints overlap?
+-   Where does naïve counting fail?
+
+Poker makes these questions tangible because the consequences are immediate and unforgiving. But the mathematics does not belong to poker. It belongs to any discipline that must reason carefully about *possibility under constraint*.
+
+Counting, in this sense, is not about arithmetic.\
+It is about structure—and about knowing when intuition needs correction.
+
+## Liberal Arts Sidebar
+
+**What Counts as Rare? Counting, Culture, and the Manufacture of Value**
+
+When early poker communities disagreed about whether a straight or a flush should be valued more highly, they were not arguing about arithmetic. They were arguing about *which experiences deserved authority*. A player who spent night after night drawing to four hearts experienced flushes as attainable, even routine. Another, reasoning abstractly across all possible five-card hands, concluded that flushes were scarcer and therefore stronger. Both views were internally coherent. What differed was the frame.
+
+This distinction—between *experienced rarity* and *structural rarity*—turns out to be one of the central tensions in the history of counting.
+
+Mathematics gives us tools for enumeration, but it does not tell us which enumeration matters. That decision is cultural, economic, and often political.
+
+A vivid example lies far from the poker table, in the modern history of diamonds. By the late nineteenth century, diamond discoveries in southern Africa had made it clear that diamonds were not naturally scarce in any absolute sense. Left to geological reality, they would have become relatively common. The response of **De Beers** was not to deny abundance, but to reorganize counting itself.
+
+De Beers restricted supply, stockpiled stones, and—most importantly—reframed the question of value. Through one of the most influential advertising campaigns of the twentieth century, diamonds were repositioned as symbols of permanence, fidelity, and moral seriousness. “A diamond is forever” did not merely suggest durability. It implied singularity. The relevant question ceased to be “How many diamonds exist?” and became “How many moments in a life justify one?”—with the socially enforced answer being exactly one.
+
+In this new frame, diamonds did not need to be geologically rare. They needed to be *ritually rare*. Counting shifted from inventories to life events. Value followed.
+
+Poker works the same way. A flush is not inherently stronger than a straight. It becomes stronger when a community agrees that rarity should be measured globally rather than locally, abstractly rather than experientially. Once that agreement hardens into convention, the hierarchy feels natural, even obvious. What began as a contested judgment becomes a rule.
+
+Across cultures, however, the introduction of large-scale counting has often been met with resistance—not because people could not count, but because counting changes what counts *as knowledge*.
+
+Anthropologists have documented societies in which precise enumeration is deliberately limited. Among the Pirahã of the Amazon, traditional language emphasizes relative quantities—“few,” “some,” “many”—rather than exact numbers. This is not a deficiency. It reflects an epistemology grounded in immediacy and relation. Counting beyond what can be acted upon offers no additional insight and may even mislead. Abstract totals sever knowledge from experience.
+
+Similar patterns appear in Inuit hunting cultures, where ecological understanding historically centered on ice conditions, animal behavior, and seasonal rhythms rather than population counts. Hunters did not need to know how many seals existed in the abstract; they needed to know when, where, and how to hunt responsibly. Enumeration without context risked replacing attentiveness with false certainty.
+
+In Melanesia, early colonial efforts to survey and measure land were resisted not because measurement was incomprehensible, but because it transformed land from a relational inheritance into a commodity. To count land was to make it alienable, taxable, and governable by distant authorities. Quantization was not neutral bookkeeping; it was an assertion of power.
+
+Even within Europe, the rise of censuses and actuarial tables provoked unease. To be counted was to become legible—to taxation, conscription, insurance, and regulation. Numerical governance promised fairness and efficiency, but it also threatened to flatten moral and social distinctions. Death became a rate. Risk became a premium. Individuals became entries in tables.
+
+Across these cases, resistance to counting follows a common pattern. Quantization: - replaces narrative with aggregation, - shifts authority from local judgment to abstract systems, - and redefines value in ways that may conflict with lived meaning.
+
+This resistance is not anti-mathematical. It is ethical and epistemological. It asks not whether numbers are correct, but whether they are *entitled* to decide.
+
+Poker compresses this long history into a single, teachable question: *Which rarity should matter?*\
+The rarity we feel? The rarity we remember? Or the rarity that emerges only when all possibilities are laid out at once?
+
+Combinatorics and probability do not answer this question for us. They provide the machinery to count, but communities decide which counts become authoritative. That decision reshapes value—whether at a card table, in a marketplace, or across a society.
+
+To learn counting, then, is not merely to master technique. It is to become aware of the frames we adopt, the perspectives we privilege, and the meanings we risk erasing when numbers begin to speak in our place.
+
+## Homework Problems
+
+1.  Prove that $$
+    \binom{n}{k} = \binom{n}{n-k}
+    $$ using a counting argument (not algebraic manipulation). Interpret this identity in the context of choosing cards from a deck.
+
+2.  Prove Pascal’s identity $$
+    \binom{n}{k} = \binom{n-1}{k} + \binom{n-1}{k-1}
+    $$ by partitioning a collection of $k$-element subsets into two disjoint classes. Explain the underlying “either–or” decision being counted.
+
+3.  Prove that $$
+    \sum_{k=0}^n \binom{n}{k} = 2^n
+    $$ by interpreting both sides as counting the same set in two different ways.
+
+4.  Prove that $$
+    \sum_{k=0}^n (-1)^k \binom{n}{k} = 0
+    $$ for $n \ge 1$ using a combinatorial argument rather than the binomial theorem.
+
+5.  Count the number of five-card poker hands that contain *exactly one pair*. Carefully justify that no other hand types are included.
+
+6.  Count the number of five-card poker hands that contain *exactly two distinct pairs*. Explain why your count excludes full houses.
+
+7.  Count the number of five-card flushes that are *not* straight flushes. Clearly describe how straight flushes are excluded.
+
+8.  Count the number of five-card straights. Explicitly state how the ace is treated in your model.
+
+9.  Using your answers to the previous two problems, explain mathematically why flushes outrank straights in standard poker hand rankings.
+
+10. Count the number of distinct flops in Texas Hold’em that contain at least one repeated rank.
+
+11. Count the number of distinct flops in Texas Hold’em that contain at least two cards of the same suit.
+
+12. Count the number of five-card boards (flop–turn–river) that contain *exactly two hearts*.
+
+13. Count the number of five-card boards that contain at least one ace and at least one heart.
+
+14. At a six-handed Texas Hold’em table, count the number of hole-card assignments in which *at least one player* is dealt a pocket pair.
+
+15. At a six-handed Texas Hold’em table, count the number of hole-card assignments in which *no player* is dealt a pocket pair.
+
+16. A species has $r$ genes, each with two possible alleles.
+
+    (a) Count the number of possible genotypes if allele order matters.\
+    (b) Count the number of possible genotypes if allele order does not matter.\
+        Explain the structural difference between the two models.
+
+17. A population is classified according to three overlapping traits. Explain how to count the number of individuals possessing at least one trait, and why naïve addition necessarily overcounts.
+
+18. A system has $n$ binary switches, but configurations in which switches 1 and 2 are both on are forbidden. Count the number of valid configurations.
+
+19. Three tasks must be assigned to five distinct time slots, with the restriction that no two tasks may occupy adjacent slots. Count the number of valid schedules.
+
+20. Count the number of binary strings of length $n$ that contain at least one occurrence of the substring “11”.
+
+21. Invent a new five-card hand ranking system based on a different notion of rarity (for example, rarity conditioned on partial information). Explain how your ranking could be justified mathematically.
+
+22. Give an example of a poker situation in which conditioning on known cards dramatically changes which outcomes appear rare. Explain how this differs from global counting.
+
+23. Identify a poker counting problem in which two different modeling choices lead to two different correct answers. Explain what information each model preserves.
+
+24. Reflect on how counting can *create* value rather than merely measure it. Use one example from poker and one example from outside poker.
+
+## Extension Activity
+
+Write a short program that uses random simulation to estimate how often each five-card hand type occurs, and then compare your simulated frequencies to the exact frequencies obtained by counting.
+
+Begin by choosing a programming environment (R, Python, Julia, or another language you know). Your program should represent a standard 52-card deck, repeatedly generate random five-card hands *without replacement*, classify each hand by its ranking, and record counts. You may treat the ordering of the five cards as irrelevant, but your code should be explicit about how it generates hands and how it avoids duplicates within a hand.
+
+Your simulation should estimate the relative frequencies of at least the following categories: high card, one pair, two pair, three of a kind, straight, flush, full house, four of a kind, and straight flush. You should explain, in words, how your classifier distinguishes between these categories and how it handles special cases such as the ace being low in a $A$–$2$–$3$–$4$–$5$ straight.
+
+Run the simulation for several different sample sizes (for example $10^4$, $10^5$, and $10^6$ hands). For each run, report a table showing the estimated frequency of each hand type. Then compute the exact counts for each hand type using analytic methods from the chapter, and convert those counts into exact proportions by dividing by $\binom{52}{5}$. Create a second table that places simulated estimates and exact values side by side, and include the absolute error for each category.
+
+To connect simulation back to mathematical reasoning, include a short discussion addressing the following questions. Which hand categories converge most quickly to their exact proportions, and which converge slowly? How does the rarity of an event affect the reliability of its estimate? If a category occurs very rarely (such as straight flushes), what would you need to change about your simulation to estimate its frequency accurately?
+
+Finally, reflect on the relationship between analytic counting and simulation. When is simulation a useful substitute for exact counting, and when is it misleading? Identify one feature of poker counting (for example overlaps between straights and flushes, or the treatment of ace-low straights) where writing correct code forces you to be mathematically precise.

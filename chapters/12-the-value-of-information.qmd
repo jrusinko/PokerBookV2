@@ -1,0 +1,109 @@
+---
+title: "The Value of Information"
+chapter-id: "ch12"
+part: "Part IV: Optimization"
+poker-topics:
+  - "18 Value of Information"
+  - "10 Information Asymmetry"
+applications:
+  - "market research (buying data)"
+  - "scientific experimentation (value of trials)"
+  - "intelligence/surveillance (cost–benefit)"
+sidebar:
+  lens: "Ethics / political science"
+  title: "Surveillance, Privacy, and Power"
+  theme: "Information has value, but collecting it can violate consent or amplify power asymmetries."
+---
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part IV: Optimization
+- **Poker topics:** 18 Value of Information, 10 Information Asymmetry
+- **Beyond poker:** market research (buying data), scientific experimentation (value of trials), intelligence/surveillance (cost–benefit)
+
+:::
+
+## Motivating Example
+
+You can call to ‘see one more card’ but it costs money. Sometimes buying information is worth it; sometimes it’s not.
+
+**Guiding question.** When is information worth paying for, and how much should we pay?
+
+- Situation: You can call to ‘see one more card’ but it costs money. Sometimes buying information is worth it; sometimes it’s not.
+- Why it matters: this introduces 18 Value of Information, 10 Information Asymmetry.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+- Information sets and what a bet 'buys'
+- EVPI/EVSI definitions
+- When information has negative side-effects
+- Poker examples: calling to realize/see
+
+### Definitions
+
+**information set.** *[Definition.]*
+
+**value of information.** *[Definition.]*
+
+**EVPI.** *[Definition.]*
+
+**EVSI.** *[Definition.]*
+
+### Core concepts
+
+- opportunity cost
+- information asymmetry
+- decision improvement
+
+### Core results
+
+**non-negativity of information value (EVPI ≥ 0).** *[Statement / proof placeholder.]*
+
+**information dominance (conceptual).** *[Statement / proof placeholder.]*
+
+### Worked example ideas
+
+- Compute EVPI in a toy draw decision with/without seeing the next card
+
+### Computation notes
+
+["Optional: simulate value of a 'free card' in a simplified model"]
+
+## Beyond Poker
+
+These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+
+Possible directions:
+
+- market research (buying data)
+- scientific experimentation (value of trials)
+- intelligence/surveillance (cost–benefit)
+
+## Liberal Arts Sidebar
+
+**Surveillance, Privacy, and Power**
+
+*Lens:* Ethics / political science
+
+*Theme:* Information has value, but collecting it can violate consent or amplify power asymmetries.
+
+> When is information gathering unethical, even if it increases expected value?
+
+## Homework Problems
+
+Use these as problem prompts to develop a full set:
+
+1. Compute with definitions and formulas
+2. Explain a concept in words
+3. Short proof or justification (when appropriate)
+
+1. *[Problem to be written.]*
+2. *[Problem to be written.]*
+3. *[Problem to be written.]*
+
+## Extension Activity
+
+Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+

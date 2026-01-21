@@ -1,0 +1,110 @@
+---
+title: "Conditional Probability and Bayes’ Rule"
+chapter-id: "ch05"
+part: "Part II: Probability, Expectation, and Belief Updating"
+poker-topics:
+  - "9 Bayesian Updating (Implicit)"
+  - "10 Information Asymmetry"
+applications:
+  - "medical testing (base rates)"
+  - "legal reasoning (evidence evaluation)"
+  - "machine learning (classification/update)"
+sidebar:
+  lens: "Law & ethics"
+  title: "Evidence and Base-Rate Neglect"
+  theme: "How misunderstandings of conditional probability have contributed to wrongful convictions and flawed reasoning about evidence."
+---
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part II: Probability, Expectation, and Belief Updating
+- **Poker topics:** 9 Bayesian Updating (Implicit), 10 Information Asymmetry
+- **Beyond poker:** medical testing (base rates), legal reasoning (evidence evaluation), machine learning (classification/update)
+
+:::
+
+## Motivating Example
+
+Opponent raises the river. Is that strong or weak? The same action means different things depending on what you believed before.
+
+**Guiding question.** How should new information change what we believe?
+
+- Situation: Opponent raises the river. Is that strong or weak? The same action means different things depending on what you believed before.
+- Why it matters: this introduces 9 Bayesian Updating (Implicit), 10 Information Asymmetry.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+- Conditional probability as updating
+- Total probability and partitions
+- Bayes’ rule
+- Poker reading: actions as evidence
+
+### Definitions
+
+**conditional probability.** *[Definition.]*
+
+**joint probability.** *[Definition.]*
+
+**independence.** *[Definition.]*
+
+**conditional independence (informal).** *[Definition.]*
+
+### Core concepts
+
+- belief updating
+- information flow
+
+### Core results
+
+**product rule.** *[Statement / proof placeholder.]*
+
+**law of total probability.** *[Statement / proof placeholder.]*
+
+**Bayes’ theorem.** *[Statement / proof placeholder.]*
+
+### Worked example ideas
+
+- Update belief about a range after a bet sizing choice
+
+### Computation notes
+
+['Optional: compute posterior range weights in a small discrete example']
+
+## Beyond Poker
+
+These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+
+Possible directions:
+
+- medical testing (base rates)
+- legal reasoning (evidence evaluation)
+- machine learning (classification/update)
+
+## Liberal Arts Sidebar
+
+**Evidence and Base-Rate Neglect**
+
+*Lens:* Law & ethics
+
+*Theme:* How misunderstandings of conditional probability have contributed to wrongful convictions and flawed reasoning about evidence.
+
+> Should juries (and the public) be taught probability explicitly? Why or why not?
+
+## Homework Problems
+
+Use these as problem prompts to develop a full set:
+
+1. Compute with definitions and formulas
+2. Explain a concept in words
+3. Short proof or justification (when appropriate)
+
+1. *[Problem to be written.]*
+2. *[Problem to be written.]*
+3. *[Problem to be written.]*
+
+## Extension Activity
+
+Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+

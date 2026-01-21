@@ -1,0 +1,1367 @@
+poker_topics_master:
+- 1 Expected Value (EV)
+- 2 Variance and Volatility
+- 3 Risk vs Reward Tradeoffs
+- 4 Equity and Realization
+- 5 Multi-Stage Decision Making
+- 6 Hand Ranges (Not Hands)
+- 7 Range Construction and Narrowing
+- 8 Blockers and Removal Effects
+- 9 Bayesian Updating (Implicit)
+- 10 Information Asymmetry
+- 11 Zero-Sum Interaction
+- 12 Mixed Strategies
+- 13 Nash Equilibrium (GTO)
+- 14 Indifference Conditions
+- 15 Exploitative Play
+- 16 Bet Sizing as Optimization
+- 17 Pot Odds and Threshold Decisions
+- 18 Value of Information
+- 19 Tournament vs Cash Incentives
+- 20 ICM and Nonlinear Utility
+- 21 Game Trees and Abstraction
+- 22 Regret Minimization (CFR)
+- 23 Approximate Equilibria
+- 24 Randomness and Fair Dealing
+- 25 Statistical Inference from Results
+chapters:
+- id: ch01
+  title: Poker Games, Structure, and Language
+  part: 'Part I: Poker Foundations & Counting'
+  motivating_example: Two players argue whether a play was “correct,” but they were
+    thinking in different formats (cash vs tournament), so they’re optimizing different
+    goals.
+  math:
+    definitions: []
+    concepts:
+    - discrete game states
+    - information availability
+    - incentive structures (cash vs tournament)
+    theorems: []
+  poker_topics: []
+  applications:
+  - game design (rules and incentives)
+  - institutional design (policies and constraints)
+  - law/sports officiating (decision-making under rules)
+  sidebar:
+    lens: Cultural anthropology
+    title: Games, Rules, and Social Meaning
+    theme: How different cultures frame games (competition vs ritual vs community),
+      and how that changes what a “good move” means.
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: Two players argue whether a play was “correct,” but they were
+        thinking in different formats (cash vs tournament), so they’re optimizing
+        different goals.'
+      - 'Why it matters: this introduces core decision-making in poker.'
+      guiding_question: What does it mean for a decision to be “good” in poker across
+        different formats and goals?
+    math_and_poker:
+      planned_subsections:
+      - Poker formats and payoff structures
+      - 'Information: what players know when'
+      - Terminology and notation for the book
+      worked_example_ideas:
+      - Map a single hand history into states, actions, and information sets (informal)
+      computation_notes:
+      - 'None required (optional: hand-history parsing later)'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: Is poker fundamentally a competitive game, a social game,
+        or both? What changes when the goal changes?
+    homework:
+      math_problem_types:
+      - Define key terms (state, action, information) in your own words
+      - Classify scenarios by information available
+      poker_problem_types:
+      - Translate a played hand into the book’s terminology
+      - Identify what information each player had at each decision
+    extension:
+      activity_idea: Choose another game (board/video/sport) and write a one-page
+        comparison of incentives and information.
+- id: ch02
+  title: Counting Hands and Boards
+  part: 'Part I: Poker Foundations & Counting'
+  motivating_example: 'A debate: “Flushes are rarer than straights” vs “straights
+    are rarer.” Who’s right, and how do we know?'
+  math:
+    definitions:
+    - permutation
+    - combination
+    - binomial coefficient
+    - complement (of a set)
+    concepts:
+    - order vs non-order
+    - counting under constraints
+    - equivalence classes / symmetry
+    theorems:
+    - rule of product
+    - rule of sum
+    - complement principle
+    - inclusion–exclusion principle (finite)
+  poker_topics:
+  - 4 Equity and Realization
+  - 8 Blockers and Removal Effects
+  applications:
+  - genetics (counting genotypes)
+  - chemistry (counting molecular configurations/isomers)
+  - computer science (counting states/configurations)
+  sidebar:
+    lens: History of mathematics
+    title: When Counting Changed the World
+    theme: How combinatorics/probability enabled insurance, governance, and new ways
+      of reasoning about uncertainty—and why some communities resisted it.
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: A debate: “Flushes are rarer than straights” vs “straights are
+        rarer.” Who’s right, and how do we know?'
+      - 'Why it matters: this introduces 4 Equity and Realization, 8 Blockers and
+        Removal Effects.'
+      guiding_question: How often do different hands occur, and how do we count them
+        correctly?
+    math_and_poker:
+      planned_subsections:
+      - Counting principles (sum/product)
+      - Counting poker hands (5-card and Hold'em contexts)
+      - Complement and inclusion–exclusion
+      - From counts to probabilities
+      worked_example_ideas:
+      - Count and compare straights vs flushes; then compute probabilities
+      - 'Blocker example: how a known card changes counts'
+      computation_notes:
+      - 'Optional: brute-force enumeration for a small deck or Monte Carlo to validate
+        counts'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: Why might societies resist counting-based reasoning about
+        chance and uncertainty?
+    homework:
+      math_problem_types:
+      - Compute combinations/permutations in small settings
+      - Apply complement and inclusion–exclusion to a counting problem
+      - Explain why a counting method avoids overcounting
+      poker_problem_types:
+      - Count a hand class relevant to Hold'em (e.g., flopped sets)
+      - Compute probability with known blockers
+      - Compare two hand-frequency claims using counts
+    extension:
+      activity_idea: Write a short program to enumerate 5-card hands and estimate
+        frequencies; compare to analytic results.
+- id: ch03
+  title: Poker as a Probability Space
+  part: 'Part II: Probability, Expectation, and Belief Updating'
+  motivating_example: You get all-in preflop as a favorite and lose; someone says
+    “unlucky,” another says “inevitable.” What can probability actually claim?
+  math:
+    definitions:
+    - experiment
+    - sample space
+    - event
+    - probability measure
+    - uniform probability (finite)
+    concepts:
+    - modeling assumptions
+    - independence (informal)
+    - symmetry
+    theorems:
+    - probability axioms (finite)
+    - additivity of probability
+  poker_topics:
+  - 24 Randomness and Fair Dealing
+  - 1 Expected Value (EV)
+  applications:
+  - quality control (defect probabilities)
+  - risk analysis (engineering failure models)
+  - epidemiology (exposure and outcomes)
+  sidebar:
+    lens: Philosophy / religious studies
+    title: Luck, Fate, and Responsibility
+    theme: How different traditions interpret randomness (fate, karma, divine will)
+      and what that implies about blame/praise under uncertainty.
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: You get all-in preflop as a favorite and lose; someone says “unlucky,”
+        another says “inevitable.” What can probability actually claim?'
+      - 'Why it matters: this introduces 24 Randomness and Fair Dealing, 1 Expected
+        Value (EV).'
+      guiding_question: What does probability actually say about what should happen—and
+        what randomness allows?
+    math_and_poker:
+      planned_subsections:
+      - Sample spaces for poker (cards, deals, runouts)
+      - Events and probability models
+      - Independence and symmetry assumptions
+      - Interpreting probability statements
+      worked_example_ideas:
+      - Compute probability of improving from flop to river in a simple draw
+      computation_notes:
+      - 'Optional: Monte Carlo estimation of a probability and informal error discussion'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: When outcomes are probabilistic, what does responsibility
+        mean—morally and socially?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch04
+  title: Random Variables, Expectation, and Variance
+  part: 'Part II: Probability, Expectation, and Belief Updating'
+  motivating_example: Two lines have the same EV, but one is swingy and one is steady.
+    Which is “better” and why do people disagree?
+  math:
+    definitions:
+    - random variable (discrete)
+    - PMF
+    - expected value
+    - variance
+    - standard deviation
+    concepts:
+    - distribution vs outcome
+    - volatility and dispersion
+    - linearity of expectation
+    theorems:
+    - linearity of expectation
+    - variance identities
+    - variance of sums (independent case)
+  poker_topics:
+  - 1 Expected Value (EV)
+  - 2 Variance and Volatility
+  - 3 Risk vs Reward Tradeoffs
+  applications:
+  - finance (returns and volatility)
+  - operations research (expected cost vs variability)
+  - psychology (behavioral variability)
+  sidebar:
+    lens: Psychology
+    title: Why Humans Hate Variance
+    theme: Why people prefer predictability—even at the cost of lower EV—and how that
+      shapes real decision-making.
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: Two lines have the same EV, but one is swingy and one is steady.
+        Which is “better” and why do people disagree?'
+      - 'Why it matters: this introduces 1 Expected Value (EV), 2 Variance and Volatility.'
+      guiding_question: How do we measure not just average outcomes, but variability
+        and risk?
+    math_and_poker:
+      planned_subsections:
+      - Random variables for outcomes (profit/loss)
+      - Expected value and interpretation
+      - Variance/standard deviation
+      - Comparing lines with equal EV
+      worked_example_ideas:
+      - Two betting lines with equal EV but different variance; compute both
+      computation_notes:
+      - Simulate distributions of outcomes to visualize variance
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: Is avoiding variance rational, emotional, or both? When is
+        it justified?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch05
+  title: Conditional Probability and Bayes’ Rule
+  part: 'Part II: Probability, Expectation, and Belief Updating'
+  motivating_example: Opponent raises the river. Is that strong or weak? The same
+    action means different things depending on what you believed before.
+  math:
+    definitions:
+    - conditional probability
+    - joint probability
+    - independence
+    - conditional independence (informal)
+    concepts:
+    - belief updating
+    - information flow
+    theorems:
+    - product rule
+    - law of total probability
+    - Bayes’ theorem
+  poker_topics:
+  - 9 Bayesian Updating (Implicit)
+  - 10 Information Asymmetry
+  applications:
+  - medical testing (base rates)
+  - legal reasoning (evidence evaluation)
+  - machine learning (classification/update)
+  sidebar:
+    lens: Law & ethics
+    title: Evidence and Base-Rate Neglect
+    theme: How misunderstandings of conditional probability have contributed to wrongful
+      convictions and flawed reasoning about evidence.
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: Opponent raises the river. Is that strong or weak? The same action
+        means different things depending on what you believed before.'
+      - 'Why it matters: this introduces 9 Bayesian Updating (Implicit), 10 Information
+        Asymmetry.'
+      guiding_question: How should new information change what we believe?
+    math_and_poker:
+      planned_subsections:
+      - Conditional probability as updating
+      - Total probability and partitions
+      - Bayes’ rule
+      - 'Poker reading: actions as evidence'
+      worked_example_ideas:
+      - Update belief about a range after a bet sizing choice
+      computation_notes:
+      - 'Optional: compute posterior range weights in a small discrete example'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: Should juries (and the public) be taught probability explicitly?
+        Why or why not?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch06
+  title: Expected Value in Multi-Stage Decisions
+  part: 'Part II: Probability, Expectation, and Belief Updating'
+  motivating_example: A call looks unprofitable immediately, but it keeps open future
+    betting opportunities that can make the overall line profitable.
+  math:
+    definitions:
+    - expected value of an action
+    - conditional expectation
+    - break-even probability
+    - equity
+    concepts:
+    - decision trees
+    - multi-stage uncertainty
+    - threshold decision rules
+    - equity realization
+    theorems:
+    - law of total expectation (total expectation)
+    - dominance principle (informal)
+  poker_topics:
+  - 1 Expected Value (EV)
+  - 4 Equity and Realization
+  - 5 Multi-Stage Decision Making
+  - 17 Pot Odds and Threshold Decisions
+  applications:
+  - business strategy (sequential investments)
+  - environmental policy (choices with future uncertainty)
+  - AI (planning under uncertainty)
+  sidebar:
+    lens: Moral philosophy
+    title: Short-Term Pain, Long-Term Gain
+    theme: Ethical frameworks that emphasize long-run consequences—and when maximizing
+      long-run value can conflict with other values.
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: A call looks unprofitable immediately, but it keeps open future
+        betting opportunities that can make the overall line profitable.'
+      - 'Why it matters: this introduces 1 Expected Value (EV), 4 Equity and Realization.'
+      guiding_question: How do we evaluate decisions whose consequences unfold over
+        multiple stages?
+    math_and_poker:
+      planned_subsections:
+      - Decision trees for poker streets
+      - Conditional expectation along the tree
+      - Pot odds and break-even thresholds
+      - Equity realization across streets
+      worked_example_ideas:
+      - Turn decision with river consequences; compute EV by conditioning on river
+        outcomes
+      computation_notes:
+      - Monte Carlo to estimate multi-street EV when the tree is large
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: Is maximizing long-run value always ethically justified?
+        What other values might matter?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch07
+  title: 'Inference with Discrete Distributions: Ranges and Blockers'
+  part: 'Part II: Probability, Expectation, and Belief Updating'
+  motivating_example: After a sequence of actions, you try to infer what hands are
+    still plausible. Good players do it intuitively—this chapter makes it explicit.
+  math:
+    definitions:
+    - probability distribution on a finite set
+    - range (belief distribution)
+    - likelihood
+    - posterior distribution
+    - blocker (card removal)
+    concepts:
+    - belief modeling
+    - conditional distributions
+    - combinatorial weighting
+    - card removal effects
+    theorems:
+    - Bayes’ theorem (applied)
+    - normalization of distributions
+  poker_topics:
+  - 6 Hand Ranges (Not Hands)
+  - 7 Range Construction and Narrowing
+  - 8 Blockers and Removal Effects
+  - 9 Bayesian Updating (Implicit)
+  applications:
+  - forensics (constraint-based inference)
+  - ecology (presence/absence inference)
+  - intelligence analysis (hypothesis filtering)
+  sidebar:
+    lens: Sociology & ethics
+    title: Profiling, Stereotypes, and Inference
+    theme: When inference from limited evidence becomes unjustified assumption; parallels
+      between hand ranges and social profiling.
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: After a sequence of actions, you try to infer what hands are still
+        plausible. Good players do it intuitively—this chapter makes it explicit.'
+      - 'Why it matters: this introduces 6 Hand Ranges (Not Hands), 7 Range Construction
+        and Narrowing.'
+      guiding_question: How do we represent and update uncertainty about hidden information?
+    math_and_poker:
+      planned_subsections:
+      - Representing ranges as distributions
+      - Action filters and likelihoods
+      - Blockers and combinatorial weighting
+      - Posterior ranges and strategy implications
+      worked_example_ideas:
+      - Start with a preflop range; update through flop/turn actions; compute posterior
+        weights for a few hand classes
+      computation_notes:
+      - 'Optional: simple range-tracking spreadsheet or script'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: When does inference become unjustified assumption? How should
+        we handle uncertainty ethically?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch08
+  title: Zero-Sum Games and Mixed Strategies
+  part: 'Part III: Game Theory (Intro / Toy Models)'
+  motivating_example: If you always bluff, you get snapped; if you never bluff, you
+    get overfolded against. Randomizing feels irrational—but can be optimal.
+  math:
+    definitions:
+    - player
+    - strategy
+    - pure strategy
+    - mixed strategy
+    - payoff matrix
+    - zero-sum game
+    concepts:
+    - strategic interaction
+    - expected payoff under mixing
+    - randomization as strategy
+    theorems:
+    - expected payoff formula for mixed strategies
+    - minimax principle (informal statement)
+  poker_topics:
+  - 11 Zero-Sum Interaction
+  - 12 Mixed Strategies
+  applications:
+  - sports strategy (penalty kicks/play calling)
+  - cybersecurity (attack–defense)
+  - military strategy (adversarial planning)
+  sidebar:
+    lens: History / ethics
+    title: War, Games, and Human Cost
+    theme: Game theory’s military origins and critiques of zero-sum framing that can
+      dehumanize opponents or obscure moral stakes.
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: If you always bluff, you get snapped; if you never bluff, you
+        get overfolded against. Randomizing feels irrational—but can be optimal.'
+      - 'Why it matters: this introduces 11 Zero-Sum Interaction, 12 Mixed Strategies.'
+      guiding_question: Why would a rational strategy ever involve deliberate randomness?
+    math_and_poker:
+      planned_subsections:
+      - From poker situations to payoff matrices
+      - Mixed strategies and expected payoffs
+      - Why randomization prevents exploitation
+      - Toy poker-inspired games
+      worked_example_ideas:
+      - Solve a 2x2 bluff/call toy game; find optimal mixing
+      computation_notes:
+      - 'Optional: simulate exploitability when deviating from mix'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: When is it dangerous to view the world as zero-sum? What
+        gets lost in that framing?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch09
+  title: Nash Equilibrium and Indifference Conditions
+  part: 'Part III: Game Theory (Intro / Toy Models)'
+  motivating_example: You hear “the correct bluff frequency makes them indifferent.”
+    What does that mean mathematically, and why does it prevent exploitation?
+  math:
+    definitions:
+    - best response
+    - Nash equilibrium
+    - support of a mixed strategy
+    - indifference condition
+    concepts:
+    - mutual best responses
+    - stability
+    - equilibrium vs outcome
+    theorems:
+    - Nash equilibrium conditions (finite games)
+    - indifference principle for mixed strategies (support equations)
+  poker_topics:
+  - 13 Nash Equilibrium (GTO)
+  - 14 Indifference Conditions
+  applications:
+  - economics (market competition models)
+  - political science (strategic voting/campaigning)
+  - evolutionary biology (stable strategies)
+  sidebar:
+    lens: Political philosophy
+    title: Stability vs Justice
+    theme: Equilibria can be stable yet unfair; parallels with social/market equilibria
+      that entrench inequality.
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: You hear “the correct bluff frequency makes them indifferent.”
+        What does that mean mathematically, and why does it prevent exploitation?'
+      - 'Why it matters: this introduces 13 Nash Equilibrium (GTO), 14 Indifference
+        Conditions.'
+      guiding_question: What does it mean for strategies to be mutually stable—and
+        how do indifference conditions determine frequencies?
+    math_and_poker:
+      planned_subsections:
+      - Best responses in finite games
+      - Equilibrium definitions
+      - Indifference conditions in support
+      - Value/bluff balance intuition
+      worked_example_ideas:
+      - Derive bluff frequency that makes a defender indifferent in a toy model
+      computation_notes:
+      - 'Optional: verify with numerical best responses'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: Should stability be valued over fairness? Can an equilibrium
+        be unjust?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch10
+  title: Exploitative Play vs Equilibrium Thinking
+  part: 'Part III: Game Theory (Intro / Toy Models)'
+  motivating_example: Against a weak player, strict equilibrium play seems too passive;
+    against a strong player, exploitation can backfire. When should you deviate?
+  math:
+    definitions:
+    - exploitative strategy
+    - deviation
+    - counter-strategy
+    - exploitability (informal)
+    concepts:
+    - robustness vs exploitation
+    - best-response logic
+    - model misspecification
+    theorems:
+    - best-response principle
+    - exploitability as performance gap (conceptual)
+  poker_topics:
+  - 15 Exploitative Play
+  - 13 Nash Equilibrium (GTO)
+  applications:
+  - pricing strategy (responding to consumers)
+  - negotiation (adaptive vs principled)
+  - algorithmic trading (exploiting inefficiencies)
+  sidebar:
+    lens: Ethics
+    title: Exploitation in Everyday Life
+    theme: When is taking advantage of others acceptable if all parties consent? Contrast
+      games vs real-world power imbalances.
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: Against a weak player, strict equilibrium play seems too passive;
+        against a strong player, exploitation can backfire. When should you deviate?'
+      - 'Why it matters: this introduces 15 Exploitative Play, 13 Nash Equilibrium
+        (GTO).'
+      guiding_question: When should we deviate from equilibrium to exploit opponents,
+        and what are the risks?
+    math_and_poker:
+      planned_subsections:
+      - What equilibrium guarantees
+      - What exploitation targets
+      - How to model opponent tendencies
+      - Measuring cost of being wrong
+      worked_example_ideas:
+      - Given opponent overfold rate, compute an exploitative bluff frequency and
+        compare to equilibrium
+      computation_notes:
+      - 'Optional: sensitivity analysis over opponent parameters'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: Is exploitation wrong if everyone consents? How do power
+        differences change the answer?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch11
+  title: Betting as Optimization
+  part: 'Part IV: Optimization'
+  motivating_example: You think you’re ahead. Do you bet small to get called, or large
+    to deny equity? Bet sizing is an optimization problem.
+  math:
+    definitions:
+    - objective function
+    - constraint
+    - feasible set
+    - optimal solution
+    - marginal value
+    concepts:
+    - tradeoffs
+    - risk vs reward as constraints/objectives
+    - sizing as maximizing expected value (or utility)
+    theorems:
+    - finite optimization principle (argmax)
+    - marginal analysis principle (informal)
+  poker_topics:
+  - 16 Bet Sizing as Optimization
+  - 3 Risk vs Reward Tradeoffs
+  applications:
+  - engineering design (optimize under constraints)
+  - portfolio allocation (risk/return)
+  - resource allocation (budgets/scheduling)
+  sidebar:
+    lens: Philosophy
+    title: Optimization and the Good Life
+    theme: Critiques of reducing life to objective functions; what should not be optimized
+      (or cannot be).
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: You think you’re ahead. Do you bet small to get called, or large
+        to deny equity? Bet sizing is an optimization problem.'
+      - 'Why it matters: this introduces 16 Bet Sizing as Optimization, 3 Risk vs
+        Reward Tradeoffs.'
+      guiding_question: How do we choose bet sizes that balance value, fold equity,
+        and risk?
+    math_and_poker:
+      planned_subsections:
+      - Objective functions for bet sizing (EV/utility)
+      - Constraints (stack sizes, pot, ranges)
+      - 'Tradeoffs: fold equity vs value'
+      - Sizing heuristics and check strategies
+      worked_example_ideas:
+      - Choose a bet size maximizing EV in a simplified model with fold/call/raise
+        frequencies
+      computation_notes:
+      - 'Optional: plot EV vs bet size over a parameter grid'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: What should not be optimized? Where does optimization break
+        down as a worldview?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch12
+  title: The Value of Information
+  part: 'Part IV: Optimization'
+  motivating_example: You can call to ‘see one more card’ but it costs money. Sometimes
+    buying information is worth it; sometimes it’s not.
+  math:
+    definitions:
+    - information set
+    - value of information
+    - EVPI
+    - EVSI
+    concepts:
+    - opportunity cost
+    - information asymmetry
+    - decision improvement
+    theorems:
+    - non-negativity of information value (EVPI ≥ 0)
+    - information dominance (conceptual)
+  poker_topics:
+  - 18 Value of Information
+  - 10 Information Asymmetry
+  applications:
+  - market research (buying data)
+  - scientific experimentation (value of trials)
+  - intelligence/surveillance (cost–benefit)
+  sidebar:
+    lens: Ethics / political science
+    title: Surveillance, Privacy, and Power
+    theme: Information has value, but collecting it can violate consent or amplify
+      power asymmetries.
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: You can call to ‘see one more card’ but it costs money. Sometimes
+        buying information is worth it; sometimes it’s not.'
+      - 'Why it matters: this introduces 18 Value of Information, 10 Information Asymmetry.'
+      guiding_question: When is information worth paying for, and how much should
+        we pay?
+    math_and_poker:
+      planned_subsections:
+      - Information sets and what a bet 'buys'
+      - EVPI/EVSI definitions
+      - When information has negative side-effects
+      - 'Poker examples: calling to realize/see'
+      worked_example_ideas:
+      - Compute EVPI in a toy draw decision with/without seeing the next card
+      computation_notes:
+      - 'Optional: simulate value of a ''free card'' in a simplified model'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: When is information gathering unethical, even if it increases
+        expected value?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch13
+  title: 'Tournament Poker and ICM: Optimization with Nonlinear Utility'
+  part: 'Part IV: Optimization'
+  motivating_example: Near the bubble, someone folds a strong hand—absurd in cash
+    games. Why do incentives flip in tournaments?
+  math:
+    definitions:
+    - utility function
+    - expected utility
+    - Independent Chip Model (ICM)
+    - payoff structure (payout ladder)
+    concepts:
+    - nonlinear payoffs
+    - marginal chip value
+    - risk sensitivity / bubble pressure
+    - chip EV vs $EV
+    theorems:
+    - expected utility maximization (decision criterion)
+    - chip EV ≠ dollar EV (formal statement under nonlinear utility)
+  poker_topics:
+  - 19 Tournament vs Cash Incentives
+  - 20 ICM and Nonlinear Utility
+  applications:
+  - winner-take-all labor markets (careers, entertainment)
+  - public policy (threshold incentives)
+  - economics of inequality (nonlinear rewards)
+  sidebar:
+    lens: Economics / social justice
+    title: Winner-Take-All Systems
+    theme: How nonlinear reward structures change behavior and risk-taking; fairness
+      and distributional consequences.
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: Near the bubble, someone folds a strong hand—absurd in cash games.
+        Why do incentives flip in tournaments?'
+      - 'Why it matters: this introduces 19 Tournament vs Cash Incentives, 20 ICM
+        and Nonlinear Utility.'
+      guiding_question: Why does the same chip have different value in tournaments
+        than in cash games?
+    math_and_poker:
+      planned_subsections:
+      - Why chip EV differs from money EV
+      - Utility and payout ladders
+      - ICM mechanics (conceptual + calculations)
+      - Bubble/ladder implications for decisions
+      worked_example_ideas:
+      - Compute ICM equity in a small payout example and compare two shove/call lines
+      computation_notes:
+      - 'Optional: simulate finish orders to estimate ICM equity (simple)'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: Are winner-take-all systems fair? What incentives do they
+        create?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch14
+  title: Game Trees and Abstraction
+  part: 'Part V: Game Theory (Advanced / Solvers)'
+  motivating_example: A single hand branches into thousands of possible futures. Exact
+    solving is impossible—so we simplify. But simplification has costs.
+  math:
+    definitions:
+    - extensive-form game
+    - game tree
+    - information set
+    - perfect vs imperfect information
+    - abstraction
+    concepts:
+    - state-space explosion
+    - approximation error
+    - state reduction/aggregation
+    theorems:
+    - normal-form vs extensive-form relationship (stated)
+  poker_topics:
+  - 21 Game Trees and Abstraction
+  applications:
+  - AI search trees
+  - cognitive science (bounded rationality)
+  - software engineering (state abstraction)
+  sidebar:
+    lens: Cognitive science
+    title: Bounded Rationality
+    theme: Humans and institutions must abstract. When is simplification a necessity,
+      and when does it become distortion?
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: A single hand branches into thousands of possible futures. Exact
+        solving is impossible—so we simplify. But simplification has costs.'
+      - 'Why it matters: this introduces 21 Game Trees and Abstraction.'
+      guiding_question: How can we simplify complex decision problems without losing
+        what matters?
+    math_and_poker:
+      planned_subsections:
+      - Extensive-form games and information sets
+      - Building a poker game tree
+      - Why abstraction is necessary
+      - Evaluating abstraction error
+      worked_example_ideas:
+      - Draw a tiny heads-up game tree for a single street and show where information
+        sets merge
+      computation_notes:
+      - 'Optional: count nodes in a simplified tree to see explosion'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: How much simplification is too much? Who is harmed by abstraction
+        error?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch15
+  title: 'Learning Equilibria: Regret Minimization and Solvers'
+  part: 'Part V: Game Theory (Advanced / Solvers)'
+  motivating_example: Solvers don’t ‘solve’ poker in one step; they improve by iterated
+    learning. What does ‘learning’ mean mathematically?
+  math:
+    definitions:
+    - regret
+    - counterfactual regret
+    - iteration
+    - approximate equilibrium
+    concepts:
+    - no-regret learning
+    - self-play
+    - convergence (informal)
+    theorems:
+    - no-regret ⇒ equilibrium (informal statement)
+    - CFR convergence (stated, not proved)
+  poker_topics:
+  - 22 Regret Minimization (CFR)
+  - 23 Approximate Equilibria
+  applications:
+  - online advertising (adaptive bidding)
+  - recommender systems (learning from feedback)
+  - evolutionary dynamics (learning populations)
+  sidebar:
+    lens: Philosophy of AI
+    title: Learning Without Understanding
+    theme: Algorithms can learn strategies they can’t explain. What counts as knowledge
+      or justification?
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: Solvers don’t ‘solve’ poker in one step; they improve by iterated
+        learning. What does ‘learning’ mean mathematically?'
+      - 'Why it matters: this introduces 22 Regret Minimization (CFR), 23 Approximate
+        Equilibria.'
+      guiding_question: How can strategies improve over time without knowing the solution
+        in advance?
+    math_and_poker:
+      planned_subsections:
+      - Regret and no-regret learning
+      - Counterfactual regret idea
+      - CFR loop at high level
+      - Interpreting solver outputs as approximations
+      worked_example_ideas:
+      - Run through 2–3 iterations of a tiny regret-minimization example (conceptual)
+      computation_notes:
+      - 'Optional: implement a tiny regret-minimization loop in R/Python'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: Is a strategy valid if we can’t explain it? What does ‘understanding’
+        mean?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch16
+  title: 'Alternative Solver Perspectives: LP, QRE, and Regularization'
+  part: 'Part V: Game Theory (Advanced / Solvers)'
+  motivating_example: Different solver settings produce different strategies. Which
+    is ‘right’? The answer depends on assumptions baked into the model.
+  math:
+    definitions:
+    - linear program (LP)
+    - feasible region
+    - regularization
+    - quantal response equilibrium (QRE)
+    concepts:
+    - smooth vs sharp best responses
+    - stability vs optimality
+    - modeling assumptions
+    theorems:
+    - LP duality (conceptual statement)
+    - existence of QRE (stated)
+  poker_topics:
+  - 23 Approximate Equilibria
+  applications:
+  - econometrics (regularized estimation)
+  - behavioral economics (bounded rationality)
+  - optimization theory (convex relaxations)
+  sidebar:
+    lens: Philosophy of science
+    title: Models Shape Reality
+    theme: Do models merely describe behavior, or do they shape what we consider rational
+      and true?
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: Different solver settings produce different strategies. Which
+        is ‘right’? The answer depends on assumptions baked into the model.'
+      - 'Why it matters: this introduces 23 Approximate Equilibria.'
+      guiding_question: How do modeling assumptions change the ‘optimal’ strategy
+        a solver returns?
+    math_and_poker:
+      planned_subsections:
+      - LP viewpoint on equilibrium (high level)
+      - Regularization as stability/behavior model
+      - QRE as bounded rationality
+      - Comparing outputs under assumptions
+      worked_example_ideas:
+      - Compare sharp best response vs smoothed (QRE) response in a toy 2x2
+      computation_notes:
+      - 'Optional: numerical solve of QRE in a 2x2 game'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: Is there such a thing as a ‘true’ model, or only useful models
+        for purposes?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch17
+  title: Variance, Bankroll, and Risk of Ruin
+  part: 'Part VI: Randomness, Variance, and Statistical Judgment'
+  motivating_example: A skilled player goes broke after a downswing; another survives
+    by lowering stakes. How do we quantify survival under variance?
+  math:
+    definitions:
+    - bankroll
+    - risk of ruin
+    - growth rate
+    - log utility (optional)
+    concepts:
+    - downswings
+    - long-run vs short-run
+    - Kelly criterion (conceptual)
+    theorems:
+    - law of large numbers (informal)
+    - risk-of-ruin formulas (simple models)
+  poker_topics:
+  - 2 Variance and Volatility
+  - 3 Risk vs Reward Tradeoffs
+  applications:
+  - insurance (ruin probabilities)
+  - personal finance (retirement drawdown risk)
+  - entrepreneurship (runway and failure risk)
+  sidebar:
+    lens: Sociology
+    title: Survivorship Bias
+    theme: We hear from winners, not from those who went broke. How does survivorship
+      bias distort beliefs about skill and risk?
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: A skilled player goes broke after a downswing; another survives
+        by lowering stakes. How do we quantify survival under variance?'
+      - 'Why it matters: this introduces 2 Variance and Volatility, 3 Risk vs Reward
+        Tradeoffs.'
+      guiding_question: How does variance interact with limited resources over time
+        (and when do you go broke)?
+    math_and_poker:
+      planned_subsections:
+      - Variance over repeated play
+      - Bankroll constraints and survival
+      - Risk of ruin models
+      - Kelly/log-utility intuition
+      worked_example_ideas:
+      - Compute risk-of-ruin in a simple win/loss model for two bankroll choices
+      computation_notes:
+      - Simulate bankroll trajectories to visualize ruin frequency
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: How does survivorship bias shape our beliefs about merit,
+        skill, and success?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch18
+  title: Randomness, Shuffling, RNGs, and Verification
+  part: 'Part VI: Randomness, Variance, and Statistical Judgment'
+  motivating_example: Players suspect an online site’s shuffling is biased; the site
+    claims it’s fair. What would ‘evidence’ look like?
+  math:
+    definitions:
+    - random permutation
+    - pseudorandom number generator (PRNG)
+    - test statistic
+    - audit
+    concepts:
+    - fairness
+    - independence
+    - limits of statistical testing
+    theorems:
+    - uniformity over permutations (conceptual)
+    - limits of hypothesis tests (interpretive)
+  poker_topics:
+  - 24 Randomness and Fair Dealing
+  applications:
+  - cryptography (secure randomness)
+  - elections (audits and fairness)
+  - scientific integrity (randomization)
+  sidebar:
+    lens: Political science
+    title: Trust in Institutions
+    theme: Societies rely on trusted randomness. When trust erodes, legitimacy collapses—how
+      do institutions earn trust?
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: Players suspect an online site’s shuffling is biased; the site
+        claims it’s fair. What would ‘evidence’ look like?'
+      - 'Why it matters: this introduces 24 Randomness and Fair Dealing.'
+      guiding_question: How can randomness be tested, trusted, or verified?
+    math_and_poker:
+      planned_subsections:
+      - What it means to be 'random'
+      - PRNGs vs true randomness
+      - Testing randomness and limitations
+      - Audits and transparency
+      worked_example_ideas:
+      - Basic randomness diagnostic on a short sequence (conceptual)
+      computation_notes:
+      - 'Optional: generate PRNG samples and run simple diagnostics'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: How do institutions earn trust in randomness and fairness?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch19
+  title: 'Learning from Data: Hand Histories and Statistical Inference'
+  part: 'Part VI: Randomness, Variance, and Statistical Judgment'
+  motivating_example: A player reviews a losing session and concludes they’re playing
+    badly—but the sample is tiny. What can the data really support?
+  math:
+    definitions:
+    - sample
+    - estimator
+    - sampling distribution (informal)
+    - bias (estimator)
+    concepts:
+    - sampling variability
+    - selection bias
+    - overfitting
+    - interpretation of uncertainty
+    theorems:
+    - law of large numbers (applied)
+    - bias–variance tradeoff (conceptual)
+  poker_topics:
+  - 25 Statistical Inference from Results
+  applications:
+  - sports analytics (evaluating performance)
+  - social science (observational data)
+  - education research (assessment)
+  sidebar:
+    lens: Critical data studies
+    title: Data Isn’t Neutral
+    theme: What gets measured reflects values. How can ‘objective’ data still embed
+      bias or omit context?
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: A player reviews a losing session and concludes they’re playing
+        badly—but the sample is tiny. What can the data really support?'
+      - 'Why it matters: this introduces 25 Statistical Inference from Results.'
+      guiding_question: What can data tell us—and what can it not—about skill and
+        decision quality?
+    math_and_poker:
+      planned_subsections:
+      - From hands to data
+      - Estimators and uncertainty
+      - Bias/selection effects in tracking
+      - 'Practical inference: what conclusions are justified'
+      worked_example_ideas:
+      - Given a winrate estimate and sample size, discuss plausible uncertainty and
+        misinterpretation
+      computation_notes:
+      - 'Optional: bootstrap a statistic from a toy dataset'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: Who decides what counts as evidence? What gets ignored when
+        we focus on data?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.
+- id: ch20
+  title: Detecting Cheating and Collusion
+  part: 'Part VI: Randomness, Variance, and Statistical Judgment'
+  motivating_example: Two players rarely play big pots against each other. Is it coincidence,
+    shared style, or collusion?
+  math:
+    definitions:
+    - null hypothesis
+    - alternative hypothesis
+    - test statistic
+    - p-value
+    - false positive/false negative
+    concepts:
+    - statistical power (informal)
+    - multiple testing
+    - correlation vs causation
+    - evidence vs proof
+    theorems:
+    - hypothesis testing framework (conceptual)
+  poker_topics:
+  - 25 Statistical Inference from Results
+  - 24 Randomness and Fair Dealing
+  applications:
+  - fraud detection (finance/insurance)
+  - academic integrity (plagiarism/cheating detection)
+  - network analysis (collusion detection)
+  sidebar:
+    lens: Law & ethics
+    title: Accusation and Due Process
+    theme: Statistical suspicion is not proof. How much evidence is enough to accuse
+      someone, and what safeguards prevent moral panics?
+  sections:
+    motivating_example:
+      beats:
+      - 'Situation: Two players rarely play big pots against each other. Is it coincidence,
+        shared style, or collusion?'
+      - 'Why it matters: this introduces 25 Statistical Inference from Results, 24
+        Randomness and Fair Dealing.'
+      guiding_question: How strong must evidence be before we accuse wrongdoing, and
+        how do we manage false positives?
+    math_and_poker:
+      planned_subsections:
+      - Hypotheses and test statistics
+      - Multiple comparisons and false alarms
+      - Network patterns and collusion signals
+      - Due process and decision thresholds
+      worked_example_ideas:
+      - 'Toy example: unusual pattern → p-value; discuss why that’s not proof'
+      computation_notes:
+      - 'Optional: simulate null distributions for a test statistic'
+    beyond_poker:
+      transfer_note: 'These applications use the same core mathematical move: define
+        a model, quantify uncertainty/value, and choose actions under constraints.'
+    liberal_arts:
+      discussion_prompt: How much evidence is enough to accuse someone? What safeguards
+        prevent moral panics?
+    homework:
+      math_problem_types:
+      - Compute with definitions and formulas
+      - Explain a concept in words
+      - Short proof or justification (when appropriate)
+      poker_problem_types:
+      - Compute EV/probability for a specific hand scenario
+      - Compare two lines/actions using the chapter tools
+      - Interpret results in poker language
+    extension:
+      activity_idea: Extend the chapter’s main tool using a small simulation or a
+        short written reflection connecting poker to another domain.

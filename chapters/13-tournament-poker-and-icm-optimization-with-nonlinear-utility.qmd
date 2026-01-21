@@ -1,0 +1,110 @@
+---
+title: "Tournament Poker and ICM: Optimization with Nonlinear Utility"
+chapter-id: "ch13"
+part: "Part IV: Optimization"
+poker-topics:
+  - "19 Tournament vs Cash Incentives"
+  - "20 ICM and Nonlinear Utility"
+applications:
+  - "winner-take-all labor markets (careers, entertainment)"
+  - "public policy (threshold incentives)"
+  - "economics of inequality (nonlinear rewards)"
+sidebar:
+  lens: "Economics / social justice"
+  title: "Winner-Take-All Systems"
+  theme: "How nonlinear reward structures change behavior and risk-taking; fairness and distributional consequences."
+---
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part IV: Optimization
+- **Poker topics:** 19 Tournament vs Cash Incentives, 20 ICM and Nonlinear Utility
+- **Beyond poker:** winner-take-all labor markets (careers, entertainment), public policy (threshold incentives), economics of inequality (nonlinear rewards)
+
+:::
+
+## Motivating Example
+
+Near the bubble, someone folds a strong hand—absurd in cash games. Why do incentives flip in tournaments?
+
+**Guiding question.** Why does the same chip have different value in tournaments than in cash games?
+
+- Situation: Near the bubble, someone folds a strong hand—absurd in cash games. Why do incentives flip in tournaments?
+- Why it matters: this introduces 19 Tournament vs Cash Incentives, 20 ICM and Nonlinear Utility.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+- Why chip EV differs from money EV
+- Utility and payout ladders
+- ICM mechanics (conceptual + calculations)
+- Bubble/ladder implications for decisions
+
+### Definitions
+
+**utility function.** *[Definition.]*
+
+**expected utility.** *[Definition.]*
+
+**Independent Chip Model (ICM).** *[Definition.]*
+
+**payoff structure (payout ladder).** *[Definition.]*
+
+### Core concepts
+
+- nonlinear payoffs
+- marginal chip value
+- risk sensitivity / bubble pressure
+- chip EV vs $EV
+
+### Core results
+
+**expected utility maximization (decision criterion).** *[Statement / proof placeholder.]*
+
+**chip EV ≠ dollar EV (formal statement under nonlinear utility).** *[Statement / proof placeholder.]*
+
+### Worked example ideas
+
+- Compute ICM equity in a small payout example and compare two shove/call lines
+
+### Computation notes
+
+['Optional: simulate finish orders to estimate ICM equity (simple)']
+
+## Beyond Poker
+
+These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+
+Possible directions:
+
+- winner-take-all labor markets (careers, entertainment)
+- public policy (threshold incentives)
+- economics of inequality (nonlinear rewards)
+
+## Liberal Arts Sidebar
+
+**Winner-Take-All Systems**
+
+*Lens:* Economics / social justice
+
+*Theme:* How nonlinear reward structures change behavior and risk-taking; fairness and distributional consequences.
+
+> Are winner-take-all systems fair? What incentives do they create?
+
+## Homework Problems
+
+Use these as problem prompts to develop a full set:
+
+1. Compute with definitions and formulas
+2. Explain a concept in words
+3. Short proof or justification (when appropriate)
+
+1. *[Problem to be written.]*
+2. *[Problem to be written.]*
+3. *[Problem to be written.]*
+
+## Extension Activity
+
+Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+

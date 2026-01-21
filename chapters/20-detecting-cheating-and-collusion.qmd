@@ -1,0 +1,110 @@
+---
+title: "Detecting Cheating and Collusion"
+chapter-id: "ch20"
+part: "Part VI: Randomness, Variance, and Statistical Judgment"
+poker-topics:
+  - "25 Statistical Inference from Results"
+  - "24 Randomness and Fair Dealing"
+applications:
+  - "fraud detection (finance/insurance)"
+  - "academic integrity (plagiarism/cheating detection)"
+  - "network analysis (collusion detection)"
+sidebar:
+  lens: "Law & ethics"
+  title: "Accusation and Due Process"
+  theme: "Statistical suspicion is not proof. How much evidence is enough to accuse someone, and what safeguards prevent moral panics?"
+---
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part VI: Randomness, Variance, and Statistical Judgment
+- **Poker topics:** 25 Statistical Inference from Results, 24 Randomness and Fair Dealing
+- **Beyond poker:** fraud detection (finance/insurance), academic integrity (plagiarism/cheating detection), network analysis (collusion detection)
+
+:::
+
+## Motivating Example
+
+Two players rarely play big pots against each other. Is it coincidence, shared style, or collusion?
+
+**Guiding question.** How strong must evidence be before we accuse wrongdoing, and how do we manage false positives?
+
+- Situation: Two players rarely play big pots against each other. Is it coincidence, shared style, or collusion?
+- Why it matters: this introduces 25 Statistical Inference from Results, 24 Randomness and Fair Dealing.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+- Hypotheses and test statistics
+- Multiple comparisons and false alarms
+- Network patterns and collusion signals
+- Due process and decision thresholds
+
+### Definitions
+
+**null hypothesis.** *[Definition.]*
+
+**alternative hypothesis.** *[Definition.]*
+
+**test statistic.** *[Definition.]*
+
+**p-value.** *[Definition.]*
+
+**false positive/false negative.** *[Definition.]*
+
+### Core concepts
+
+- statistical power (informal)
+- multiple testing
+- correlation vs causation
+- evidence vs proof
+
+### Core results
+
+**hypothesis testing framework (conceptual).** *[Statement / proof placeholder.]*
+
+### Worked example ideas
+
+- Toy example: unusual pattern → p-value; discuss why that’s not proof
+
+### Computation notes
+
+['Optional: simulate null distributions for a test statistic']
+
+## Beyond Poker
+
+These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+
+Possible directions:
+
+- fraud detection (finance/insurance)
+- academic integrity (plagiarism/cheating detection)
+- network analysis (collusion detection)
+
+## Liberal Arts Sidebar
+
+**Accusation and Due Process**
+
+*Lens:* Law & ethics
+
+*Theme:* Statistical suspicion is not proof. How much evidence is enough to accuse someone, and what safeguards prevent moral panics?
+
+> How much evidence is enough to accuse someone? What safeguards prevent moral panics?
+
+## Homework Problems
+
+Use these as problem prompts to develop a full set:
+
+1. Compute with definitions and formulas
+2. Explain a concept in words
+3. Short proof or justification (when appropriate)
+
+1. *[Problem to be written.]*
+2. *[Problem to be written.]*
+3. *[Problem to be written.]*
+
+## Extension Activity
+
+Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+

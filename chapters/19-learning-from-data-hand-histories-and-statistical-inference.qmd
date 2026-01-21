@@ -1,0 +1,109 @@
+---
+title: "Learning from Data: Hand Histories and Statistical Inference"
+chapter-id: "ch19"
+part: "Part VI: Randomness, Variance, and Statistical Judgment"
+poker-topics:
+  - "25 Statistical Inference from Results"
+applications:
+  - "sports analytics (evaluating performance)"
+  - "social science (observational data)"
+  - "education research (assessment)"
+sidebar:
+  lens: "Critical data studies"
+  title: "Data Isn’t Neutral"
+  theme: "What gets measured reflects values. How can ‘objective’ data still embed bias or omit context?"
+---
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part VI: Randomness, Variance, and Statistical Judgment
+- **Poker topics:** 25 Statistical Inference from Results
+- **Beyond poker:** sports analytics (evaluating performance), social science (observational data), education research (assessment)
+
+:::
+
+## Motivating Example
+
+A player reviews a losing session and concludes they’re playing badly—but the sample is tiny. What can the data really support?
+
+**Guiding question.** What can data tell us—and what can it not—about skill and decision quality?
+
+- Situation: A player reviews a losing session and concludes they’re playing badly—but the sample is tiny. What can the data really support?
+- Why it matters: this introduces 25 Statistical Inference from Results.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+- From hands to data
+- Estimators and uncertainty
+- Bias/selection effects in tracking
+- Practical inference: what conclusions are justified
+
+### Definitions
+
+**sample.** *[Definition.]*
+
+**estimator.** *[Definition.]*
+
+**sampling distribution (informal).** *[Definition.]*
+
+**bias (estimator).** *[Definition.]*
+
+### Core concepts
+
+- sampling variability
+- selection bias
+- overfitting
+- interpretation of uncertainty
+
+### Core results
+
+**law of large numbers (applied).** *[Statement / proof placeholder.]*
+
+**bias–variance tradeoff (conceptual).** *[Statement / proof placeholder.]*
+
+### Worked example ideas
+
+- Given a winrate estimate and sample size, discuss plausible uncertainty and misinterpretation
+
+### Computation notes
+
+['Optional: bootstrap a statistic from a toy dataset']
+
+## Beyond Poker
+
+These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+
+Possible directions:
+
+- sports analytics (evaluating performance)
+- social science (observational data)
+- education research (assessment)
+
+## Liberal Arts Sidebar
+
+**Data Isn’t Neutral**
+
+*Lens:* Critical data studies
+
+*Theme:* What gets measured reflects values. How can ‘objective’ data still embed bias or omit context?
+
+> Who decides what counts as evidence? What gets ignored when we focus on data?
+
+## Homework Problems
+
+Use these as problem prompts to develop a full set:
+
+1. Compute with definitions and formulas
+2. Explain a concept in words
+3. Short proof or justification (when appropriate)
+
+1. *[Problem to be written.]*
+2. *[Problem to be written.]*
+3. *[Problem to be written.]*
+
+## Extension Activity
+
+Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+

@@ -1,0 +1,109 @@
+---
+title: "Variance, Bankroll, and Risk of Ruin"
+chapter-id: "ch17"
+part: "Part VI: Randomness, Variance, and Statistical Judgment"
+poker-topics:
+  - "2 Variance and Volatility"
+  - "3 Risk vs Reward Tradeoffs"
+applications:
+  - "insurance (ruin probabilities)"
+  - "personal finance (retirement drawdown risk)"
+  - "entrepreneurship (runway and failure risk)"
+sidebar:
+  lens: "Sociology"
+  title: "Survivorship Bias"
+  theme: "We hear from winners, not from those who went broke. How does survivorship bias distort beliefs about skill and risk?"
+---
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part VI: Randomness, Variance, and Statistical Judgment
+- **Poker topics:** 2 Variance and Volatility, 3 Risk vs Reward Tradeoffs
+- **Beyond poker:** insurance (ruin probabilities), personal finance (retirement drawdown risk), entrepreneurship (runway and failure risk)
+
+:::
+
+## Motivating Example
+
+A skilled player goes broke after a downswing; another survives by lowering stakes. How do we quantify survival under variance?
+
+**Guiding question.** How does variance interact with limited resources over time (and when do you go broke)?
+
+- Situation: A skilled player goes broke after a downswing; another survives by lowering stakes. How do we quantify survival under variance?
+- Why it matters: this introduces 2 Variance and Volatility, 3 Risk vs Reward Tradeoffs.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+- Variance over repeated play
+- Bankroll constraints and survival
+- Risk of ruin models
+- Kelly/log-utility intuition
+
+### Definitions
+
+**bankroll.** *[Definition.]*
+
+**risk of ruin.** *[Definition.]*
+
+**growth rate.** *[Definition.]*
+
+**log utility (optional).** *[Definition.]*
+
+### Core concepts
+
+- downswings
+- long-run vs short-run
+- Kelly criterion (conceptual)
+
+### Core results
+
+**law of large numbers (informal).** *[Statement / proof placeholder.]*
+
+**risk-of-ruin formulas (simple models).** *[Statement / proof placeholder.]*
+
+### Worked example ideas
+
+- Compute risk-of-ruin in a simple win/loss model for two bankroll choices
+
+### Computation notes
+
+['Simulate bankroll trajectories to visualize ruin frequency']
+
+## Beyond Poker
+
+These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+
+Possible directions:
+
+- insurance (ruin probabilities)
+- personal finance (retirement drawdown risk)
+- entrepreneurship (runway and failure risk)
+
+## Liberal Arts Sidebar
+
+**Survivorship Bias**
+
+*Lens:* Sociology
+
+*Theme:* We hear from winners, not from those who went broke. How does survivorship bias distort beliefs about skill and risk?
+
+> How does survivorship bias shape our beliefs about merit, skill, and success?
+
+## Homework Problems
+
+Use these as problem prompts to develop a full set:
+
+1. Compute with definitions and formulas
+2. Explain a concept in words
+3. Short proof or justification (when appropriate)
+
+1. *[Problem to be written.]*
+2. *[Problem to be written.]*
+3. *[Problem to be written.]*
+
+## Extension Activity
+
+Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+

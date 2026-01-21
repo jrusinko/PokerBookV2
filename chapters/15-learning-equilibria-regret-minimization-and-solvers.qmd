@@ -1,0 +1,109 @@
+---
+title: "Learning Equilibria: Regret Minimization and Solvers"
+chapter-id: "ch15"
+part: "Part V: Game Theory (Advanced / Solvers)"
+poker-topics:
+  - "22 Regret Minimization (CFR)"
+  - "23 Approximate Equilibria"
+applications:
+  - "online advertising (adaptive bidding)"
+  - "recommender systems (learning from feedback)"
+  - "evolutionary dynamics (learning populations)"
+sidebar:
+  lens: "Philosophy of AI"
+  title: "Learning Without Understanding"
+  theme: "Algorithms can learn strategies they can’t explain. What counts as knowledge or justification?"
+---
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part V: Game Theory (Advanced / Solvers)
+- **Poker topics:** 22 Regret Minimization (CFR), 23 Approximate Equilibria
+- **Beyond poker:** online advertising (adaptive bidding), recommender systems (learning from feedback), evolutionary dynamics (learning populations)
+
+:::
+
+## Motivating Example
+
+Solvers don’t ‘solve’ poker in one step; they improve by iterated learning. What does ‘learning’ mean mathematically?
+
+**Guiding question.** How can strategies improve over time without knowing the solution in advance?
+
+- Situation: Solvers don’t ‘solve’ poker in one step; they improve by iterated learning. What does ‘learning’ mean mathematically?
+- Why it matters: this introduces 22 Regret Minimization (CFR), 23 Approximate Equilibria.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+- Regret and no-regret learning
+- Counterfactual regret idea
+- CFR loop at high level
+- Interpreting solver outputs as approximations
+
+### Definitions
+
+**regret.** *[Definition.]*
+
+**counterfactual regret.** *[Definition.]*
+
+**iteration.** *[Definition.]*
+
+**approximate equilibrium.** *[Definition.]*
+
+### Core concepts
+
+- no-regret learning
+- self-play
+- convergence (informal)
+
+### Core results
+
+**no-regret ⇒ equilibrium (informal statement).** *[Statement / proof placeholder.]*
+
+**CFR convergence (stated, not proved).** *[Statement / proof placeholder.]*
+
+### Worked example ideas
+
+- Run through 2–3 iterations of a tiny regret-minimization example (conceptual)
+
+### Computation notes
+
+['Optional: implement a tiny regret-minimization loop in R/Python']
+
+## Beyond Poker
+
+These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+
+Possible directions:
+
+- online advertising (adaptive bidding)
+- recommender systems (learning from feedback)
+- evolutionary dynamics (learning populations)
+
+## Liberal Arts Sidebar
+
+**Learning Without Understanding**
+
+*Lens:* Philosophy of AI
+
+*Theme:* Algorithms can learn strategies they can’t explain. What counts as knowledge or justification?
+
+> Is a strategy valid if we can’t explain it? What does ‘understanding’ mean?
+
+## Homework Problems
+
+Use these as problem prompts to develop a full set:
+
+1. Compute with definitions and formulas
+2. Explain a concept in words
+3. Short proof or justification (when appropriate)
+
+1. *[Problem to be written.]*
+2. *[Problem to be written.]*
+3. *[Problem to be written.]*
+
+## Extension Activity
+
+Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+

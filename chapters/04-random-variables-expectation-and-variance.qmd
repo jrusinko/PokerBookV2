@@ -1,0 +1,114 @@
+---
+title: "Random Variables, Expectation, and Variance"
+chapter-id: "ch04"
+part: "Part II: Probability, Expectation, and Belief Updating"
+poker-topics:
+  - "1 Expected Value (EV)"
+  - "2 Variance and Volatility"
+  - "3 Risk vs Reward Tradeoffs"
+applications:
+  - "finance (returns and volatility)"
+  - "operations research (expected cost vs variability)"
+  - "psychology (behavioral variability)"
+sidebar:
+  lens: "Psychology"
+  title: "Why Humans Hate Variance"
+  theme: "Why people prefer predictability—even at the cost of lower EV—and how that shapes real decision-making."
+---
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part II: Probability, Expectation, and Belief Updating
+- **Poker topics:** 1 Expected Value (EV), 2 Variance and Volatility, 3 Risk vs Reward Tradeoffs
+- **Beyond poker:** finance (returns and volatility), operations research (expected cost vs variability), psychology (behavioral variability)
+
+:::
+
+## Motivating Example
+
+Two lines have the same EV, but one is swingy and one is steady. Which is “better” and why do people disagree?
+
+**Guiding question.** How do we measure not just average outcomes, but variability and risk?
+
+- Situation: Two lines have the same EV, but one is swingy and one is steady. Which is “better” and why do people disagree?
+- Why it matters: this introduces 1 Expected Value (EV), 2 Variance and Volatility.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+- Random variables for outcomes (profit/loss)
+- Expected value and interpretation
+- Variance/standard deviation
+- Comparing lines with equal EV
+
+### Definitions
+
+**random variable (discrete).** *[Definition.]*
+
+**PMF.** *[Definition.]*
+
+**expected value.** *[Definition.]*
+
+**variance.** *[Definition.]*
+
+**standard deviation.** *[Definition.]*
+
+### Core concepts
+
+- distribution vs outcome
+- volatility and dispersion
+- linearity of expectation
+
+### Core results
+
+**linearity of expectation.** *[Statement / proof placeholder.]*
+
+**variance identities.** *[Statement / proof placeholder.]*
+
+**variance of sums (independent case).** *[Statement / proof placeholder.]*
+
+### Worked example ideas
+
+- Two betting lines with equal EV but different variance; compute both
+
+### Computation notes
+
+['Simulate distributions of outcomes to visualize variance']
+
+## Beyond Poker
+
+These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+
+Possible directions:
+
+- finance (returns and volatility)
+- operations research (expected cost vs variability)
+- psychology (behavioral variability)
+
+## Liberal Arts Sidebar
+
+**Why Humans Hate Variance**
+
+*Lens:* Psychology
+
+*Theme:* Why people prefer predictability—even at the cost of lower EV—and how that shapes real decision-making.
+
+> Is avoiding variance rational, emotional, or both? When is it justified?
+
+## Homework Problems
+
+Use these as problem prompts to develop a full set:
+
+1. Compute with definitions and formulas
+2. Explain a concept in words
+3. Short proof or justification (when appropriate)
+
+1. *[Problem to be written.]*
+2. *[Problem to be written.]*
+3. *[Problem to be written.]*
+
+## Extension Activity
+
+Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+

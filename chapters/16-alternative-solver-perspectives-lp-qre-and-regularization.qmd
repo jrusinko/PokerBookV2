@@ -1,0 +1,108 @@
+---
+title: "Alternative Solver Perspectives: LP, QRE, and Regularization"
+chapter-id: "ch16"
+part: "Part V: Game Theory (Advanced / Solvers)"
+poker-topics:
+  - "23 Approximate Equilibria"
+applications:
+  - "econometrics (regularized estimation)"
+  - "behavioral economics (bounded rationality)"
+  - "optimization theory (convex relaxations)"
+sidebar:
+  lens: "Philosophy of science"
+  title: "Models Shape Reality"
+  theme: "Do models merely describe behavior, or do they shape what we consider rational and true?"
+---
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part V: Game Theory (Advanced / Solvers)
+- **Poker topics:** 23 Approximate Equilibria
+- **Beyond poker:** econometrics (regularized estimation), behavioral economics (bounded rationality), optimization theory (convex relaxations)
+
+:::
+
+## Motivating Example
+
+Different solver settings produce different strategies. Which is ‘right’? The answer depends on assumptions baked into the model.
+
+**Guiding question.** How do modeling assumptions change the ‘optimal’ strategy a solver returns?
+
+- Situation: Different solver settings produce different strategies. Which is ‘right’? The answer depends on assumptions baked into the model.
+- Why it matters: this introduces 23 Approximate Equilibria.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+- LP viewpoint on equilibrium (high level)
+- Regularization as stability/behavior model
+- QRE as bounded rationality
+- Comparing outputs under assumptions
+
+### Definitions
+
+**linear program (LP).** *[Definition.]*
+
+**feasible region.** *[Definition.]*
+
+**regularization.** *[Definition.]*
+
+**quantal response equilibrium (QRE).** *[Definition.]*
+
+### Core concepts
+
+- smooth vs sharp best responses
+- stability vs optimality
+- modeling assumptions
+
+### Core results
+
+**LP duality (conceptual statement).** *[Statement / proof placeholder.]*
+
+**existence of QRE (stated).** *[Statement / proof placeholder.]*
+
+### Worked example ideas
+
+- Compare sharp best response vs smoothed (QRE) response in a toy 2x2
+
+### Computation notes
+
+['Optional: numerical solve of QRE in a 2x2 game']
+
+## Beyond Poker
+
+These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+
+Possible directions:
+
+- econometrics (regularized estimation)
+- behavioral economics (bounded rationality)
+- optimization theory (convex relaxations)
+
+## Liberal Arts Sidebar
+
+**Models Shape Reality**
+
+*Lens:* Philosophy of science
+
+*Theme:* Do models merely describe behavior, or do they shape what we consider rational and true?
+
+> Is there such a thing as a ‘true’ model, or only useful models for purposes?
+
+## Homework Problems
+
+Use these as problem prompts to develop a full set:
+
+1. Compute with definitions and formulas
+2. Explain a concept in words
+3. Short proof or justification (when appropriate)
+
+1. *[Problem to be written.]*
+2. *[Problem to be written.]*
+3. *[Problem to be written.]*
+
+## Extension Activity
+
+Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+

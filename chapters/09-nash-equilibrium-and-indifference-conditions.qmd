@@ -1,0 +1,109 @@
+---
+title: "Nash Equilibrium and Indifference Conditions"
+chapter-id: "ch09"
+part: "Part III: Game Theory (Intro / Toy Models)"
+poker-topics:
+  - "13 Nash Equilibrium (GTO)"
+  - "14 Indifference Conditions"
+applications:
+  - "economics (market competition models)"
+  - "political science (strategic voting/campaigning)"
+  - "evolutionary biology (stable strategies)"
+sidebar:
+  lens: "Political philosophy"
+  title: "Stability vs Justice"
+  theme: "Equilibria can be stable yet unfair; parallels with social/market equilibria that entrench inequality."
+---
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part III: Game Theory (Intro / Toy Models)
+- **Poker topics:** 13 Nash Equilibrium (GTO), 14 Indifference Conditions
+- **Beyond poker:** economics (market competition models), political science (strategic voting/campaigning), evolutionary biology (stable strategies)
+
+:::
+
+## Motivating Example
+
+You hear “the correct bluff frequency makes them indifferent.” What does that mean mathematically, and why does it prevent exploitation?
+
+**Guiding question.** What does it mean for strategies to be mutually stable—and how do indifference conditions determine frequencies?
+
+- Situation: You hear “the correct bluff frequency makes them indifferent.” What does that mean mathematically, and why does it prevent exploitation?
+- Why it matters: this introduces 13 Nash Equilibrium (GTO), 14 Indifference Conditions.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+- Best responses in finite games
+- Equilibrium definitions
+- Indifference conditions in support
+- Value/bluff balance intuition
+
+### Definitions
+
+**best response.** *[Definition.]*
+
+**Nash equilibrium.** *[Definition.]*
+
+**support of a mixed strategy.** *[Definition.]*
+
+**indifference condition.** *[Definition.]*
+
+### Core concepts
+
+- mutual best responses
+- stability
+- equilibrium vs outcome
+
+### Core results
+
+**Nash equilibrium conditions (finite games).** *[Statement / proof placeholder.]*
+
+**indifference principle for mixed strategies (support equations).** *[Statement / proof placeholder.]*
+
+### Worked example ideas
+
+- Derive bluff frequency that makes a defender indifferent in a toy model
+
+### Computation notes
+
+['Optional: verify with numerical best responses']
+
+## Beyond Poker
+
+These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+
+Possible directions:
+
+- economics (market competition models)
+- political science (strategic voting/campaigning)
+- evolutionary biology (stable strategies)
+
+## Liberal Arts Sidebar
+
+**Stability vs Justice**
+
+*Lens:* Political philosophy
+
+*Theme:* Equilibria can be stable yet unfair; parallels with social/market equilibria that entrench inequality.
+
+> Should stability be valued over fairness? Can an equilibrium be unjust?
+
+## Homework Problems
+
+Use these as problem prompts to develop a full set:
+
+1. Compute with definitions and formulas
+2. Explain a concept in words
+3. Short proof or justification (when appropriate)
+
+1. *[Problem to be written.]*
+2. *[Problem to be written.]*
+3. *[Problem to be written.]*
+
+## Extension Activity
+
+Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+

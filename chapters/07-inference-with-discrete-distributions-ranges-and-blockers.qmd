@@ -1,0 +1,114 @@
+---
+title: "Inference with Discrete Distributions: Ranges and Blockers"
+chapter-id: "ch07"
+part: "Part II: Probability, Expectation, and Belief Updating"
+poker-topics:
+  - "6 Hand Ranges (Not Hands)"
+  - "7 Range Construction and Narrowing"
+  - "8 Blockers and Removal Effects"
+  - "9 Bayesian Updating (Implicit)"
+applications:
+  - "forensics (constraint-based inference)"
+  - "ecology (presence/absence inference)"
+  - "intelligence analysis (hypothesis filtering)"
+sidebar:
+  lens: "Sociology & ethics"
+  title: "Profiling, Stereotypes, and Inference"
+  theme: "When inference from limited evidence becomes unjustified assumption; parallels between hand ranges and social profiling."
+---
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part II: Probability, Expectation, and Belief Updating
+- **Poker topics:** 6 Hand Ranges (Not Hands), 7 Range Construction and Narrowing, 8 Blockers and Removal Effects, 9 Bayesian Updating (Implicit)
+- **Beyond poker:** forensics (constraint-based inference), ecology (presence/absence inference), intelligence analysis (hypothesis filtering)
+
+:::
+
+## Motivating Example
+
+After a sequence of actions, you try to infer what hands are still plausible. Good players do it intuitively—this chapter makes it explicit.
+
+**Guiding question.** How do we represent and update uncertainty about hidden information?
+
+- Situation: After a sequence of actions, you try to infer what hands are still plausible. Good players do it intuitively—this chapter makes it explicit.
+- Why it matters: this introduces 6 Hand Ranges (Not Hands), 7 Range Construction and Narrowing.
+
+## Mathematical Framework and Poker Theory
+
+### Roadmap
+
+- Representing ranges as distributions
+- Action filters and likelihoods
+- Blockers and combinatorial weighting
+- Posterior ranges and strategy implications
+
+### Definitions
+
+**probability distribution on a finite set.** *[Definition.]*
+
+**range (belief distribution).** *[Definition.]*
+
+**likelihood.** *[Definition.]*
+
+**posterior distribution.** *[Definition.]*
+
+**blocker (card removal).** *[Definition.]*
+
+### Core concepts
+
+- belief modeling
+- conditional distributions
+- combinatorial weighting
+- card removal effects
+
+### Core results
+
+**Bayes’ theorem (applied).** *[Statement / proof placeholder.]*
+
+**normalization of distributions.** *[Statement / proof placeholder.]*
+
+### Worked example ideas
+
+- Start with a preflop range; update through flop/turn actions; compute posterior weights for a few hand classes
+
+### Computation notes
+
+['Optional: simple range-tracking spreadsheet or script']
+
+## Beyond Poker
+
+These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+
+Possible directions:
+
+- forensics (constraint-based inference)
+- ecology (presence/absence inference)
+- intelligence analysis (hypothesis filtering)
+
+## Liberal Arts Sidebar
+
+**Profiling, Stereotypes, and Inference**
+
+*Lens:* Sociology & ethics
+
+*Theme:* When inference from limited evidence becomes unjustified assumption; parallels between hand ranges and social profiling.
+
+> When does inference become unjustified assumption? How should we handle uncertainty ethically?
+
+## Homework Problems
+
+Use these as problem prompts to develop a full set:
+
+1. Compute with definitions and formulas
+2. Explain a concept in words
+3. Short proof or justification (when appropriate)
+
+1. *[Problem to be written.]*
+2. *[Problem to be written.]*
+3. *[Problem to be written.]*
+
+## Extension Activity
+
+Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+
