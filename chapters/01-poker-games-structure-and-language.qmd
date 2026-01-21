@@ -512,8 +512,6 @@ Homework Problems
 
 ## Extension Activity
 
-## Extension Activity
-
 ### One Hand, Many Games
 
 Throughout this chapter, we have emphasized that poker decisions cannot be evaluated without first specifying what a player is trying to optimize. Different players may approach the same hand with different goals, values, and interpretations of what the game is for. As a result, rational players can behave very differently—even when they face the same cards and the same rules.
