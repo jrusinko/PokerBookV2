@@ -14,101 +14,647 @@ sidebar:
   lens: "Psychology"
   title: "Why Humans Hate Variance"
   theme: "Why people prefer predictability—even at the cost of lower EV—and how that shapes real decision-making."
+editor: 
+  markdown: 
+    wrap: 72
 ---
-::: {.callout-note}
+
+::: callout-note
 **Chapter at a glance**
 
-- **Part:** Part II: Probability, Expectation, and Belief Updating
-- **Poker topics:** 1 Expected Value (EV), 2 Variance and Volatility, 3 Risk vs Reward Tradeoffs
-- **Beyond poker:** finance (returns and volatility), operations research (expected cost vs variability), psychology (behavioral variability)
-
+-   **Part:** Part II: Probability, Expectation, and Belief Updating
+-   **Poker topics:** 1 Expected Value (EV), 2 Variance and Volatility,
+    3 Risk vs Reward Tradeoffs
+-   **Beyond poker:** finance (returns and volatility), operations
+    research (expected cost vs variability), psychology (behavioral
+    variability)
 :::
 
 ## Motivating Example
 
-Two lines have the same EV, but one is swingy and one is steady. Which is “better” and why do people disagree?
+In 2003, amateur accountant [**Chris Moneymaker**]{.underline} and
+grizzled professional gambler [**Sam Farha**]{.underline} were the final
+two players in the World Series of Poker Main Event. Moneymaker was
+catapulted into poker fame in part because of a dramatic river decision
+in this hand:\
+<https://www.youtube.com/shorts/pwmog3zZbCU>.
 
-**Guiding question.** How do we measure not just average outcomes, but variability and risk?
+As viewers, it is easy to see—*after the fact*—that calling was the
+winning decision for Farha. But imagine yourself in Farha’s position, at
+the moment the bet is made, before the cards are revealed. What
+information would you have been weighing when deciding whether to call
+or fold? On what grounds could that decision be evaluated as good or
+bad, independent of its outcome?
 
-- Situation: Two lines have the same EV, but one is swingy and one is steady. Which is “better” and why do people disagree?
-- Why it matters: this introduces 1 Expected Value (EV), 2 Variance and Volatility.
+------------------------------------------------------------------------
 
-## Mathematical Framework and Poker Theory
+### Random Variables as Models of Decisions
 
-### Roadmap
+#### Definition (Random Variable)
 
-- Random variables for outcomes (profit/loss)
-- Expected value and interpretation
-- Variance/standard deviation
-- Comparing lines with equal EV
+Let $(\Omega, \mathcal{F}, \mathbb{P})$ represent the unresolved
+uncertainty at a decision point.\
+A **random variable** is a function $$
+X : \Omega \to \mathbb{R}.
+$$ In a decision context, $X(\omega)$ is the payoff that would result if
+the future unfolds according to outcome $\omega \in \Omega$.
 
-### Definitions
+------------------------------------------------------------------------
 
-**random variable (discrete).** *[Definition.]*
+### A Concrete River Decision (Numbers First)
 
-**PMF.** *[Definition.]*
+Consider a river situation with concrete amounts:
 
-**expected value.** *[Definition.]*
+-   The pot before the bet is **\$200**.
+-   Your opponent bets **\$100**.
+-   You are deciding whether to **call \$100**.
+-   If you call and win at showdown, you receive the final pot: \$400.
+-   If you call and lose, you lose your call amount: \$100.
 
-**variance.** *[Definition.]*
+Earlier contributions to the pot are sunk and do not change with your
+current choice. We therefore measure profit **from the moment you face
+the bet**.
 
-**standard deviation.** *[Definition.]*
+Let $p$ be your probability of winning at showdown conditional on
+calling.
 
-### Core concepts
+------------------------------------------------------------------------
 
-- distribution vs outcome
-- volatility and dispersion
-- linearity of expectation
+### Defining the Random Variable for the Call
 
-### Core results
+Define $X_{\text{call}}$ to be the net payoff (from now onward) if you
+call:
 
-**linearity of expectation.** *[Statement / proof placeholder.]*
+$$
+X_{\text{call}} =
+\begin{cases}
+300, & \text{with probability } p, \\
+-100, & \text{with probability } 1-p.
+\end{cases}
+$$
 
-**variance identities.** *[Statement / proof placeholder.]*
+If you win, you take the final pot of \$400 but had to contribute \$100
+to call, resulting in a net profit of \$300.\
+If you lose, your net payoff is (-\$100).
 
-**variance of sums (independent case).** *[Statement / proof placeholder.]*
+This random variable captures the decision *before* the showdown occurs.
 
-### Worked example ideas
+------------------------------------------------------------------------
 
-- Two betting lines with equal EV but different variance; compute both
+### Expected Value
 
-### Computation notes
+#### Definition (Expected Value)
 
-['Simulate distributions of outcomes to visualize variance']
+For a discrete random variable taking values $x_i$ with probabilities
+$p_i$, $$
+\mathbb{E}[X] = \sum_i x_i p_i.
+$$
+
+------------------------------------------------------------------------
+
+### Worked Example: Expected Value of the Call
+
+For the river call, $$
+\mathbb{E}[X_{\text{call}}]
+= 300p + (-100)(1-p)
+= 400p - 100.
+$$
+
+Calling is breakeven when $$
+400p - 100 \ge 0
+\quad \Longleftrightarrow \quad
+p \ge 0.25.
+$$
+
+If you estimate $p = 0.30$, then $$
+\mathbb{E}[X_{\text{call}}]
+= 400(0.30) - 100
+= 20.
+$$
+
+**Decision interpretation:** calling commits you to a random variable
+with expected value \$20. The outcome of the next hand does not alter
+this evaluation.
+
+------------------------------------------------------------------------
+
+### Variance
+
+Expected value summarizes the center of the payoff distribution, but not
+its spread. Variance measures dispersion around the mean.
+
+#### Definition (Variance)
+
+Let $X$ be a random variable with mean $\mu = \mathbb{E}[X]$.\
+The **variance** of $X$ is $$
+\mathrm{Var}(X) = \mathbb{E}\big[(X - \mu)^2\big].
+$$
+
+For a two-point distribution, $$
+\mathrm{Var}(X)
+= p(x_1 - \mu)^2 + (1-p)(x_2 - \mu)^2.
+$$
+
+------------------------------------------------------------------------
+
+### Worked Example: Variance of the Call
+
+Using $p = 0.30$, we have $$
+\mu = \mathbb{E}[X_{\text{call}}] = 20.
+$$
+
+The deviations from the mean are $$
+300 - 20 = 280,
+\qquad
+-100 - 20 = -120.
+$$
+
+Thus, $$
+\mathrm{Var}(X_{\text{call}})
+= 0.30(280)^2 + 0.70(120)^2
+= 33600.
+$$
+
+Variance is measured in squared dollars, which limits its direct
+interpretability.
+
+------------------------------------------------------------------------
+
+### Standard Deviation
+
+#### Definition (Standard Deviation)
+
+The **standard deviation** of a random variable $X$ is $$
+\sigma_X = \sqrt{\mathrm{Var}(X)}.
+$$
+
+------------------------------------------------------------------------
+
+### Worked Example: Standard Deviation of the Call
+
+$$
+\sigma_{X_{\text{call}}}
+= \sqrt{33600}
+\approx 183.
+$$
+
+**Decision interpretation:** even though the expected profit is only
+\$20, typical outcomes differ from this expectation by nearly \$200.
+This volatility is a feature of the decision, not a flaw in the
+analysis.
+
+------------------------------------------------------------------------
+
+### General Form: Pot $P$, Bet $B$
+
+The same reasoning applies in general.
+
+-   Pot before the bet: $P$
+-   Opponent bets: $B$
+-   You consider calling $B$
+-   You win with probability $p$
+
+From the decision point onward, $$
+X_{\text{call}} =
+\begin{cases}
+P + B, & \text{with probability } p, \\
+- B, & \text{with probability } 1-p.
+\end{cases}
+$$
+
+The expected value is $$
+\mathbb{E}[X_{\text{call}}]
+= p(P+B) + (1-p)(-B)
+= p(P+2B) - B.
+$$
+
+Calling is breakeven when $$
+p \ge \frac{B}{P + 2B}.
+$$
+
+Variance and standard deviation follow from the same two-point formulas:
+$$
+\mu = \mathbb{E}[X_{\text{call}}],
+$$ $$
+\mathrm{Var}(X_{\text{call}})
+= p\big((P+B)-\mu\big)^2
++ (1-p)\big((-B)-\mu\big)^2,
+$$ $$
+\sigma_{X_{\text{call}}}
+= \sqrt{\mathrm{Var}(X_{\text{call}})}.
+$$
+
+------------------------------------------------------------------------
+
+### Comparing Decisions Before Outcomes
+
+At a decision point, different actions correspond to different random
+variables: $$
+X_{\text{fold}}, \quad X_{\text{call}}, \quad X_{\text{raise}}.
+$$
+
+Evaluating a decision means defining these variables and comparing their
+expected values and variances. The realized outcome is a single draw
+from the chosen random variable. The evaluation itself occurs entirely
+**before** the cards are revealed.
+
+### Continuous Random Variables
+
+Not all poker decisions lead to a finite set of possible outcomes. In
+many situations—especially those involving bet sizing—the uncertainty is
+naturally modeled as *continuous* rather than discrete.
+
+------------------------------------------------------------------------
+
+#### Definition (Continuous Random Variable)
+
+A **continuous random variable** is a random variable $X$ whose possible
+values lie in an interval of real numbers and whose probabilities are
+described by a **probability density function** (pdf) $f_X(x)$
+satisfying:
+
+1.  $f_X(x) \ge 0$ for all $x$,
+2.  $$\int_{-\infty}^{\infty} f_X(x)\,dx = 1.$$
+
+For any interval $[a,b]$, the probability that $X$ lies in that interval
+is $$
+\mathbb{P}(a \le X \le b)
+= \int_a^b f_X(x)\,dx.
+$$
+
+------------------------------------------------------------------------
+
+### A Poker Example: A Random Raise Size
+
+Consider a situation on the river where a player always raises when they
+choose to raise, but the *size* of the raise is not fixed. Instead, the
+player selects a raise size uniformly at random between \$100 and \$300.
+
+Let $X$ be the random variable representing the **size of the raise**,
+measured in dollars.
+
+Then $X$ is a continuous random variable with probability density
+function $$
+f_X(x) =
+\begin{cases}
+\frac{1}{200}, & 100 \le x \le 300, \\
+0, & \text{otherwise}.
+\end{cases}
+$$
+
+This model reflects a situation where all raise sizes in the interval
+are equally likely.
+
+------------------------------------------------------------------------
+
+### Expected Value of a Continuous Random Variable
+
+#### Definition (Expected Value)
+
+If $X$ is a continuous random variable with density function $f_X(x)$,
+its **expected value** is $$
+\mathbb{E}[X] = \int_{-\infty}^{\infty} x f_X(x)\,dx,
+$$ provided the integral exists.
+
+------------------------------------------------------------------------
+
+### Worked Example: Expected Raise Size
+
+For the uniform raise-size model, $$
+\mathbb{E}[X]
+= \int_{100}^{300} x \cdot \frac{1}{200}\,dx
+= \frac{1}{200}\int_{100}^{300} x\,dx.
+$$
+
+Evaluating the integral, $$
+\mathbb{E}[X]
+= \frac{1}{200}\left[\frac{x^2}{2}\right]_{100}^{300}
+= \frac{1}{200}\cdot \frac{300^2 - 100^2}{2}
+= 200.
+$$
+
+**Decision interpretation:**\
+Before the action occurs, the *average* raise size generated by this
+decision rule is \$200, even though no single hand may use that exact
+amount.
+
+------------------------------------------------------------------------
+
+### Variance of a Continuous Random Variable
+
+#### Definition (Variance)
+
+Let $X$ be a continuous random variable with mean $\mu = \mathbb{E}[X]$.
+The **variance** of $X$ is $$
+\mathrm{Var}(X)
+= \int_{-\infty}^{\infty} (x - \mu)^2 f_X(x)\,dx.
+$$
+
+------------------------------------------------------------------------
+
+### Worked Example: Variance of the Raise Size
+
+Using $\mu = 200$, $$
+\mathrm{Var}(X)
+= \int_{100}^{300} (x - 200)^2 \cdot \frac{1}{200}\,dx.
+$$
+
+Evaluating the integral, $$
+\mathrm{Var}(X)
+= \frac{1}{200}\int_{-100}^{100} u^2\,du
+= \frac{1}{200}\left[\frac{u^3}{3}\right]_{-100}^{100}
+= \frac{1}{200}\cdot \frac{2(100)^3}{3}
+= \frac{1000000}{300}
+\approx 3333.33.
+$$
+
+The standard deviation is therefore $$
+\sigma_X \approx 57.7.
+$$
+
+------------------------------------------------------------------------
+
+### Continuous Random Variables as Decision Models
+
+In this example, the randomness does not come from the cards, but from
+the *player’s own action*. Choosing a mixed or randomized strategy
+induces a continuous random variable whose distribution can be analyzed
+mathematically.
+
+This illustrates a broader principle:
+
+> Random variables need not describe the uncertainty of nature alone.\
+> They can also describe uncertainty deliberately introduced by a
+> decision-maker.
+
+Such models will reappear later when we study mixed strategies,
+equilibrium concepts, and optimization under uncertainty.
 
 ## Beyond Poker
 
-These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+Election Forecasting as Random Variables: A Model-Based View
 
-Possible directions:
+Modern election forecasting, most prominently associated with Nate Silver, treats elections not as events to be predicted with certainty, but as systems governed by uncertainty. The central object of study is not the final outcome itself, but the range of outcomes that remain plausible once all available information has been incorporated.
 
-- finance (returns and volatility)
-- operations research (expected cost vs variability)
-- psychology (behavioral variability)
+In this framework, an election result is modeled as a random variable. Polls, demographic data, and historical patterns do not determine the outcome; they shape the distribution of possibilities.
+
+Polls as Measurements with Error
+
+Each opinion poll can be viewed as a numerical measurement of voter sentiment, subject to error. Some of this error is random, arising from finite sample sizes. Some reflects systematic features of survey design, such as likely-voter screens or consistent partisan bias.
+
+Rather than assuming polls are exact, forecasting models treat each poll as a noisy signal. Polls that are larger, more recent, or historically reliable are given more influence than others. When many such signals are combined, the result is not a single number, but a range of plausible vote shares, centered around a most likely value.
+
+This step mirrors a familiar move in poker: combining partial, imperfect information to form an overall assessment of the situation, while recognizing that uncertainty remains.
+
+From Estimates to Outcomes
+
+Winning an election is a threshold event: a candidate either wins or loses. Translating uncertainty about vote share into uncertainty about outcomes requires an additional step.
+
+Forecasting models address this by simulating the election many times. In each simulation, vote shares are drawn in a way that reflects the estimated uncertainty, and the resulting outcomes are recorded. After many such runs, the proportion of simulations in which a candidate wins is reported as their chance of victory.
+
+If a candidate wins in 65% of simulated elections, the forecast reports a 65% chance of winning—not as a guarantee, but as a summary of how often that outcome appears across the range of modeled possibilities.
+
+Variance, Correlation, and Surprise
+
+A crucial insight in these models is that errors are often correlated. When polls are systematically off in one direction, they tend to be off together. This increases the likelihood of large, coordinated surprises, even when individual estimates appear precise.
+
+Accounting for this correlation increases variance at the system level. It explains why elections with seemingly stable polling leads can still produce unexpected results.
+
+This phenomenon has a direct analogue in poker: multiple hands that look independent may in fact be driven by the same underlying uncertainty, producing streaks and swings that surprise players who focus only on averages.
+
+What It Means for a Forecast to Be “Right”
+
+Forecasts are often judged by whether the most likely outcome occurs. From a mathematical perspective, this is a misunderstanding of what the model is designed to do.
+
+A model that assigns a 30% chance to an outcome is not refuted when that outcome occurs. It is behaving exactly as described. Over many elections, such outcomes should happen about 30% of the time.
+
+The same logic governs poker decisions. A play that wins 70% of the time still loses 30% of the time. When it does, the decision has not failed; the random variable has simply realized a less likely value.
+
+Decision Quality Over Outcome
+
+Silver’s background as a poker player shaped this way of thinking. In both poker and election forecasting, the goal is not certainty, but coherence: assigning reasonable weights to possibilities and understanding the risks involved.
+
+Expected value captures what tends to happen on average. Variance captures how widely reality may deviate from that average. Together, they provide a disciplined way to reason about uncertain systems—whether the stakes are chips on a table or votes in a democracy.
 
 ## Liberal Arts Sidebar
 
 **Why Humans Hate Variance**
+## Liberal Arts Sidebar  
+### Why Humans Fear Variance More Than Loss
 
-*Lens:* Psychology
+Human discomfort with risk is often described as an aversion to loss. Psychological research suggests something subtler and more revealing: people are frequently reacting not to expected loss, but to **variance**.
 
-*Theme:* Why people prefer predictability—even at the cost of lower EV—and how that shapes real decision-making.
+One of the foundational results in behavioral economics, associated with the work of **:contentReference[oaicite:0]{index=0}** and **:contentReference[oaicite:1]{index=1}**, is that individuals do not evaluate outcomes solely by their average payoff. Instead, they respond strongly to the *spread* of possible outcomes and to the emotional experience of surprise.
 
-> Is avoiding variance rational, emotional, or both? When is it justified?
+---
+
+### Variance as Psychological Stress
+
+From a mathematical perspective, variance measures how far outcomes typically lie from the mean. From a psychological perspective, variance measures something closer to **emotional instability**.
+
+High-variance situations produce:
+- sharp reversals,
+- outcomes that feel inconsistent,
+- and narratives that are difficult to reconcile with expectations.
+
+Even when two options have identical expected value, people reliably prefer the option with lower variance. This preference appears across domains:
+- finance (preference for bonds over stocks),
+- medicine (preference for treatments with predictable outcomes),
+- and everyday decision-making (steady income over uncertain windfalls).
+
+In poker, this manifests as a preference for “safe” lines—checking rather than betting, folding rather than calling—even when those lines are inferior in expectation.
+
+---
+
+### Loss Aversion Is Often Variance Aversion
+
+Loss aversion is commonly described as the idea that losses hurt more than gains of the same size feel good. But many experimental results attributed to loss aversion can be reinterpreted as **variance aversion**.
+
+A decision with high variance produces:
+- vivid negative outcomes,
+- memorable failures,
+- and post hoc regret.
+
+By contrast, low-variance decisions produce outcomes that feel “reasonable,” even when they are mathematically inferior. This helps explain why people often reject favorable gambles with small probabilities of loss, even when the expected value is strongly positive.
+
+Mathematically, expected value is a long-run quantity. Psychologically, humans experience outcomes one realization at a time.
+
+---
+
+### Risk Avoidance as a Rational Response to Limited Repetition
+
+Variance aversion is not always irrational. Expected value arguments rely implicitly on repetition: the idea that a decision will be made many times, allowing outcomes to average out.
+
+In real life, many decisions are **one-shot**:
+- a single medical procedure,
+- a single election,
+- a single career move.
+
+In such cases, high variance represents genuine danger. The mathematics does not disappear, but the context changes. Variance becomes a proxy for fragility: the risk that a single unfavorable realization cannot be recovered from.
+
+This distinction helps explain why professional poker players tolerate variance that casual players avoid. Professionals operate in a regime of repetition; casual players experience poker as a sequence of emotionally salient events.
+
+---
+
+### Narrative, Hindsight, and Misjudged Decisions
+
+High-variance outcomes also distort judgment after the fact. A low-probability loss invites moralizing explanations: the decision was reckless, the forecaster incompetent, the call “obviously bad.”
+
+This hindsight bias erases the probabilistic structure that existed before the outcome occurred. Variance ensures that unlikely events happen occasionally. Narrative ensures that, when they do, they feel meaningful.
+
+The mathematical framework in this chapter offers a corrective: decisions should be evaluated by the random variables they induce, not by the particular realization that happened to occur.
+
+---
+
+### A Unifying Perspective
+
+Expected value tells us what happens on average.  
+Variance tells us how violent the path to that average can be.
+
+Human psychology is exquisitely sensitive to the second quantity. Understanding that sensitivity does not eliminate it—but it does allow us to see where emotion ends and mathematics begins.
+
+In poker, in forecasting, and in everyday life, much of what we call “risk” is simply variance wearing a human face.
+
 
 ## Homework Problems
 
-Use these as problem prompts to develop a full set:
+1.  Rewatch the final river decision in the 2003 World Series of Poker
+    Main Event between Farha and Moneymaker . Let the pot size before
+    the river bet be $P$ and the bet size be $B$. Express the breakeven
+    probability of winning required for Farha to call in terms of $P$
+    and $B$.
 
-1. Compute with definitions and formulas
-2. Explain a concept in words
-3. Short proof or justification (when appropriate)
+2.  Using publicly available estimates of the pot and bet sizes in the
+    hand, compute a numerical value for Farha’s breakeven probability.
+    Interpret this number in words: what fraction of the time must
+    Moneymaker be bluffing for the call to be nonnegative in
+    expectation?
 
-1. *[Problem to be written.]*
-2. *[Problem to be written.]*
-3. *[Problem to be written.]*
+3.  Suppose Farha estimates that Moneymaker is bluffing with probability
+    $p$. Write down the random variable representing Farha’s payoff if
+    he calls. Compute the expected value of the call as a function of
+    $p$, and determine for which values of $p$ the call is profitable.
+
+4.  Using the same random variable, compute the variance of Farha’s
+    payoff conditional on calling. Then compute the standard deviation.
+    Write a sentence explaining which player benefits from an increase
+    in variance and why.
+
+5.  In a heads-up river situation, the pot is \$300 and the bettor
+    wagers \$150. The defender estimates that the bettor is bluffing
+    with probability $0.30$. Compute the expected value of calling and
+    determine whether the call is profitable.
+
+6.  Repeat the previous problem, but now assume the bettor wagers \$300
+    into the same pot. How does the breakeven bluffing frequency change?
+    Explain the result in terms of incentives created by bet sizing.
+
+7.  A player bets the river with a polarized range: value hands that
+    always win when called, and bluffs that always lose when called. Let
+    the bettor’s range contain $V$ value hands and $L$ bluffs. Express
+    the defender’s breakeven calling frequency in terms of $V$ and $L$.
+
+8.  Using the setup of the previous problem, suppose the defender calls
+    with probability $q$. Compute the bettor’s expected value as a
+    function of $q$. Determine the value of $q$ that makes the bettor
+    indifferent between bluffing and not bluffing.
+
+9.  Explain how the result of the previous problem leads naturally to
+    the concept of *minimum defense frequency*. Your explanation should
+    be mathematical rather than strategic.
+
+10. Consider a turn situation in which one card remains to come. A
+    player is deciding whether to call a bet of \$50 into a pot of \$150
+    with a flush draw. Using counting arguments, compute the probability
+    of completing the flush. Then compute the expected value of the
+    call.
+
+11. Modify the previous problem by assuming that if the flush completes,
+    the opponent will sometimes fold to a river bet, generating
+    additional profit. Introduce a reasonable random variable modeling
+    this possibility and compute its expected value.
+
+12. A casino offers a game in which a fair six-sided die is rolled. If
+    the die shows 1 or 2, you lose \$10. If it shows 3, 4, or 5, you win
+    \$8. If it shows 6, you win \$30. Define an appropriate random
+    variable and compute the expected value of the game.
+
+13. An insurance policy costs \$400 per year and pays \$50,000 if a
+    certain rare event occurs. Suppose the probability of the event in a
+    given year is $0.005$. Compute the expected value of purchasing the
+    policy and interpret the result.
+
+14. A company must decide whether to invest in a project that has a 40%
+    chance of yielding a profit of \$1 million and a 60% chance of
+    yielding a loss of \$200,000. Define the relevant random variable
+    and compute its expected value. Discuss how variance might influence
+    the company’s decision even if the expected value is positive.
+
+15. Let $X$ be a discrete random variable with values $x_1,\dots,x_n$
+    and probabilities $p_1,\dots,p_n$. Prove that $$
+    \mathbb{E}[X - c] = \mathbb{E}[X] - c
+    $$ for any constant $c$.
+
+16. Let $X$ be a random variable and let $a$ and $b$ be real constants.
+    Prove that $$
+    \mathrm{Var}(aX + b) = a^2 \mathrm{Var}(X).
+    $$
+
+17. Let $X$ be a random variable taking exactly two values $x_1$ and
+    $x_2$ with probabilities $p$ and $1-p$. Prove that the variance of
+    $X$ is maximized when $p = \tfrac12$, and interpret this result in
+    the context of poker decisions.
+
+8. A player randomizes their river bet size uniformly between \$100 and \$300. Let $X$ denote the bet size.  
+(a) Write down the probability density function of $X$.  
+(b) Compute $\mathbb{E}[X]$.  
+(c) Compute $\mathrm{Var}(X)$ and the standard deviation.  
+(d) Interpret the standard deviation in the context of betting behavior.
+
+19. Suppose a player’s net profit $Y$ from a hand depends linearly on their raise size $X$ according to the formula
+$$
+Y = 0.4X - 50,
+$$
+where $X$ is uniformly distributed between \$100 and \$300.  
+(a) Compute $\mathbb{E}[Y]$.  
+(b) Compute $\mathrm{Var}(Y)$.  
+(c) Determine whether the betting strategy is profitable in expectation.
+
+20. A player chooses between folding, calling, and raising as follows:
+- With probability $0.4$, they fold and earn \$0.
+- With probability $0.3$, they call and earn a fixed payoff of \$40.
+- With probability $0.3$, they raise, choosing a raise size uniformly between \$100 and \$200, and their net payoff equals half the raise size minus \$30.
+
+Define an appropriate random variable for the player’s payoff and compute its expected value.
+
+21. Let $X$ be a continuous random variable representing the amount a player invests in a speculative financial asset, with probability density function
+$$
+f_X(x) =
+\begin{cases}
+\frac{1}{1000}, & 0 \le x \le 1000, \\
+0, & \text{otherwise}.
+\end{cases}
+$$
+Suppose the net return is given by
+$$
+Y = 1.2X - X.
+$$
+(a) Compute $\mathbb{E}[Y]$.  
+(b) Compute $\mathrm{Var}(Y)$.  
+(c) Explain how this model parallels the evaluation of a poker bet with uncertain payoff.
+
+22. Let $X$ be a continuous random variable with probability density function $f_X(x)$ and finite expected value.  
+(a) Prove that for any constant $c$,
+$$
+\mathbb{E}[X + c] = \mathbb{E}[X] + c.
+$$
+(b) Prove that for any constant $a$,
+$$
+\mathrm{Var}(aX) = a^2 \mathrm{Var}(X).
+$$
+(c) Explain why these identities are essential for analyzing continuous betting strategies in poker.
 
 ## Extension Activity
 
-Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
-
+Extend the chapter’s main tool using a small simulation or a short
+written reflection connecting poker to another domain.
