@@ -527,7 +527,7 @@ Expected value captures what tends to happen on average. Variance captures how w
 ## Liberal Arts Sidebar
 
 **Why Humans Hate Variance**
-## Liberal Arts Sidebar  
+  
 ### Why Humans Fear Variance More Than Loss
 
 Human discomfort with risk is often described as an aversion to loss. Psychological research suggests something subtler and more revealing: people are frequently reacting not to expected loss, but to **variance**.

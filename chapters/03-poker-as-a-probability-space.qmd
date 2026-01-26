@@ -652,30 +652,6 @@ study of poker mathematics.
 Understanding a distribution means understanding what assumptions
 produced it and what kinds of variation it represents.
 
-### Summary of Terminology
-
-We conclude by summarizing the key terms introduced in this section.
-
--   **Probability measure**: A function assigning probabilities to
-    events in a sample space, satisfying normalization, nonnegativity,
-    and additivity.
--   **Distribution**: A structured assignment of probabilities to
-    possible outcomes or ranges of outcomes.
--   **Discrete distribution**: A distribution supported on a finite or
-    countable set, with probabilities summed to obtain totals.
--   **Continuous distribution**: A distribution described by a density
-    function, with probabilities computed by integration.
--   **Density function**: A nonnegative function whose integral over an
-    interval gives the probability of outcomes in that interval.
--   **Integral (in probability)**: The continuous analogue of summation,
-    used to accumulate probability across ranges of values.
-
-These concepts provide the language needed to move from counting
-outcomes to evaluating performance across many possibilities. In the
-next section, we will use distributions—discrete and continuous—to
-define numerical summaries that allow meaningful comparison between
-different poker decisions.
-
 ### A Note on Measurable Spaces (and How Much Structure We Really Need)
 
 Earlier, we referred to a *measurable space* $(\Omega,\mathcal{F})$. At
@@ -785,27 +761,17 @@ Each category corresponds to an **event**: a set of possible measurement
 values. Probability is not assigned to individual measurements, but to
 these sets.
 
-This mirrors poker analysis. Individual hands are equally likely under
-uniform dealing, but poker decisions depend on categories such as pairs,
-flushes, or full houses.
-
-### Continuous Distributions and Integration
-
 Suppose the measurement produced by a medical test varies continuously
 and is modeled by a density function $f(x)$. The probability that a
 randomly selected individual has a measurement between $a$ and $b$ is
-given by $$
-\int_a^b f(x)\,dx.
-$$
+given by $$ \int_a^b f(x)\,dx. $$
 
 This integral plays the same role as a sum in discrete poker models. It
 accumulates probability across a range of outcomes rather than counting
 individual possibilities.
 
 If a diagnostic threshold is placed at a value $c$, the probability of a
-positive test result is $$
-\int_c^{\infty} f(x)\,dx.
-$$
+positive test result is $$ \int_c^{\infty} f(x)\,dx. $$
 
 Changing the threshold changes the event being measured and therefore
 changes the induced distribution of test outcomes.
@@ -816,13 +782,9 @@ Once thresholds are fixed, the continuous distribution of measurements
 induces a **discrete distribution** on diagnostic categories.
 
 For example, if thresholds $a < b$ define three categories, then the
-probabilities of negative, borderline, and positive results are $$
-\int_{-\infty}^a f(x)\,dx,
-\quad
-\int_a^b f(x)\,dx,
-\quad
-\int_b^{\infty} f(x)\,dx,
-$$ respectively.
+probabilities of negative, borderline, and positive results are
+$$ \int_{-\infty}^a f(x)\,dx, \quad \int_a^b f(x)\,dx, \quad \int_b^{\infty} f(x)\,dx, $$
+respectively.
 
 These probabilities need not be equal. Even if measurements are
 symmetrically distributed, the sizes of the intervals determine how
@@ -833,20 +795,9 @@ hands, - a non-uniform distribution on hand categories.
 
 The grouping—not the underlying randomness—creates the imbalance.
 
-### Interpretation and Modeling Choices
-
-Crucially, diagnostic categories are not intrinsic features of the data.
-They are modeling choices. Moving a threshold slightly can significantly
-change the probability of a positive or negative result, even though the
-underlying distribution remains unchanged.
-
-The mathematics makes this explicit. Probability does not tell us where
-thresholds *should* be placed. It tells us how probability is
-redistributed once they are.
-
-This distinction mirrors poker strategy. The deck does not decide which
-hands are “strong”; players define strength by grouping outcomes in
-strategically meaningful ways.
+This mirrors poker analysis. Individual hands are equally likely under
+uniform dealing, but poker decisions depend on categories such as pairs,
+flushes, or full houses.
 
 ### Why This Matters
 
