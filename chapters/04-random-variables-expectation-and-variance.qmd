@@ -390,6 +390,94 @@ This illustrates a broader principle:
 Such models will reappear later when we study mixed strategies,
 equilibrium concepts, and optimization under uncertainty.
 
+### Expected Value and Basic Poker Quantities
+
+Several commonly used poker terms arise directly from expected value calculations. Although they are often presented as strategic heuristics, they are more accurately understood as mathematical consequences of the payoff structure of betting.
+
+---
+
+### Pot Odds
+
+At a decision point on the river, suppose:
+
+- The pot before the bet is $P$.
+- An opponent bets $B$.
+- You are considering whether to call $B$.
+
+As shown earlier, calling induces the random variable
+$$
+X_{\text{call}} =
+\begin{cases}
+P + B, & \text{with probability } p, \\
+- B, & \text{with probability } 1-p,
+\end{cases}
+$$
+where $p$ is the probability that you win at showdown.
+
+The expected value of the call is
+$$
+\mathbb{E}[X_{\text{call}}] = p(P+2B) - B.
+$$
+
+Calling is breakeven when $\mathbb{E}[X_{\text{call}}] = 0$, which occurs exactly when
+$$
+p = \frac{B}{P + 2B}.
+$$
+
+The quantity $\frac{B}{P + 2B}$ is called the **pot odds threshold**. It represents the minimum probability of winning required for a call to be nonnegative in expectation.
+
+Pot odds are therefore not a rule of thumb, but a direct translation of expected value into a probability comparison.
+
+---
+
+### Minimum Defense Frequency
+
+Expected value also constrains how often a player must defend against bets in order to prevent an opponent from profiting automatically.
+
+Suppose a bettor wagers $B$ into a pot of size $P$ on the river. Consider the bettor’s expected value if the defender folds with probability $f$ and calls with probability $1-f$.
+
+- If the defender folds, the bettor wins the pot $P$.
+- If the defender calls, the bettor loses $B$ when bluffing.
+
+Ignoring value hands and focusing only on bluffs, the bettor’s expected value from bluffing is
+$$
+\mathbb{E}[\text{bluff}]
+= fP - (1-f)B.
+$$
+
+For the bluff to be breakeven,
+$$
+fP - (1-f)B = 0.
+$$
+
+Solving for $f$ gives
+$$
+f = \frac{B}{P + B}.
+$$
+
+Thus, if the defender folds more than $\frac{B}{P+B}$ of the time, the bettor’s bluffs are profitable regardless of hand strength.
+
+The complementary quantity,
+$$
+1 - f = \frac{P}{P + B},
+$$
+is known as the **minimum defense frequency**. It is the fraction of the defender’s range that must continue (by calling or raising) to ensure that the opponent cannot profit by bluffing automatically.
+
+---
+
+### Interpretation
+
+Pot odds and minimum defense frequency are not strategic prescriptions. They are constraints imposed by expected value.
+
+- Pot odds describe when a *call* is justified given a fixed bet.
+- Minimum defense frequency describes how often a *defense* must occur to prevent exploitation.
+
+Both arise from the same underlying principle: a decision is evaluated by the random variable it induces, not by the outcome that happens to occur.
+
+These quantities will reappear later in the text when we study equilibrium behavior and mixed strategies, where expected value is balanced across multiple actions.
+
+
+
 ## Beyond Poker
 
 Election Forecasting as Random Variables: A Model-Based View
