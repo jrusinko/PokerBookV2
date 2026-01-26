@@ -28,51 +28,87 @@ editor:
     analysis (engineering failure models), epidemiology (exposure and
     outcomes)
 :::
+
 ## Motivating Example: The Same Deck, Different Distributions
 
-In Chapter 2, we learned how to count poker hands. We counted carefully, distinguished between permutations and combinations, and saw how subtle choices in modeling could change an answer by orders of magnitude. At the end of that chapter, one fact stood out: every 5-card hand dealt from a standard deck is equally likely.
+In Chapter 2, we learned how to count poker hands. We counted carefully,
+distinguished between permutations and combinations, and saw how subtle
+choices in modeling could change an answer by orders of magnitude. At
+the end of that chapter, one fact stood out: every 5-card hand dealt
+from a standard deck is equally likely.
 
-This statement feels definitive. If all hands are equally likely, then probability seems simple: count the hands you care about and divide by the total number of hands. In this sense, probability appears to be nothing more than normalized counting.
+This statement feels definitive. If all hands are equally likely, then
+probability seems simple: count the hands you care about and divide by
+the total number of hands. In this sense, probability appears to be
+nothing more than normalized counting.
 
 And yet, this apparent simplicity conceals a deeper question.
 
 Consider two poker games played with the same 52-card deck.
 
-In 5-card draw, full houses are rare curiosities. A player might go years without seeing more than a handful. In Texas Hold’em, however, full houses appear with surprising regularity. Players expect to see them in long sessions, and entire betting lines are built around their possibility.
+In 5-card draw, full houses are rare curiosities. A player might go
+years without seeing more than a handful. In Texas Hold’em, however,
+full houses appear with surprising regularity. Players expect to see
+them in long sessions, and entire betting lines are built around their
+possibility.
 
-Nothing about the deck has changed. The cards are the same. The shuffle is the same. The underlying randomness is the same.
+Nothing about the deck has changed. The cards are the same. The shuffle
+is the same. The underlying randomness is the same.
 
 So where does the difference come from?
 
-One tempting answer is to say that Hold’em “creates more chances” for strong hands. This is true, but incomplete. The deeper explanation is mathematical: **probability is not assigned directly to cards, but to structured collections of outcomes**. When we change how outcomes are grouped, observed, or compared, we change the distribution of probability—even when the underlying dealing process remains uniform.
+One tempting answer is to say that Hold’em “creates more chances” for
+strong hands. This is true, but incomplete. The deeper explanation is
+mathematical: **probability is not assigned directly to cards, but to
+structured collections of outcomes**. When we change how outcomes are
+grouped, observed, or compared, we change the distribution of
+probability—even when the underlying dealing process remains uniform.
 
-In Chapter 2, uniformity lived at the level of individual hands. Every 5-card subset of the deck had the same probability. But poker decisions are rarely made at that level. Players do not ask, “What is the probability of this exact hand?” Instead, they ask questions like:
-- How often will I make a flush?
-- How frequently does my opponent have a full house here?
-- How common is a hand strong enough to continue betting?
+In Chapter 2, uniformity lived at the level of individual hands. Every
+5-card subset of the deck had the same probability. But poker decisions
+are rarely made at that level. Players do not ask, “What is the
+probability of this exact hand?” Instead, they ask questions like: - How
+often will I make a flush? - How frequently does my opponent have a full
+house here? - How common is a hand strong enough to continue betting?
 
-These questions are not about individual hands. They are about **categories of hands**, **ranges of outcomes**, and **patterns that emerge across many deals**.
+These questions are not about individual hands. They are about
+**categories of hands**, **ranges of outcomes**, and **patterns that
+emerge across many deals**.
 
-Once we group hands into categories—pairs, flushes, full houses—the uniformity disappears. Some categories contain vast numbers of hands; others contain very few. Uniform probability on individual hands induces a highly non-uniform distribution on hand categories. This induced distribution explains both the rarity of certain hands and their position in the hierarchy of poker rankings.
+Once we group hands into categories—pairs, flushes, full houses—the
+uniformity disappears. Some categories contain vast numbers of hands;
+others contain very few. Uniform probability on individual hands induces
+a highly non-uniform distribution on hand categories. This induced
+distribution explains both the rarity of certain hands and their
+position in the hierarchy of poker rankings.
 
-The same phenomenon appears again when we leave the world of cards entirely. Bet sizes are not counted the way hands are counted. Long-run averages do not come in discrete packets. In these settings, probability spreads continuously across ranges of values, and counting gives way to accumulation.
+The same phenomenon appears again when we leave the world of cards
+entirely. Bet sizes are not counted the way hands are counted. Long-run
+averages do not come in discrete packets. In these settings, probability
+spreads continuously across ranges of values, and counting gives way to
+accumulation.
 
-The lesson is not that probability has become more complicated. It is that probability has become more *structured*. To compare poker outcomes meaningfully, we must describe not just what is possible, but how probability is distributed across those possibilities.
+The lesson is not that probability has become more complicated. It is
+that probability has become more *structured*. To compare poker outcomes
+meaningfully, we must describe not just what is possible, but how
+probability is distributed across those possibilities.
 
-This chapter formalizes that idea. We will move from counting outcomes to organizing them, from isolated probabilities to distributions, and from summation to integration. The deck remains the same. What changes is how probability is allowed to express itself.
-
+This chapter formalizes that idea. We will move from counting outcomes
+to organizing them, from isolated probabilities to distributions, and
+from summation to integration. The deck remains the same. What changes
+is how probability is allowed to express itself.
 
 ## Mathematical Framework and Poker Theory
+
 ### Roadmap
 
-- Sample spaces for poker (cards, deals, boards, and runouts)
-- Probability measures and modeling assumptions
-- Events, partitions, and induced distributions
-- Discrete distributions arising from counting
-- Continuous distributions and the role of integration
-- Independence as a structural property of models
-- Interpreting probability statements across different poker contexts
-
+-   Sample spaces for poker (cards, deals, boards, and runouts)
+-   Probability measures and modeling assumptions
+-   Events, partitions, and induced distributions
+-   Discrete distributions arising from counting
+-   Continuous distributions and the role of integration
+-   Independence as a structural property of models
+-   Interpreting probability statements across different poker contexts
 
 ### Definitions
 
@@ -111,21 +147,54 @@ two hearts,” - or “at least one player holds pocket aces.”
 
 Events may overlap, be disjoint, or contain one another.
 
-### Probability
+## Probability Spaces and Distributions
 
-**Definition (Probability).**\
-If all outcomes in the sample space $\Omega$ are equally likely, the
-probability of an event $E$ is
+Counting alone does not yet constitute probability. To speak precisely
+about likelihood, dependence, and long-run behavior, we must specify not
+only *what* outcomes are possible, but *how probability is assigned* to
+collections of those outcomes.
 
-$$
+This is formalized through the notion of a **probability space**.
+
+### Probability Measures
+
+**Definition (Probability Measure).**\
+A **probability measure** is a function $$
+\mathbb{P} : \mathcal{F} \to
+\[0,1\], $$ defined on a collection $\mathcal{F}$ of subsets of
+$\Omega$, satisfying:
+
+1.  $\mathbb{P}(\Omega) = 1$,
+2.  $\mathbb{P}(E) \ge 0$ for all $E \in \mathcal{F}$,
+3.  for any countable collection of pairwise disjoint events $\{E_i\}$,
+    $$
+    \mathbb{P}\left(\bigcup_i E_i\right) = \sum_i \mathbb{P}(E_i).
+    $$
+
+The triple $(\Omega,\mathcal{F},\mathbb{P})$ is called a **probability
+space**.
+
+In most poker applications, the sample space $\Omega$ is finite, and
+every subset of $\Omega$ may be treated as an event. In such cases, the
+collection $\mathcal{F}$ can be taken to be the power set of $\Omega$,
+and no additional technical complications arise.
+
+### Uniform Probability Models
+
+In many poker settings, randomness arises from fair shuffling and
+dealing.
+
+**Definition (Uniform Probability Measure).**\
+If $\Omega$ is finite and all outcomes are assumed to be equally likely,
+the probability of an event $E \subseteq \Omega$ is defined by $$
 \mathbb{P}(E) = \frac{|E|}{|\Omega|}.
-$$
+$$ Under this assumption, probability is computed by counting favorable
+outcomes and normalizing by the total number of possibilities. This
+uniform model underlies most elementary poker probability calculations.
 
-Thus, probability reduces to a counting problem: count how many outcomes
-satisfy the event, and divide by the total number of possible outcomes.
-
-This framework assumes *uniform randomness*, which is appropriate for
-card dealing under fair shuffling.
+Uniformity is an assumption about the dealing mechanism, not a property
+of the events being studied. Once outcomes are grouped into categories,
+the induced probabilities need not be uniform.
 
 ------------------------------------------------------------------------
 
@@ -609,372 +678,597 @@ different poker decisions.
 
 ### A Note on Measurable Spaces (and How Much Structure We Really Need)
 
-Earlier, we referred to a *measurable space* $(\Omega,\mathcal{F})$. At this point, it is reasonable to ask: what is this object, and why have we introduced it?
+Earlier, we referred to a *measurable space* $(\Omega,\mathcal{F})$. At
+this point, it is reasonable to ask: what is this object, and why have
+we introduced it?
 
-The short answer is that a measurable space is a bookkeeping device. It specifies **which collections of outcomes are legitimate events** to which probabilities may be assigned.
+The short answer is that a measurable space is a bookkeeping device. It
+specifies **which collections of outcomes are legitimate events** to
+which probabilities may be assigned.
 
 #### What Is a Measurable Space?
 
 A measurable space consists of two components:
 
-- $\Omega$, the set of all possible outcomes of an experiment,
-- $\mathcal{F}$, a collection of subsets of $\Omega$, called **events**, that are allowed to receive probabilities.
+-   $\Omega$, the set of all possible outcomes of an experiment,
+-   $\mathcal{F}$, a collection of subsets of $\Omega$, called
+    **events**, that are allowed to receive probabilities.
 
-The collection $\mathcal{F}$ is required to satisfy three basic closure properties:
+The collection $\mathcal{F}$ is required to satisfy three basic closure
+properties:
 
-1. $\Omega \in \mathcal{F}$,
-2. if $A \in \mathcal{F}$, then its complement $\Omega \setminus A \in \mathcal{F}$,
-3. if $A_1,A_2,\dots \in \mathcal{F}$, then $\bigcup_i A_i \in \mathcal{F}$.
+1.  $\Omega \in \mathcal{F}$,
+2.  if $A \in \mathcal{F}$, then its complement
+    $\Omega \setminus A \in \mathcal{F}$,
+3.  if $A_1,A_2,\dots \in \mathcal{F}$, then
+    $\bigcup_i A_i \in \mathcal{F}$.
 
-These rules ensure that probabilities can be assigned consistently when events are combined, negated, or refined.
+These rules ensure that probabilities can be assigned consistently when
+events are combined, negated, or refined.
 
 #### Why This Matters (Conceptually)
 
-In most poker models, $\Omega$ is finite. For example, the set of all 5-card hands has size $\binom{52}{5}$. In such cases, *every* subset of $\Omega$ can safely be treated as an event, and we may take $\mathcal{F}$ to be the set of all subsets of $\Omega$.
+In most poker models, $\Omega$ is finite. For example, the set of all
+5-card hands has size $\binom{52}{5}$. In such cases, *every* subset of
+$\Omega$ can safely be treated as an event, and we may take
+$\mathcal{F}$ to be the set of all subsets of $\Omega$.
 
-When $\Omega$ is finite, the measurable-space structure is invisible. There are no pathologies, no paradoxes, and no hidden complications.
+When $\Omega$ is finite, the measurable-space structure is invisible.
+There are no pathologies, no paradoxes, and no hidden complications.
 
-The language of measurable spaces becomes necessary only when:
-- $\Omega$ is infinite,
-- or outcomes vary continuously,
-- or probabilities are defined via integrals rather than counting.
+The language of measurable spaces becomes necessary only when: -
+$\Omega$ is infinite, - or outcomes vary continuously, - or
+probabilities are defined via integrals rather than counting.
 
-In those settings, not every conceivable subset behaves well with respect to probability, and $\mathcal{F}$ serves as a guardrail.
+In those settings, not every conceivable subset behaves well with
+respect to probability, and $\mathcal{F}$ serves as a guardrail.
 
 #### How Much Structure We Need Here
 
-For the purposes of this chapter, we can adopt the following informal but accurate principle:
+For the purposes of this chapter, we can adopt the following informal
+but accurate principle:
 
-> **An event is any outcome or collection of outcomes that can be described in a way that allows probability to be assigned consistently.**
+> **An event is any outcome or collection of outcomes that can be
+> described in a way that allows probability to be assigned
+> consistently.**
 
-In discrete poker models, this includes:
-- individual hands,
-- hand categories,
-- sets defined by ranks, suits, or board structure.
+In discrete poker models, this includes: - individual hands, - hand
+categories, - sets defined by ranks, suits, or board structure.
 
-In continuous models, this includes:
-- intervals of bet sizes,
-- ranges of long-run averages,
-- sets described by inequalities.
+In continuous models, this includes: - intervals of bet sizes, - ranges
+of long-run averages, - sets described by inequalities.
 
-We will not need to construct $\mathcal{F}$ explicitly. Instead, we rely on the fact that the events we consider—those defined by counting or by integration—automatically satisfy the required consistency properties.
+We will not need to construct $\mathcal{F}$ explicitly. Instead, we rely
+on the fact that the events we consider—those defined by counting or by
+integration—automatically satisfy the required consistency properties.
 
 #### Why Keep the Terminology at All?
 
 The phrase *measurable space* serves two purposes:
 
-1. It reminds us that probability is not assigned to outcomes arbitrarily, but to well-defined collections of outcomes.
-2. It prepares the ground for later chapters, where continuous distributions and integrals play a central role.
+1.  It reminds us that probability is not assigned to outcomes
+    arbitrarily, but to well-defined collections of outcomes.
+2.  It prepares the ground for later chapters, where continuous
+    distributions and integrals play a central role.
 
-In short, the language appears early not because we will use it heavily, but because it quietly enforces discipline. It tells us when probability assignments make sense and when they do not, without forcing us into full measure theory.
+In short, the language appears early not because we will use it heavily,
+but because it quietly enforces discipline. It tells us when probability
+assignments make sense and when they do not, without forcing us into
+full measure theory.
 
-For now, it is enough to think of a measurable space as **a sample space together with a rulebook for which questions about that space are allowed**.
-
-
+For now, it is enough to think of a measurable space as **a sample space
+together with a rulebook for which questions about that space are
+allowed**.
 
 ## Beyond Poker: Medical Testing and Diagnostic Thresholds
 
-Poker is not the only domain in which probability is assigned uniformly at one level and becomes uneven when outcomes are grouped. A closely parallel situation arises in medical testing, where continuous biological measurements are converted into discrete diagnostic categories.
+Poker is not the only domain in which probability is assigned uniformly
+at one level and becomes uneven when outcomes are grouped. A closely
+parallel situation arises in medical testing, where continuous
+biological measurements are converted into discrete diagnostic
+categories.
 
 The mathematics is the same; only the interpretation changes.
 
 ### Measurements, Thresholds, and Events
 
-Many medical tests produce a numerical measurement: a blood concentration, a hormone level, or a marker of inflammation. This measurement varies continuously across a population.
+Many medical tests produce a numerical measurement: a blood
+concentration, a hormone level, or a marker of inflammation. This
+measurement varies continuously across a population.
 
-To interpret the test, clinicians introduce **thresholds**. For example, a test result may be classified as:
-- negative if the measurement lies below a lower cutoff,
-- borderline if it lies in an intermediate range,
-- positive if it exceeds an upper cutoff.
+To interpret the test, clinicians introduce **thresholds**. For example,
+a test result may be classified as: - negative if the measurement lies
+below a lower cutoff, - borderline if it lies in an intermediate
+range, - positive if it exceeds an upper cutoff.
 
-Each category corresponds to an **event**: a set of possible measurement values. Probability is not assigned to individual measurements, but to these sets.
+Each category corresponds to an **event**: a set of possible measurement
+values. Probability is not assigned to individual measurements, but to
+these sets.
 
-This mirrors poker analysis. Individual hands are equally likely under uniform dealing, but poker decisions depend on categories such as pairs, flushes, or full houses.
+This mirrors poker analysis. Individual hands are equally likely under
+uniform dealing, but poker decisions depend on categories such as pairs,
+flushes, or full houses.
 
 ### Continuous Distributions and Integration
 
-Suppose the measurement produced by a medical test varies continuously and is modeled by a density function $f(x)$. The probability that a randomly selected individual has a measurement between $a$ and $b$ is given by
-$$
+Suppose the measurement produced by a medical test varies continuously
+and is modeled by a density function $f(x)$. The probability that a
+randomly selected individual has a measurement between $a$ and $b$ is
+given by $$
 \int_a^b f(x)\,dx.
 $$
 
-This integral plays the same role as a sum in discrete poker models. It accumulates probability across a range of outcomes rather than counting individual possibilities.
+This integral plays the same role as a sum in discrete poker models. It
+accumulates probability across a range of outcomes rather than counting
+individual possibilities.
 
-If a diagnostic threshold is placed at a value $c$, the probability of a positive test result is
-$$
+If a diagnostic threshold is placed at a value $c$, the probability of a
+positive test result is $$
 \int_c^{\infty} f(x)\,dx.
 $$
 
-Changing the threshold changes the event being measured and therefore changes the induced distribution of test outcomes.
+Changing the threshold changes the event being measured and therefore
+changes the induced distribution of test outcomes.
 
 ### Induced Distributions on Diagnostic Categories
 
-Once thresholds are fixed, the continuous distribution of measurements induces a **discrete distribution** on diagnostic categories.
+Once thresholds are fixed, the continuous distribution of measurements
+induces a **discrete distribution** on diagnostic categories.
 
-For example, if thresholds $a < b$ define three categories, then the probabilities of negative, borderline, and positive results are
-$$
+For example, if thresholds $a < b$ define three categories, then the
+probabilities of negative, borderline, and positive results are $$
 \int_{-\infty}^a f(x)\,dx,
 \quad
 \int_a^b f(x)\,dx,
 \quad
 \int_b^{\infty} f(x)\,dx,
-$$
-respectively.
+$$ respectively.
 
-These probabilities need not be equal. Even if measurements are symmetrically distributed, the sizes of the intervals determine how probability mass is allocated across categories.
+These probabilities need not be equal. Even if measurements are
+symmetrically distributed, the sizes of the intervals determine how
+probability mass is allocated across categories.
 
-This is directly analogous to poker:
-- uniform probability on individual hands,
-- a non-uniform distribution on hand categories.
+This is directly analogous to poker: - uniform probability on individual
+hands, - a non-uniform distribution on hand categories.
 
 The grouping—not the underlying randomness—creates the imbalance.
 
 ### Interpretation and Modeling Choices
 
-Crucially, diagnostic categories are not intrinsic features of the data. They are modeling choices. Moving a threshold slightly can significantly change the probability of a positive or negative result, even though the underlying distribution remains unchanged.
+Crucially, diagnostic categories are not intrinsic features of the data.
+They are modeling choices. Moving a threshold slightly can significantly
+change the probability of a positive or negative result, even though the
+underlying distribution remains unchanged.
 
-The mathematics makes this explicit. Probability does not tell us where thresholds *should* be placed. It tells us how probability is redistributed once they are.
+The mathematics makes this explicit. Probability does not tell us where
+thresholds *should* be placed. It tells us how probability is
+redistributed once they are.
 
-This distinction mirrors poker strategy. The deck does not decide which hands are “strong”; players define strength by grouping outcomes in strategically meaningful ways.
+This distinction mirrors poker strategy. The deck does not decide which
+hands are “strong”; players define strength by grouping outcomes in
+strategically meaningful ways.
 
 ### Why This Matters
 
 Medical testing highlights a broader lesson of this chapter:
 
-- probability measures assign likelihoods to events,
-- distributions summarize how probability is spread,
-- discrete outcomes often arise from continuous variation,
-- integrals compute probabilities by accumulation, not enumeration.
+-   probability measures assign likelihoods to events,
+-   distributions summarize how probability is spread,
+-   discrete outcomes often arise from continuous variation,
+-   integrals compute probabilities by accumulation, not enumeration.
 
-Poker hands and medical diagnoses occupy very different cultural spaces, but mathematically they rely on the same ideas. In both cases, understanding probability means understanding how outcomes are grouped, how distributions are induced, and how interpretation depends on structure rather than intuition.
+Poker hands and medical diagnoses occupy very different cultural spaces,
+but mathematically they rely on the same ideas. In both cases,
+understanding probability means understanding how outcomes are grouped,
+how distributions are induced, and how interpretation depends on
+structure rather than intuition.
 
-This perspective will be essential as we move toward quantitative summaries of performance and decision-making in the next sections.
-
+This perspective will be essential as we move toward quantitative
+summaries of performance and decision-making in the next sections.
 
 ## Liberal Arts Sidebar
 
-A poker table late at night can feel like a sanctuary built for uncertainty. The lights are too bright, the air a little stale. A player stacks their chips with care, counts the pot twice, and moves all-in—not with bravado, but with quiet conviction. This is the right decision. The numbers agree. The opponent calls. The cards are turned. One card on the river erases everything. Chips slide across the felt. Someone laughs too loudly. Someone exhales. Someone immediately starts explaining what *really* happened.
+A poker table late at night can feel like a sanctuary built for
+uncertainty. The lights are too bright, the air a little stale. A player
+stacks their chips with care, counts the pot twice, and moves all-in—not
+with bravado, but with quiet conviction. This is the right decision. The
+numbers agree. The opponent calls. The cards are turned. One card on the
+river erases everything. Chips slide across the felt. Someone laughs too
+loudly. Someone exhales. Someone immediately starts explaining what
+*really* happened.
 
 A small theology is born.
 
-Was it fate? A bad call? Arrogance punished? Or simply “variance,” that modern word we use when stories collapse under their own weight?
+Was it fate? A bad call? Arrogance punished? Or simply “variance,” that
+modern word we use when stories collapse under their own weight?
 
-Scenes like this are ordinary to anyone who has spent time around cards. But they distill an ancient human problem with unusual clarity. Effort does not guarantee outcome. Skill does not secure reward. The world does not reliably align merit with result. When that gap opens, humans do what they have always done: they search for meaning.
+Scenes like this are ordinary to anyone who has spent time around cards.
+But they distill an ancient human problem with unusual clarity. Effort
+does not guarantee outcome. Skill does not secure reward. The world does
+not reliably align merit with result. When that gap opens, humans do
+what they have always done: they search for meaning.
 
-Our preference for certainty runs deeper than culture. Other primates show visible stress when reward schedules become unpredictable. Heart rates rise. Attention narrows. Even when humans seek novelty—new food, new places, new risks—we do so inside structures that limit exposure. We buy lottery tickets but insure our homes. We gamble with chips, not rent money. We flirt with uncertainty, but we build railings.
+Our preference for certainty runs deeper than culture. Other primates
+show visible stress when reward schedules become unpredictable. Heart
+rates rise. Attention narrows. Even when humans seek novelty—new food,
+new places, new risks—we do so inside structures that limit exposure. We
+buy lottery tickets but insure our homes. We gamble with chips, not rent
+money. We flirt with uncertainty, but we build railings.
 
-Much of what we call civilization is an extended attempt to reduce uncertainty. Agriculture replaces the gamble of foraging with stored grain. Calendars tame the seasons. Contracts freeze expectations. Insurance spreads loss across populations. Factories standardize output. Bureaucracies replace judgment with procedure. Modern life is a vast effort to make tomorrow resemble yesterday.
+Much of what we call civilization is an extended attempt to reduce
+uncertainty. Agriculture replaces the gamble of foraging with stored
+grain. Calendars tame the seasons. Contracts freeze expectations.
+Insurance spreads loss across populations. Factories standardize output.
+Bureaucracies replace judgment with procedure. Modern life is a vast
+effort to make tomorrow resemble yesterday.
 
-And still, uncertainty persists. Crops fail. Markets crash. Diagnoses surprise. A single card appears on the river.
+And still, uncertainty persists. Crops fail. Markets crash. Diagnoses
+surprise. A single card appears on the river.
 
-Long before probability existed, cultures developed ways to live with this mismatch between effort and outcome.
+Long before probability existed, cultures developed ways to live with
+this mismatch between effort and outcome.
 
-In ancient Greece, uncertainty was not a flaw in the system—it *was* the system. The tragedies of Sophocles and Aeschylus are not warnings against poor reasoning. Oedipus does not fail because he ignores evidence. He fails because the world is not arranged to reward intelligence. The moral weight of the story lies not in the outcome, but in the response. Fate—*moira*—named a reality in which control was always partial. Responsibility survived by shifting from success to character.
+In ancient Greece, uncertainty was not a flaw in the system—it *was* the
+system. The tragedies of Sophocles and Aeschylus are not warnings
+against poor reasoning. Oedipus does not fail because he ignores
+evidence. He fails because the world is not arranged to reward
+intelligence. The moral weight of the story lies not in the outcome, but
+in the response. Fate—*moira*—named a reality in which control was
+always partial. Responsibility survived by shifting from success to
+character.
 
-Stoic philosophers sharpened this shift into discipline. Epictetus urged his students to draw a hard line between what is up to us and what is not. Our judgments, intentions, and actions belong to us; everything else does not. To demand that the world reward effort was, to a Stoic, a category mistake. The ethical task was not to conquer uncertainty, but to live well inside it.
+Stoic philosophers sharpened this shift into discipline. Epictetus urged
+his students to draw a hard line between what is up to us and what is
+not. Our judgments, intentions, and actions belong to us; everything
+else does not. To demand that the world reward effort was, to a Stoic, a
+category mistake. The ethical task was not to conquer uncertainty, but
+to live well inside it.
 
-In South Asian traditions shaped by karma, uncertainty stretched across time. A single outcome could never carry full moral weight. Meaning accumulated slowly, across repeated actions, sometimes across lifetimes. Loss was not proof of failure; gain was not proof of virtue. Karma did not eliminate chance. It weakened its authority by refusing to let any single moment define a life.
+In South Asian traditions shaped by karma, uncertainty stretched across
+time. A single outcome could never carry full moral weight. Meaning
+accumulated slowly, across repeated actions, sometimes across lifetimes.
+Loss was not proof of failure; gain was not proof of virtue. Karma did
+not eliminate chance. It weakened its authority by refusing to let any
+single moment define a life.
 
-Many Indigenous traditions approached uncertainty through relationship rather than causation. A failed hunt or sudden illness was not random noise or divine punishment. It was a signal within a living network of land, animal, ancestor, and human obligation. Stories did not explain outcomes; they situated them. The response to uncertainty was not blame, but attentiveness—an effort to restore balance rather than assign fault.
+Many Indigenous traditions approached uncertainty through relationship
+rather than causation. A failed hunt or sudden illness was not random
+noise or divine punishment. It was a signal within a living network of
+land, animal, ancestor, and human obligation. Stories did not explain
+outcomes; they situated them. The response to uncertainty was not blame,
+but attentiveness—an effort to restore balance rather than assign fault.
 
-What unites these traditions is not superstition, but seriousness. Each offers a way to preserve moral agency in a world that does not promise control. Storytelling becomes ethical infrastructure: a way to act responsibly without demanding certainty.
+What unites these traditions is not superstition, but seriousness. Each
+offers a way to preserve moral agency in a world that does not promise
+control. Storytelling becomes ethical infrastructure: a way to act
+responsibly without demanding certainty.
 
-Probability enters history much later, alongside navigation, commerce, insurance, and the modern state. It is no accident that probability theory develops where uncertainty becomes something to be *managed* rather than appeased. Early probabilists were not cloistered philosophers. They were sailors, merchants, gamblers, insurers—people who needed to act without guarantees.
+Probability enters history much later, alongside navigation, commerce,
+insurance, and the modern state. It is no accident that probability
+theory develops where uncertainty becomes something to be *managed*
+rather than appeased. Early probabilists were not cloistered
+philosophers. They were sailors, merchants, gamblers, insurers—people
+who needed to act without guarantees.
 
-Probability does not tell a story about why things happen. It refuses intention. Instead, it asks a question that feels almost offensively thin: how often does something like this happen when the same conditions repeat?
+Probability does not tell a story about why things happen. It refuses
+intention. Instead, it asks a question that feels almost offensively
+thin: how often does something like this happen when the same conditions
+repeat?
 
-This move changes everything. Fate becomes frequency. Destiny dissolves into distribution.
+This move changes everything. Fate becomes frequency. Destiny dissolves
+into distribution.
 
-For the first time, it becomes possible to say—cleanly, without apology—that a decision can be good even when the outcome is bad. A ship can be well navigated and still sink. A physician can follow best practice and still lose a patient. A poker player can make the correct play and watch their stack disappear. Probability creates space between judgment of action and judgment of result.
+For the first time, it becomes possible to say—cleanly, without
+apology—that a decision can be good even when the outcome is bad. A ship
+can be well navigated and still sink. A physician can follow best
+practice and still lose a patient. A poker player can make the correct
+play and watch their stack disappear. Probability creates space between
+judgment of action and judgment of result.
 
-But this clarity comes with unease. Probability explains patterns, not moments. It tells us that losses are inevitable somewhere, sometime—but never why *this* loss happened *now*. It offers coherence without consolation.
+But this clarity comes with unease. Probability explains patterns, not
+moments. It tells us that losses are inevitable somewhere, sometime—but
+never why *this* loss happened *now*. It offers coherence without
+consolation.
 
-More unsettling still, probability draws boundaries around what can be said at all. To assign probabilities consistently, mathematicians must restrict which collections of outcomes count as legitimate events. When outcomes vary continuously, there exist infinitely many imaginable questions for which no probability can be assigned—not because we lack data, but because no assignment can be made without contradiction. Probability insists on discipline. Some questions are simply unmeasurable.
+More unsettling still, probability draws boundaries around what can be
+said at all. To assign probabilities consistently, mathematicians must
+restrict which collections of outcomes count as legitimate events. When
+outcomes vary continuously, there exist infinitely many imaginable
+questions for which no probability can be assigned—not because we lack
+data, but because no assignment can be made without contradiction.
+Probability insists on discipline. Some questions are simply
+unmeasurable.
 
-This is not a technical inconvenience. It is a philosophical stance. Probability acknowledges, at its foundations, that uncertainty cannot be fully domesticated. Some questions resist quantification not because they are profound, but because they are incoherent.
+This is not a technical inconvenience. It is a philosophical stance.
+Probability acknowledges, at its foundations, that uncertainty cannot be
+fully domesticated. Some questions resist quantification not because
+they are profound, but because they are incoherent.
 
-Here, mathematics echoes older wisdom. Religious traditions have long marked boundaries around explanation. Some questions were reserved for myth, ritual, or silence. Not every uncertainty was meant to be resolved. Meaning was preserved not by answering everything, but by knowing when not to ask.
+Here, mathematics echoes older wisdom. Religious traditions have long
+marked boundaries around explanation. Some questions were reserved for
+myth, ritual, or silence. Not every uncertainty was meant to be
+resolved. Meaning was preserved not by answering everything, but by
+knowing when not to ask.
 
-Modern science sharpens this discomfort further. In quantum physics, uncertainty is not ignorance. It is built into reality. Outcomes are not hidden behind missing information; they are genuinely indeterminate. The universe does not know the answer in advance. It offers likelihoods, not narratives.
+Modern science sharpens this discomfort further. In quantum physics,
+uncertainty is not ignorance. It is built into reality. Outcomes are not
+hidden behind missing information; they are genuinely indeterminate. The
+universe does not know the answer in advance. It offers likelihoods, not
+narratives.
 
-Poker lives precisely at this fault line. One hand demands a story. Ten thousand hands erase it. Probability does not deny the drama of the river card. It denies its authority as explanation.
+Poker lives precisely at this fault line. One hand demands a story. Ten
+thousand hands erase it. Probability does not deny the drama of the
+river card. It denies its authority as explanation.
 
-What probabilistic thinking ultimately offers is not certainty, and not meaning in the old sense. It offers restraint. It teaches us how confident to be, when to trust stories, and when to resist them. It shifts responsibility away from outcomes we cannot control and toward reasoning we can examine.
+What probabilistic thinking ultimately offers is not certainty, and not
+meaning in the old sense. It offers restraint. It teaches us how
+confident to be, when to trust stories, and when to resist them. It
+shifts responsibility away from outcomes we cannot control and toward
+reasoning we can examine.
 
-And at its deepest level, probability makes a final, austere admission. Even its own language must be limited. A measure space does not describe everything that can be imagined. It describes only what can be spoken about coherently. The rest—however tempting—must be left unmeasured.
+And at its deepest level, probability makes a final, austere admission.
+Even its own language must be limited. A measure space does not describe
+everything that can be imagined. It describes only what can be spoken
+about coherently. The rest—however tempting—must be left unmeasured.
 
-For all our mathematics, we remain close to the ancients. We still do not know why misfortune chooses one person and not another. Probability has helped us understand uncertainty, manage it, and live with it more honestly. It has not banished it.
+For all our mathematics, we remain close to the ancients. We still do
+not know why misfortune chooses one person and not another. Probability
+has helped us understand uncertainty, manage it, and live with it more
+honestly. It has not banished it.
 
-What it offers instead is discipline. Not a story that comforts, but a framework that restrains. Not certainty, but a way of acting responsibly in a world that will never promise it.
-
+What it offers instead is discipline. Not a story that comforts, but a
+framework that restrains. Not certainty, but a way of acting responsibly
+in a world that will never promise it.
 
 ## Homework Problems
 
-1. Let $\Omega$ be the set of all 5-card hands dealt from a standard 52-card deck.  
-   Define $\mathbb{P}(H)=1/\binom{52}{5}$ for each $H\in\Omega$.  
-   Prove that this defines a probability measure on $\Omega$.
+1.  Let $\Omega$ be the set of all 5-card hands dealt from a standard
+    52-card deck.\
+    Define $\mathbb{P}(H)=1/\binom{52}{5}$ for each $H\in\Omega$.\
+    Prove that this defines a probability measure on $\Omega$.
 
-2. Let $\mathcal{A}$ be the event that a 5-card hand contains at least one ace.  
-   Compute $\mathbb{P}(\mathcal{A})$ exactly.
+2.  Let $\mathcal{A}$ be the event that a 5-card hand contains at least
+    one ace.\
+    Compute $\mathbb{P}(\mathcal{A})$ exactly.
 
-3. Let $\mathcal{B}$ be the event that a 5-card hand contains exactly two aces.  
-   Compute $\mathbb{P}(\mathcal{B})$ and verify that $\mathbb{P}(\mathcal{B})<\mathbb{P}(\mathcal{A})$.
+3.  Let $\mathcal{B}$ be the event that a 5-card hand contains exactly
+    two aces.\
+    Compute $\mathbb{P}(\mathcal{B})$ and verify that
+    $\mathbb{P}(\mathcal{B})<\mathbb{P}(\mathcal{A})$.
 
-4. Partition the set of all 5-card hands into standard hand-ranking categories.  
-   Prove that the induced probability distribution on these categories is not uniform.
+4.  Partition the set of all 5-card hands into standard hand-ranking
+    categories.\
+    Prove that the induced probability distribution on these categories
+    is not uniform.
 
-5. Prove the following general statement:  
-   If a finite sample space is equipped with a uniform probability measure and is partitioned into events of unequal size, then the induced distribution on the partition is non-uniform.
+5.  Prove the following general statement:\
+    If a finite sample space is equipped with a uniform probability
+    measure and is partitioned into events of unequal size, then the
+    induced distribution on the partition is non-uniform.
 
-6. Two players are dealt disjoint 5-card hands from the same deck.  
-   Let $A$ be the event that Player 1 is dealt pocket aces and $B$ the event that Player 2 is dealt pocket kings.  
-   Compute $\mathbb{P}(A\cap B)$ and prove that $A$ and $B$ are not independent.
+6.  Two players are dealt disjoint 5-card hands from the same deck.\
+    Let $A$ be the event that Player 1 is dealt pocket aces and $B$ the
+    event that Player 2 is dealt pocket kings.\
+    Compute $\mathbb{P}(A\cap B)$ and prove that $A$ and $B$ are not
+    independent.
 
-7. Generalize the previous problem to $n$ players seated at the same table.  
-   Derive a formula for the probability that *exactly one* player is dealt pocket aces.
+7.  Generalize the previous problem to $n$ players seated at the same
+    table.\
+    Derive a formula for the probability that *exactly one* player is
+    dealt pocket aces.
 
-8. In Texas Hold’em, suppose the board is fixed.  
-   Construct explicitly the sample space of all possible opponent hole-card pairs and define a uniform probability measure on this space.
+8.  In Texas Hold’em, suppose the board is fixed.\
+    Construct explicitly the sample space of all possible opponent
+    hole-card pairs and define a uniform probability measure on this
+    space.
 
-9. For a fixed board and a fixed player hand, describe precisely the event that an opponent’s hand is strictly stronger.  
-   Prove that this event can be written as a disjoint union of simpler events.
+9.  For a fixed board and a fixed player hand, describe precisely the
+    event that an opponent’s hand is strictly stronger.\
+    Prove that this event can be written as a disjoint union of simpler
+    events.
 
-10. Compute the probability that a randomly dealt opponent hand beats a fixed one-pair hand on a given board.
+10. Compute the probability that a randomly dealt opponent hand beats a
+    fixed one-pair hand on a given board.
 
-11. Suppose a player chooses a bet size uniformly at random from the interval $[0,P]$.  
-    Compute the probability that the bet lies between $\tfrac{1}{3}P$ and $\tfrac{2}{3}P$.
+11. Suppose a player chooses a bet size uniformly at random from the
+    interval $[0,P]$.\
+    Compute the probability that the bet lies between $\tfrac{1}{3}P$
+    and $\tfrac{2}{3}P$.
 
-12. Suppose instead that bet sizes are chosen with density
-    $$
+12. Suppose instead that bet sizes are chosen with density $$
     f(x)=\frac{2x}{P^2}, \quad 0\le x\le P.
-    $$
-    Verify that $f$ is a valid density and compute the probability that the bet exceeds $\tfrac{2}{3}P$.
+    $$ Verify that $f$ is a valid density and compute the probability
+    that the bet exceeds $\tfrac{2}{3}P$.
 
-13. Prove that under any continuous betting model on an interval, the probability of choosing *exactly* one specific bet size is zero.
+13. Prove that under any continuous betting model on an interval, the
+    probability of choosing *exactly* one specific bet size is zero.
 
-14. Construct two distinct probability density functions on $[0,1]$ that assign the same probability to the interval $[0.4,0.6]$, and verify this by direct computation.
+14. Construct two distinct probability density functions on $[0,1]$ that
+    assign the same probability to the interval $[0.4,0.6]$, and verify
+    this by direct computation.
 
-15. A diagnostic test produces a continuous measurement modeled by a density $f(x)$.  
-    Thresholds $a<b$ classify results as negative, borderline, or positive.  
-    Write explicit integral expressions for the probability of each classification and prove that they sum to 1.
+15. A diagnostic test produces a continuous measurement modeled by a
+    density $f(x)$.\
+    Thresholds $a<b$ classify results as negative, borderline, or
+    positive.\
+    Write explicit integral expressions for the probability of each
+    classification and prove that they sum to 1.
 
-16. Fix a density $f(x)$ and thresholds $a<b$.  
-    Prove that increasing $b$ while holding $a$ fixed strictly decreases the probability of a positive result.
+16. Fix a density $f(x)$ and thresholds $a<b$.\
+    Prove that increasing $b$ while holding $a$ fixed strictly decreases
+    the probability of a positive result.
 
-17. A manufacturing process produces parts whose lengths are normally distributed with mean $\mu$ and variance $\sigma^2$.  
-    If acceptable parts must lie within $\mu\pm 2\sigma$, compute the probability that a part is rejected.
+17. A manufacturing process produces parts whose lengths are normally
+    distributed with mean $\mu$ and variance $\sigma^2$.\
+    If acceptable parts must lie within $\mu\pm 2\sigma$, compute the
+    probability that a part is rejected.
 
-18. Suppose the acceptable interval is tightened to $\mu\pm 1.5\sigma$.  
-    Compute the new rejection probability and compare it to the previous one.
+18. Suppose the acceptable interval is tightened to $\mu\pm 1.5\sigma$.\
+    Compute the new rejection probability and compare it to the previous
+    one.
 
-19. Let incomes be modeled by a continuous density on $[0,\infty)$.  
-    Suppose tax brackets are defined by thresholds $0<t_1<t_2<t_3$.  
+19. Let incomes be modeled by a continuous density on $[0,\infty)$.\
+    Suppose tax brackets are defined by thresholds $0<t_1<t_2<t_3$.\
     Write expressions for the probability of falling into each bracket.
 
-20. Prove that shifting all tax thresholds by the same amount changes the induced distribution on brackets but leaves the underlying income model unchanged.
+20. Prove that shifting all tax thresholds by the same amount changes
+    the induced distribution on brackets but leaves the underlying
+    income model unchanged.
 
-21. Consider a continuous probability model on $[0,1]$.  
-    Let $E$ be the set of numbers whose decimal expansion does not contain the digit 7.  
-    Argue carefully whether $\mathbb{P}(E)$ can be computed within this model.
+21. Consider a continuous probability model on $[0,1]$.\
+    Let $E$ be the set of numbers whose decimal expansion does not
+    contain the digit 7.\
+    Argue carefully whether $\mathbb{P}(E)$ can be computed within this
+    model.
 
-22. Let $X$ be a continuous outcome modeled on $[0,1]$.  
-    Prove that knowing $\mathbb{P}(X\in[a,b])$ for all intervals $[a,b]$ uniquely determines the probability of any finite union of intervals.
+22. Let $X$ be a continuous outcome modeled on $[0,1]$.\
+    Prove that knowing $\mathbb{P}(X\in[a,b])$ for all intervals $[a,b]$
+    uniquely determines the probability of any finite union of
+    intervals.
 
-23. Two poker strategies lead to the same probability of winning a hand, but differ in how often they win large pots versus small pots.  
-    Construct a simple probabilistic model illustrating this distinction.
+23. Two poker strategies lead to the same probability of winning a hand,
+    but differ in how often they win large pots versus small pots.\
+    Construct a simple probabilistic model illustrating this
+    distinction.
 
-24. In the model from the previous problem, compute the probability of winning at least once over $n$ independent hands.
+24. In the model from the previous problem, compute the probability of
+    winning at least once over $n$ independent hands.
 
-25. Show that two strategies with the same probability of winning a single hand can produce different distributions of total winnings over many hands.
+25. Show that two strategies with the same probability of winning a
+    single hand can produce different distributions of total winnings
+    over many hands.
 
-26. Construct a poker-based example in which a strategy with lower single-hand win probability produces better long-run outcomes under repeated play.
+26. Construct a poker-based example in which a strategy with lower
+    single-hand win probability produces better long-run outcomes under
+    repeated play.
 
-27. Let $p\in(0,1)$ be the probability of success of a fixed decision.  
-    Compute the probability of observing exactly $k$ successes in $n$ repetitions.
+27. Let $p\in(0,1)$ be the probability of success of a fixed decision.\
+    Compute the probability of observing exactly $k$ successes in $n$
+    repetitions.
 
-28. Using the previous problem, compute the probability of observing *fewer* successes than expected after $n$ repetitions.
+28. Using the previous problem, compute the probability of observing
+    *fewer* successes than expected after $n$ repetitions.
 
-29. Explain, using a concrete poker or medical example, why short-term outcomes are a poor guide to decision quality, even when probabilities are known exactly.
+29. Explain, using a concrete poker or medical example, why short-term
+    outcomes are a poor guide to decision quality, even when
+    probabilities are known exactly.
 
-30. Consider a probabilistic model in which some intuitively meaningful questions cannot be assigned probabilities consistently.  
-    Construct a specific example from poker, betting, or measurement, and explain precisely what goes wrong.
+30. Consider a probabilistic model in which some intuitively meaningful
+    questions cannot be assigned probabilities consistently.\
+    Construct a specific example from poker, betting, or measurement,
+    and explain precisely what goes wrong.
 
 ## Extension Activities
 
 ### Extension Activity 1: Mixed Distributions for Betting Decisions
 
-Poker betting decisions are often described using discrete language—*fold*, *call*, *raise*—yet at least one of these actions (raising) involves a continuum of possible values. This activity asks you to construct a probabilistic model that blends discrete and continuous outcomes into a single coherent framework.
+Poker betting decisions are often described using discrete
+language—*fold*, *call*, *raise*—yet at least one of these actions
+(raising) involves a continuum of possible values. This activity asks
+you to construct a probabilistic model that blends discrete and
+continuous outcomes into a single coherent framework.
 
 #### Framework
 
 Consider a player facing a betting decision with stack size $S > 0$.
 
-1. Model the decision space as consisting of three actions:
-   - folding,
-   - calling,
-   - raising.
+1.  Model the decision space as consisting of three actions:
 
-2. Assign probabilities $p_F$, $p_C$, and $p_R$ to these actions, where
-   $$
-   p_F + p_C + p_R = 1.
-   $$
+    -   folding,
+    -   calling,
+    -   raising.
 
-3. Conditional on choosing to raise, model the raise size as a random variable taking values in the interval $(0,S]$.  
-   Choose a probability density function $f(x)$ on $(0,S]$ to represent raise sizes.
+2.  Assign probabilities $p_F$, $p_C$, and $p_R$ to these actions, where
+    $$
+    p_F + p_C + p_R = 1.
+    $$
 
-4. Combine the discrete action probabilities and the continuous raise-size distribution into a single probabilistic description of the betting decision.
+3.  Conditional on choosing to raise, model the raise size as a random
+    variable taking values in the interval $(0,S]$.\
+    Choose a probability density function $f(x)$ on $(0,S]$ to represent
+    raise sizes.
+
+4.  Combine the discrete action probabilities and the continuous
+    raise-size distribution into a single probabilistic description of
+    the betting decision.
 
 #### Tasks
 
-- Write down explicitly the probability assigned to:
-  - folding,
-  - calling,
-  - raising by an amount in an interval $[a,b]\subseteq(0,S]$.
-- Verify that your construction assigns total probability 1 to all possible actions.
-- Explore at least two different choices of $f(x)$ (for example, uniform, increasing, decreasing) and describe how they change the behavior of the model.
-- Explain how this framework reflects the mathematical distinction between discrete and continuous distributions while allowing them to coexist in a single model.
+-   Write down explicitly the probability assigned to:
+    -   folding,
+    -   calling,
+    -   raising by an amount in an interval $[a,b]\subseteq(0,S]$.
+-   Verify that your construction assigns total probability 1 to all
+    possible actions.
+-   Explore at least two different choices of $f(x)$ (for example,
+    uniform, increasing, decreasing) and describe how they change the
+    behavior of the model.
+-   Explain how this framework reflects the mathematical distinction
+    between discrete and continuous distributions while allowing them to
+    coexist in a single model.
 
 #### Open Directions
 
-- How might the probabilities $p_F$, $p_C$, and $p_R$ depend on stack size, pot size, or position?
-- How could this framework be extended to include minimum raise constraints?
-- What aspects of real betting behavior does your model capture, and what does it deliberately ignore?
+-   How might the probabilities $p_F$, $p_C$, and $p_R$ depend on stack
+    size, pot size, or position?
+-   How could this framework be extended to include minimum raise
+    constraints?
+-   What aspects of real betting behavior does your model capture, and
+    what does it deliberately ignore?
 
----
+------------------------------------------------------------------------
 
 ### Extension Activity 2: Why Full Houses Appear More Often in Texas Hold’em
 
-Players often report seeing full houses far more frequently in Texas Hold’em than in 5-card draw, even though both games use the same deck. This activity asks you to analyze this phenomenon from two perspectives: raw probability and selective participation.
+Players often report seeing full houses far more frequently in Texas
+Hold’em than in 5-card draw, even though both games use the same deck.
+This activity asks you to analyze this phenomenon from two perspectives:
+raw probability and selective participation.
 
 #### Framework
 
-1. Begin by computing or citing the probability of being dealt a full house in 5-card draw under uniform dealing.
+1.  Begin by computing or citing the probability of being dealt a full
+    house in 5-card draw under uniform dealing.
 
-2. In Texas Hold’em, model the process of forming a full house by considering:
-   - two private cards,
-   - five shared community cards,
-   - all 7-card combinations available to a player.
+2.  In Texas Hold’em, model the process of forming a full house by
+    considering:
 
-3. Define precisely what it means for a player to *have* a full house in each game.
+    -   two private cards,
+    -   five shared community cards,
+    -   all 7-card combinations available to a player.
+
+3.  Define precisely what it means for a player to *have* a full house
+    in each game.
 
 #### Tasks
 
-- Compare the raw probabilities of forming a full house in 5-card draw and Texas Hold’em, assuming all hands are dealt to completion.
-- Explain how the larger sample space of 7-card hands affects the induced distribution on hand categories.
-- Introduce a simple model of betting and folding in Texas Hold’em:
-  - specify at least one rule under which players may exit the hand before all cards are revealed.
-- Analyze how selective folding changes the distribution of observed hands at showdown.
-- Argue mathematically why full houses may appear more frequently among hands that reach the final betting round, even if their unconditional probability remains low.
+-   Compare the raw probabilities of forming a full house in 5-card draw
+    and Texas Hold’em, assuming all hands are dealt to completion.
+-   Explain how the larger sample space of 7-card hands affects the
+    induced distribution on hand categories.
+-   Introduce a simple model of betting and folding in Texas Hold’em:
+    -   specify at least one rule under which players may exit the hand
+        before all cards are revealed.
+-   Analyze how selective folding changes the distribution of observed
+    hands at showdown.
+-   Argue mathematically why full houses may appear more frequently
+    among hands that reach the final betting round, even if their
+    unconditional probability remains low.
 
 #### Open Directions
 
-- How does conditioning on “hands that reach showdown” alter the effective probability space?
-- How might different folding models (tight vs. loose play) change observed hand frequencies?
-- In what sense does this analysis illustrate the difference between *what exists* in the sample space and *what is observed*?
+-   How does conditioning on “hands that reach showdown” alter the
+    effective probability space?
+-   How might different folding models (tight vs. loose play) change
+    observed hand frequencies?
+-   In what sense does this analysis illustrate the difference between
+    *what exists* in the sample space and *what is observed*?
 
----
+------------------------------------------------------------------------
 
 ### Closing Reflection (Optional)
 
-Both activities highlight a central theme of this chapter: probability distributions depend not only on randomness, but on structure, modeling choices, and selection. Poker provides a vivid laboratory for exploring how probability is shaped by decisions as much as by chance.
-
+Both activities highlight a central theme of this chapter: probability
+distributions depend not only on randomness, but on structure, modeling
+choices, and selection. Poker provides a vivid laboratory for exploring
+how probability is shaped by decisions as much as by chance.
