@@ -34,45 +34,413 @@ A call looks unprofitable immediately, but it keeps open future betting opportun
 - Situation: A call looks unprofitable immediately, but it keeps open future betting opportunities that can make the overall line profitable.
 - Why it matters: this introduces 1 Expected Value (EV), 4 Equity and Realization.
 
-## Mathematical Framework and Poker Theory
+# Expected Value in Multi-Stage Decisions
 
-### Roadmap
+## Motivating Example
 
-- Decision trees for poker streets
-- Conditional expectation along the tree
-- Pot odds and break-even thresholds
-- Equity realization across streets
+A poker hand is rarely a single decision. Even the simplest description — *“I bet the flop and got called”* — conceals a structured sequence of events:
 
-### Definitions
+- cards are revealed over time,
+- information accumulates,
+- decisions are made under uncertainty,
+- a payoff is realized only at the end.
 
-**expected value of an action.** *[Definition.]*
+At showdown, the outcome of the hand is a single number: the number of chips won or lost. But long before that outcome is known, players must evaluate whether continuing is worthwhile. What they are really evaluating is **expected value**, conditioned on what is known *so far*.
 
-**conditional expectation.** *[Definition.]*
+Two phrases commonly heard at a poker table point toward a mathematical distinction:
 
-**break-even probability.** *[Definition.]*
+- “I had good equity.”
+- “That was a positive expected value decision.”
 
-**equity.** *[Definition.]*
+These statements are related, but they are not equivalent. Equity refers to the probability of winning under fixed conditions. Expected value refers to the average payoff of a *decision*, accounting for future randomness and future choices. The difference between these ideas only becomes clear when decisions unfold across time.
 
-### Core concepts
+This chapter develops a mathematical framework for expected value in **multi-stage decision problems**, using poker hands as a concrete setting. Poker provides intuition and examples; the mathematics supplies structure and precision.
 
-- decision trees
-- multi-stage uncertainty
-- threshold decision rules
-- equity realization
+Throughout the chapter we will return to two running examples.
 
-### Core results
+### Running Example A: A Drawing Hand with No Further Betting
 
-**law of total expectation (total expectation).** *[Statement / proof placeholder.]*
+A player reaches the flop holding a drawing hand (for instance, four cards to a flush). From this point onward, no further betting is allowed. The hand proceeds directly to the turn and river, and then to showdown.
 
-**dominance principle (informal).** *[Statement / proof placeholder.]*
+In this example:
+- there are no remaining decisions,
+- uncertainty comes only from future cards,
+- value depends entirely on probability.
 
-### Worked example ideas
+This example isolates the idea of **equity** and introduces conditional expectation without strategic branching.
 
-- Turn decision with river consequences; compute EV by conditioning on river outcomes
+### Running Example B: A Flop Bet with a Single Response
 
-### Computation notes
+A player reaches the flop and must choose between two actions:
 
-['Monte Carlo to estimate multi-street EV when the tree is large']
+- **check**, ending the hand immediately,
+- **bet** a fixed amount \( b \).
+
+If the player bets, the opponent responds by either **folding** or **calling**. No raises are allowed. If the opponent calls, the hand proceeds directly to showdown with no further betting.
+
+This example introduces:
+- decision nodes,
+- simplified modeling choices,
+- expected value that depends on policy rather than probability alone.
+
+Both examples are deliberately simplified. They are not meant to describe poker as it is played in practice. They are models designed to make mathematical structure visible.
+
+---
+
+## Decision Trees as Mathematical Objects
+
+A **decision tree** is a rooted directed tree that represents a sequential process involving both randomness and choice.
+
+Each node of the tree is one of three types:
+
+- **Chance nodes**, where outcomes occur randomly according to specified probabilities.
+- **Decision nodes**, where a player chooses among available actions.
+- **Terminal nodes**, which represent the end of the process and are labeled with numerical payoffs.
+
+A **path** from the root to a terminal node represents one complete possible evolution of the hand. Before the hand is played, all such paths exist simultaneously as possibilities.
+
+In poker language, a hand corresponds to *one realized path* through the tree. In mathematical analysis, value is assigned not to the realized path, but to the entire tree.
+
+---
+
+## From Poker Reasoning to a Decision Tree
+
+Poker players routinely reason using conditional statements:
+
+- “If I bet and get called, I’m probably behind.”
+- “If I check, I’ll likely see another card.”
+- “Only a few turn cards really matter.”
+
+These statements implicitly describe branches of a tree. Turning such reasoning into mathematics is a process of *explicit modeling*.
+
+### Identifying Decision Points
+
+The first step is to identify where decisions occur.
+
+In Running Example B, there is exactly one decision point: the flop. The available actions are
+
+$$
+A = \{\text{check}, \text{bet}\}.
+$$
+
+This becomes a single decision node with two outgoing edges.
+
+In Running Example A, there are no decisions after the flop. From that point onward, the tree consists only of chance nodes.
+
+---
+
+### Identifying Chance Events
+
+Next, we identify events outside the player’s control.
+
+In both running examples, future cards are chance events. These events are represented by chance nodes whose outgoing edges correspond to possible card outcomes, each with an associated probability.
+
+In Running Example B, the opponent’s response to a bet is also modeled as a chance event. While an opponent is making a decision, from the perspective of a single-player model their action is treated probabilistically.
+
+---
+
+### Choosing the Level of Detail
+
+The full decision tree of a real poker hand is far too large to analyze directly:
+
+- bet sizes are continuous,
+- raises may occur multiple times,
+- future decisions depend on future information.
+
+Mathematical analysis requires **simplification**.
+
+In Running Example B, we make the following modeling choices:
+
+- restrict betting to a single fixed bet size \( b \),
+- allow only two opponent responses (fold or call),
+- prohibit further betting after the call.
+
+These choices reduce an intractable tree to a finite one. The resulting tree does not describe poker exhaustively; it describes a *model* of a poker situation.
+
+Simplification is not a loss of rigor. It is the act of defining a precise mathematical object.
+
+---
+
+### Discrete and Continuous Choices
+
+Some actions in poker are naturally discrete:
+
+- fold,
+- call,
+- check.
+
+Other choices, such as bet size, are inherently continuous. A full mathematical treatment would require optimization over a continuum.
+
+In this chapter, continuous choices are discretized. We replace a continuous range of bet sizes with a finite set of representative actions. This allows us to focus on expected value and conditional expectation without introducing unnecessary technical complications.
+
+The resulting decision trees are **mixed**:
+- discrete chance outcomes,
+- discrete decisions,
+- discretized continuous actions.
+
+---
+
+### Assigning Payoffs
+
+Each terminal node of the tree is assigned a numerical payoff. This payoff represents the net change in chips relative to the current state of the hand.
+
+Once payoffs are assigned, the poker hand has been transformed into a purely mathematical object:
+
+- a finite set of paths,
+- probabilities attached to chance branches,
+- numerical payoffs at terminal nodes.
+
+From this point forward, the analysis is mathematical rather than narrative.
+
+---
+
+## From Trees to Probability Spaces
+
+Let \( \Omega \) denote the set of all terminal paths in the modeled decision tree. Each element of \( \Omega \) represents one complete evolution of the hand under the model.
+
+We define a probability measure on \( \Omega \) by multiplying probabilities along chance branches. This turns \( \Omega \) into a probability space.
+
+The terminal payoff defines a random variable
+
+$$
+X : \Omega \to \mathbb{R}.
+$$
+
+Although the realized value of \( X \) is unknown until the hand ends, the random variable itself is fixed once the model is specified.
+## Information and Conditional Expectation
+
+The random variable \( X \) encodes the final payoff of the hand, but it does not by itself tell us how to reason *during* the hand. At the moment a decision must be made, the value of \( X \) is unknown, and different futures remain possible. What matters is not the eventual realization of \( X \), but its behavior **conditioned on what is currently known**.
+
+This is the role of conditional expectation.
+
+### Information as a Mathematical Object
+
+As a hand unfolds, information accumulates. Cards are revealed, bets are made, and some paths through the decision tree are eliminated.
+
+Mathematically, this accumulation of information is represented by a growing family of σ-algebras
+
+$$
+\mathcal{F}_0 \subseteq \mathcal{F}_1 \subseteq \cdots \subseteq \mathcal{F}.
+$$
+
+Here:
+- \( \mathcal{F}_0 \) represents the information available at the initial decision point,
+- \( \mathcal{F}_t \) represents everything known after stage \( t \),
+- \( \mathcal{F} \) contains all information revealed by the end of the hand.
+
+Each σ-algebra corresponds to a *coarsening* of the decision tree: knowing \( \mathcal{F}_t \) means knowing which nodes of the tree remain possible, but not which terminal path will ultimately occur.
+
+---
+
+### Conditional Expectation as Value Given Information
+
+The conditional expectation of \( X \) given \( \mathcal{F}_t \),
+
+$$
+V_t = \mathbb{E}[X \mid \mathcal{F}_t],
+$$
+
+is a new random variable. Its value depends on the information state, not on the eventual outcome.
+
+Conceptually, \( V_t \) answers the question:
+
+> “Given everything I know *right now*, what is the average payoff of this hand?”
+
+This quantity is often called the **continuation value**. It assigns a numerical value to each information set in the decision tree.
+
+---
+
+### Conditional Expectation on a Finite Tree
+
+Because our modeled decision trees are finite, conditional expectation can be computed directly and concretely.
+
+Fix an information set corresponding to a node (or collection of indistinguishable nodes) in the tree. To compute \( \mathbb{E}[X \mid \mathcal{F}_t] \) at that node:
+
+1. List all terminal nodes reachable from that point.
+2. For each terminal node, record its payoff.
+3. Weight each payoff by the conditional probability of reaching that terminal node.
+4. Sum the weighted payoffs.
+
+This procedure makes precise the intuitive idea of “averaging over the remaining possibilities.”
+
+---
+
+## Equity Revisited: A Special Conditional Expectation
+
+Equity is often introduced informally as the probability of winning a hand. Within the present framework, it emerges naturally as a special case of conditional expectation.
+
+Let
+
+$$
+W = \{\text{the player wins at showdown}\}.
+$$
+
+The indicator random variable \( \mathbf{1}_W \) takes value 1 if the player wins and 0 otherwise. The **equity at time \( t \)** is defined by
+
+$$
+\text{Equity}_t = \mathbb{E}[\mathbf{1}_W \mid \mathcal{F}_t].
+$$
+
+Thus equity is a conditional expectation, but of a *binary* payoff rather than a numerical one.
+
+This framing clarifies an important point:
+
+- Equity depends only on chance events and current information.
+- Equity ignores costs, betting structure, and future decisions.
+
+Equity describes *how often* a hand will win, not *how valuable* continuing the hand will be.
+
+---
+
+### Running Example A: Equity as Complete Information
+
+In Running Example A, no further betting occurs after the flop. The only uncertainty lies in the turn and river cards.
+
+Suppose the player holds a four-card flush draw on the flop. There are 47 unseen cards, of which 9 complete the flush. The probability that the flush completes by the river is
+
+$$
+1 - \frac{38}{47} \cdot \frac{37}{46}.
+$$
+
+This quantity is exactly the player’s equity on the flop.
+
+Because there are no future decisions and no additional costs, the continuation value of the hand is determined entirely by this probability. In this special case, equity and expected value coincide.
+
+This example is pedagogically important precisely because it is atypical. It shows how simple the mathematics becomes *when decisions are absent*.
+
+---
+
+## Expected Value Beyond Equity
+
+Most poker situations are not like Running Example A. Betting decisions introduce costs, rewards, and optionality. Expected value must account for all of these.
+
+The continuation value
+
+$$
+V_t = \mathbb{E}[X \mid \mathcal{F}_t]
+$$
+
+averages final payoffs, not just wins and losses. It incorporates:
+- the size of the pot,
+- the cost of bets,
+- the possibility of opponents folding,
+- and the structure of future play.
+
+Equity is one ingredient in this calculation, but it is rarely sufficient by itself.
+
+---
+
+### Running Example B: When Equity Is Not Enough
+
+Consider Running Example B. Suppose:
+- the current pot size is \( P \),
+- the player may bet \( b \),
+- if the player bets, the opponent folds with probability \( f \),
+- if the opponent calls, the player’s equity at showdown is \( e \).
+
+If the player checks, the hand ends immediately with payoff \( 0 \).
+
+If the player bets, the final payoff depends on the opponent’s response and the showdown outcome.
+
+The expected value of betting is
+
+$$
+f \cdot P
++ (1 - f)\left[ e(P + b) - (1 - e)b \right].
+$$
+
+This expression combines:
+- fold equity \( f \),
+- showdown equity \( e \),
+- pot size \( P \),
+- and bet size \( b \).
+
+A hand with low equity \( e \) can still justify a bet if the probability of folding \( f \) is large enough. Conversely, a hand with high equity may not justify a bet if the cost is too high.
+
+This example shows why equity and expected value must be kept conceptually distinct.
+
+---
+
+## The Tower Property and Multi-Stage Consistency
+
+Conditional expectation satisfies the **tower property**, also called the law of iterated expectation:
+
+$$
+\mathbb{E}\left[ \mathbb{E}[X \mid \mathcal{F}_{t+1}] \mid \mathcal{F}_t \right]
+= \mathbb{E}[X \mid \mathcal{F}_t].
+$$
+
+This identity ensures that evaluating a hand in stages is consistent.
+
+In poker terms:
+- evaluating the value after seeing the turn,
+- and then averaging over all possible turns,
+
+leads to the same value as evaluating directly from the flop.
+
+The tower property is what allows players to reason locally while remaining globally coherent.
+
+---
+
+## Policies and Backward Induction
+
+At a decision node, the player must choose an action. A **policy** specifies which action to take at every information set the player may reach.
+
+Given a policy \( \pi \), the terminal payoff becomes a random variable \( X^\pi \), and the expected value of the policy is
+
+$$
+\mathbb{E}[X^\pi].
+$$
+
+Expected value is therefore a property of *policies*, not of hands in isolation.
+
+---
+
+### Backward Induction as Rational Evaluation
+
+Backward induction evaluates the decision tree from the leaves inward.
+
+- At terminal nodes, values are known.
+- At chance nodes, values are computed by averaging.
+- At decision nodes, values are computed by maximizing.
+
+Formally, the continuation value satisfies
+
+$$
+V_t = \max_{a \in A_t} \mathbb{E}[V_{t+1} \mid \mathcal{F}_t, a].
+$$
+
+This principle gives precise mathematical meaning to the idea of “playing optimally.”
+
+---
+
+### Running Example B Revisited
+
+In Running Example B, backward induction proceeds as follows:
+
+1. Assign payoffs at showdown.
+2. Compute expected value conditional on a call.
+3. Combine with fold probability to evaluate betting.
+4. Compare the result to checking.
+
+Each step replaces intuition with calculation, without abandoning the original poker reasoning.
+
+---
+
+## A Closing Perspective on Modeling
+
+This chapter has emphasized that:
+
+- the decision tree is a model, not reality,
+- equity lives on chance structure,
+- expected value lives on decisions,
+- conditional expectation connects the two.
+
+Poker provides a vivid setting in which these distinctions matter, but the mathematics applies to any sequential decision under uncertainty.
+
+The goal is not to predict outcomes, but to evaluate decisions **before** uncertainty resolves.
+
+
 
 ## Beyond Poker
 

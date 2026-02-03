@@ -392,217 +392,302 @@ equilibrium concepts, and optimization under uncertainty.
 
 ### Expected Value and Basic Poker Quantities
 
-Several commonly used poker terms arise directly from expected value calculations. Although they are often presented as strategic heuristics, they are more accurately understood as mathematical consequences of the payoff structure of betting.
+Several commonly used poker terms arise directly from expected value
+calculations. Although they are often presented as strategic heuristics,
+they are more accurately understood as mathematical consequences of the
+payoff structure of betting.
 
----
+------------------------------------------------------------------------
 
 ### Pot Odds
 
 At a decision point on the river, suppose:
 
-- The pot before the bet is $P$.
-- An opponent bets $B$.
-- You are considering whether to call $B$.
+-   The pot before the bet is $P$.
+-   An opponent bets $B$.
+-   You are considering whether to call $B$.
 
-As shown earlier, calling induces the random variable
-$$
+As shown earlier, calling induces the random variable $$
 X_{\text{call}} =
 \begin{cases}
 P + B, & \text{with probability } p, \\
 - B, & \text{with probability } 1-p,
 \end{cases}
-$$
-where $p$ is the probability that you win at showdown.
+$$ where $p$ is the probability that you win at showdown.
 
-The expected value of the call is
-$$
+The expected value of the call is $$
 \mathbb{E}[X_{\text{call}}] = p(P+2B) - B.
 $$
 
-Calling is breakeven when $\mathbb{E}[X_{\text{call}}] = 0$, which occurs exactly when
-$$
+Calling is breakeven when $\mathbb{E}[X_{\text{call}}] = 0$, which
+occurs exactly when $$
 p = \frac{B}{P + 2B}.
 $$
 
-The quantity $\frac{B}{P + 2B}$ is called the **pot odds threshold**. It represents the minimum probability of winning required for a call to be nonnegative in expectation.
+The quantity $\frac{B}{P + 2B}$ is called the **pot odds threshold**. It
+represents the minimum probability of winning required for a call to be
+nonnegative in expectation.
 
-Pot odds are therefore not a rule of thumb, but a direct translation of expected value into a probability comparison.
+Pot odds are therefore not a rule of thumb, but a direct translation of
+expected value into a probability comparison.
 
----
+------------------------------------------------------------------------
 
 ### Minimum Defense Frequency
 
-Expected value also constrains how often a player must defend against bets in order to prevent an opponent from profiting automatically.
+Expected value also constrains how often a player must defend against
+bets in order to prevent an opponent from profiting automatically.
 
-Suppose a bettor wagers $B$ into a pot of size $P$ on the river. Consider the bettor’s expected value if the defender folds with probability $f$ and calls with probability $1-f$.
+Suppose a bettor wagers $B$ into a pot of size $P$ on the river.
+Consider the bettor’s expected value if the defender folds with
+probability $f$ and calls with probability $1-f$.
 
-- If the defender folds, the bettor wins the pot $P$.
-- If the defender calls, the bettor loses $B$ when bluffing.
+-   If the defender folds, the bettor wins the pot $P$.
+-   If the defender calls, the bettor loses $B$ when bluffing.
 
-Ignoring value hands and focusing only on bluffs, the bettor’s expected value from bluffing is
-$$
+Ignoring value hands and focusing only on bluffs, the bettor’s expected
+value from bluffing is $$
 \mathbb{E}[\text{bluff}]
 = fP - (1-f)B.
 $$
 
-For the bluff to be breakeven,
-$$
+For the bluff to be breakeven, $$
 fP - (1-f)B = 0.
 $$
 
-Solving for $f$ gives
-$$
+Solving for $f$ gives $$
 f = \frac{B}{P + B}.
 $$
 
-Thus, if the defender folds more than $\frac{B}{P+B}$ of the time, the bettor’s bluffs are profitable regardless of hand strength.
+Thus, if the defender folds more than $\frac{B}{P+B}$ of the time, the
+bettor’s bluffs are profitable regardless of hand strength.
 
-The complementary quantity,
-$$
+The complementary quantity, $$
 1 - f = \frac{P}{P + B},
-$$
-is known as the **minimum defense frequency**. It is the fraction of the defender’s range that must continue (by calling or raising) to ensure that the opponent cannot profit by bluffing automatically.
+$$ is known as the **minimum defense frequency**. It is the fraction of
+the defender’s range that must continue (by calling or raising) to
+ensure that the opponent cannot profit by bluffing automatically.
 
----
+------------------------------------------------------------------------
 
 ### Interpretation
 
-Pot odds and minimum defense frequency are not strategic prescriptions. They are constraints imposed by expected value.
+Pot odds and minimum defense frequency are not strategic prescriptions.
+They are constraints imposed by expected value.
 
-- Pot odds describe when a *call* is justified given a fixed bet.
-- Minimum defense frequency describes how often a *defense* must occur to prevent exploitation.
+-   Pot odds describe when a *call* is justified given a fixed bet.
+-   Minimum defense frequency describes how often a *defense* must occur
+    to prevent exploitation.
 
-Both arise from the same underlying principle: a decision is evaluated by the random variable it induces, not by the outcome that happens to occur.
+Both arise from the same underlying principle: a decision is evaluated
+by the random variable it induces, not by the outcome that happens to
+occur.
 
-These quantities will reappear later in the text when we study equilibrium behavior and mixed strategies, where expected value is balanced across multiple actions.
-
-
+These quantities will reappear later in the text when we study
+equilibrium behavior and mixed strategies, where expected value is
+balanced across multiple actions.
 
 ## Beyond Poker
 
 Election Forecasting as Random Variables: A Model-Based View
 
-Modern election forecasting, most prominently associated with Nate Silver, treats elections not as events to be predicted with certainty, but as systems governed by uncertainty. The central object of study is not the final outcome itself, but the range of outcomes that remain plausible once all available information has been incorporated.
+Modern election forecasting, most prominently associated with Nate
+Silver, treats elections not as events to be predicted with certainty,
+but as systems governed by uncertainty. The central object of study is
+not the final outcome itself, but the range of outcomes that remain
+plausible once all available information has been incorporated.
 
-In this framework, an election result is modeled as a random variable. Polls, demographic data, and historical patterns do not determine the outcome; they shape the distribution of possibilities.
+In this framework, an election result is modeled as a random variable.
+Polls, demographic data, and historical patterns do not determine the
+outcome; they shape the distribution of possibilities.
 
 Polls as Measurements with Error
 
-Each opinion poll can be viewed as a numerical measurement of voter sentiment, subject to error. Some of this error is random, arising from finite sample sizes. Some reflects systematic features of survey design, such as likely-voter screens or consistent partisan bias.
+Each opinion poll can be viewed as a numerical measurement of voter
+sentiment, subject to error. Some of this error is random, arising from
+finite sample sizes. Some reflects systematic features of survey design,
+such as likely-voter screens or consistent partisan bias.
 
-Rather than assuming polls are exact, forecasting models treat each poll as a noisy signal. Polls that are larger, more recent, or historically reliable are given more influence than others. When many such signals are combined, the result is not a single number, but a range of plausible vote shares, centered around a most likely value.
+Rather than assuming polls are exact, forecasting models treat each poll
+as a noisy signal. Polls that are larger, more recent, or historically
+reliable are given more influence than others. When many such signals
+are combined, the result is not a single number, but a range of
+plausible vote shares, centered around a most likely value.
 
-This step mirrors a familiar move in poker: combining partial, imperfect information to form an overall assessment of the situation, while recognizing that uncertainty remains.
+This step mirrors a familiar move in poker: combining partial, imperfect
+information to form an overall assessment of the situation, while
+recognizing that uncertainty remains.
 
 From Estimates to Outcomes
 
-Winning an election is a threshold event: a candidate either wins or loses. Translating uncertainty about vote share into uncertainty about outcomes requires an additional step.
+Winning an election is a threshold event: a candidate either wins or
+loses. Translating uncertainty about vote share into uncertainty about
+outcomes requires an additional step.
 
-Forecasting models address this by simulating the election many times. In each simulation, vote shares are drawn in a way that reflects the estimated uncertainty, and the resulting outcomes are recorded. After many such runs, the proportion of simulations in which a candidate wins is reported as their chance of victory.
+Forecasting models address this by simulating the election many times.
+In each simulation, vote shares are drawn in a way that reflects the
+estimated uncertainty, and the resulting outcomes are recorded. After
+many such runs, the proportion of simulations in which a candidate wins
+is reported as their chance of victory.
 
-If a candidate wins in 65% of simulated elections, the forecast reports a 65% chance of winning—not as a guarantee, but as a summary of how often that outcome appears across the range of modeled possibilities.
+If a candidate wins in 65% of simulated elections, the forecast reports
+a 65% chance of winning—not as a guarantee, but as a summary of how
+often that outcome appears across the range of modeled possibilities.
 
 Variance, Correlation, and Surprise
 
-A crucial insight in these models is that errors are often correlated. When polls are systematically off in one direction, they tend to be off together. This increases the likelihood of large, coordinated surprises, even when individual estimates appear precise.
+A crucial insight in these models is that errors are often correlated.
+When polls are systematically off in one direction, they tend to be off
+together. This increases the likelihood of large, coordinated surprises,
+even when individual estimates appear precise.
 
-Accounting for this correlation increases variance at the system level. It explains why elections with seemingly stable polling leads can still produce unexpected results.
+Accounting for this correlation increases variance at the system level.
+It explains why elections with seemingly stable polling leads can still
+produce unexpected results.
 
-This phenomenon has a direct analogue in poker: multiple hands that look independent may in fact be driven by the same underlying uncertainty, producing streaks and swings that surprise players who focus only on averages.
+This phenomenon has a direct analogue in poker: multiple hands that look
+independent may in fact be driven by the same underlying uncertainty,
+producing streaks and swings that surprise players who focus only on
+averages.
 
 What It Means for a Forecast to Be “Right”
 
-Forecasts are often judged by whether the most likely outcome occurs. From a mathematical perspective, this is a misunderstanding of what the model is designed to do.
+Forecasts are often judged by whether the most likely outcome occurs.
+From a mathematical perspective, this is a misunderstanding of what the
+model is designed to do.
 
-A model that assigns a 30% chance to an outcome is not refuted when that outcome occurs. It is behaving exactly as described. Over many elections, such outcomes should happen about 30% of the time.
+A model that assigns a 30% chance to an outcome is not refuted when that
+outcome occurs. It is behaving exactly as described. Over many
+elections, such outcomes should happen about 30% of the time.
 
-The same logic governs poker decisions. A play that wins 70% of the time still loses 30% of the time. When it does, the decision has not failed; the random variable has simply realized a less likely value.
+The same logic governs poker decisions. A play that wins 70% of the time
+still loses 30% of the time. When it does, the decision has not failed;
+the random variable has simply realized a less likely value.
 
 Decision Quality Over Outcome
 
-Silver’s background as a poker player shaped this way of thinking. In both poker and election forecasting, the goal is not certainty, but coherence: assigning reasonable weights to possibilities and understanding the risks involved.
+Silver’s background as a poker player shaped this way of thinking. In
+both poker and election forecasting, the goal is not certainty, but
+coherence: assigning reasonable weights to possibilities and
+understanding the risks involved.
 
-Expected value captures what tends to happen on average. Variance captures how widely reality may deviate from that average. Together, they provide a disciplined way to reason about uncertain systems—whether the stakes are chips on a table or votes in a democracy.
+Expected value captures what tends to happen on average. Variance
+captures how widely reality may deviate from that average. Together,
+they provide a disciplined way to reason about uncertain systems—whether
+the stakes are chips on a table or votes in a democracy.
 
 ## Liberal Arts Sidebar
 
 **Why Humans Hate Variance**
-  
+
 ### Why Humans Fear Variance More Than Loss
 
-Human discomfort with risk is often described as an aversion to loss. Psychological research suggests something subtler and more revealing: people are frequently reacting not to expected loss, but to **variance**.
+Human discomfort with risk is often described as an aversion to loss.
+Psychological research suggests something subtler and more revealing:
+people are frequently reacting not to expected loss, but to
+**variance**.
 
-One of the foundational results in behavioral economics, associated with the work of **:contentReference[oaicite:0]{index=0}** and **:contentReference[oaicite:1]{index=1}**, is that individuals do not evaluate outcomes solely by their average payoff. Instead, they respond strongly to the *spread* of possible outcomes and to the emotional experience of surprise.
+One of the foundational results in behavioral economics, associated with
+the work of **:contentReference[oaicite:0]{index="0"}** and
+**:contentReference[oaicite:1]{index="1"}**, is that individuals do not
+evaluate outcomes solely by their average payoff. Instead, they respond
+strongly to the *spread* of possible outcomes and to the emotional
+experience of surprise.
 
----
+------------------------------------------------------------------------
 
 ### Variance as Psychological Stress
 
-From a mathematical perspective, variance measures how far outcomes typically lie from the mean. From a psychological perspective, variance measures something closer to **emotional instability**.
+From a mathematical perspective, variance measures how far outcomes
+typically lie from the mean. From a psychological perspective, variance
+measures something closer to **emotional instability**.
 
-High-variance situations produce:
-- sharp reversals,
-- outcomes that feel inconsistent,
-- and narratives that are difficult to reconcile with expectations.
+High-variance situations produce: - sharp reversals, - outcomes that
+feel inconsistent, - and narratives that are difficult to reconcile with
+expectations.
 
-Even when two options have identical expected value, people reliably prefer the option with lower variance. This preference appears across domains:
-- finance (preference for bonds over stocks),
-- medicine (preference for treatments with predictable outcomes),
-- and everyday decision-making (steady income over uncertain windfalls).
+Even when two options have identical expected value, people reliably
+prefer the option with lower variance. This preference appears across
+domains: - finance (preference for bonds over stocks), - medicine
+(preference for treatments with predictable outcomes), - and everyday
+decision-making (steady income over uncertain windfalls).
 
-In poker, this manifests as a preference for “safe” lines—checking rather than betting, folding rather than calling—even when those lines are inferior in expectation.
+In poker, this manifests as a preference for “safe” lines—checking
+rather than betting, folding rather than calling—even when those lines
+are inferior in expectation.
 
----
+------------------------------------------------------------------------
 
 ### Loss Aversion Is Often Variance Aversion
 
-Loss aversion is commonly described as the idea that losses hurt more than gains of the same size feel good. But many experimental results attributed to loss aversion can be reinterpreted as **variance aversion**.
+Loss aversion is commonly described as the idea that losses hurt more
+than gains of the same size feel good. But many experimental results
+attributed to loss aversion can be reinterpreted as **variance
+aversion**.
 
-A decision with high variance produces:
-- vivid negative outcomes,
-- memorable failures,
-- and post hoc regret.
+A decision with high variance produces: - vivid negative outcomes, -
+memorable failures, - and post hoc regret.
 
-By contrast, low-variance decisions produce outcomes that feel “reasonable,” even when they are mathematically inferior. This helps explain why people often reject favorable gambles with small probabilities of loss, even when the expected value is strongly positive.
+By contrast, low-variance decisions produce outcomes that feel
+“reasonable,” even when they are mathematically inferior. This helps
+explain why people often reject favorable gambles with small
+probabilities of loss, even when the expected value is strongly
+positive.
 
-Mathematically, expected value is a long-run quantity. Psychologically, humans experience outcomes one realization at a time.
+Mathematically, expected value is a long-run quantity. Psychologically,
+humans experience outcomes one realization at a time.
 
----
+------------------------------------------------------------------------
 
 ### Risk Avoidance as a Rational Response to Limited Repetition
 
-Variance aversion is not always irrational. Expected value arguments rely implicitly on repetition: the idea that a decision will be made many times, allowing outcomes to average out.
+Variance aversion is not always irrational. Expected value arguments
+rely implicitly on repetition: the idea that a decision will be made
+many times, allowing outcomes to average out.
 
-In real life, many decisions are **one-shot**:
-- a single medical procedure,
-- a single election,
-- a single career move.
+In real life, many decisions are **one-shot**: - a single medical
+procedure, - a single election, - a single career move.
 
-In such cases, high variance represents genuine danger. The mathematics does not disappear, but the context changes. Variance becomes a proxy for fragility: the risk that a single unfavorable realization cannot be recovered from.
+In such cases, high variance represents genuine danger. The mathematics
+does not disappear, but the context changes. Variance becomes a proxy
+for fragility: the risk that a single unfavorable realization cannot be
+recovered from.
 
-This distinction helps explain why professional poker players tolerate variance that casual players avoid. Professionals operate in a regime of repetition; casual players experience poker as a sequence of emotionally salient events.
+This distinction helps explain why professional poker players tolerate
+variance that casual players avoid. Professionals operate in a regime of
+repetition; casual players experience poker as a sequence of emotionally
+salient events.
 
----
+------------------------------------------------------------------------
 
 ### Narrative, Hindsight, and Misjudged Decisions
 
-High-variance outcomes also distort judgment after the fact. A low-probability loss invites moralizing explanations: the decision was reckless, the forecaster incompetent, the call “obviously bad.”
+High-variance outcomes also distort judgment after the fact. A
+low-probability loss invites moralizing explanations: the decision was
+reckless, the forecaster incompetent, the call “obviously bad.”
 
-This hindsight bias erases the probabilistic structure that existed before the outcome occurred. Variance ensures that unlikely events happen occasionally. Narrative ensures that, when they do, they feel meaningful.
+This hindsight bias erases the probabilistic structure that existed
+before the outcome occurred. Variance ensures that unlikely events
+happen occasionally. Narrative ensures that, when they do, they feel
+meaningful.
 
-The mathematical framework in this chapter offers a corrective: decisions should be evaluated by the random variables they induce, not by the particular realization that happened to occur.
+The mathematical framework in this chapter offers a corrective:
+decisions should be evaluated by the random variables they induce, not
+by the particular realization that happened to occur.
 
----
+------------------------------------------------------------------------
 
 ### A Unifying Perspective
 
-Expected value tells us what happens on average.  
+Expected value tells us what happens on average.\
 Variance tells us how violent the path to that average can be.
 
-Human psychology is exquisitely sensitive to the second quantity. Understanding that sensitivity does not eliminate it—but it does allow us to see where emotion ends and mathematics begins.
+Human psychology is exquisitely sensitive to the second quantity.
+Understanding that sensitivity does not eliminate it—but it does allow
+us to see where emotion ends and mathematics begins.
 
-In poker, in forecasting, and in everyday life, much of what we call “risk” is simply variance wearing a human face.
-
+In poker, in forecasting, and in everyday life, much of what we call
+“risk” is simply variance wearing a human face.
 
 ## Homework Problems
 
@@ -693,54 +778,76 @@ In poker, in forecasting, and in everyday life, much of what we call “risk” 
     $X$ is maximized when $p = \tfrac12$, and interpret this result in
     the context of poker decisions.
 
-8. A player randomizes their river bet size uniformly between \$100 and \$300. Let $X$ denote the bet size.  
-(a) Write down the probability density function of $X$.  
-(b) Compute $\mathbb{E}[X]$.  
-(c) Compute $\mathrm{Var}(X)$ and the standard deviation.  
+18. A player randomizes their river bet size uniformly between \$100 and
+    \$300. Let $X$ denote the bet size.\
+
+<!-- -->
+
+(a) Write down the probability density function of $X$.\
+(b) Compute $\mathbb{E}[X]$.\
+(c) Compute $\mathrm{Var}(X)$ and the standard deviation.\
 (d) Interpret the standard deviation in the context of betting behavior.
 
-19. Suppose a player’s net profit $Y$ from a hand depends linearly on their raise size $X$ according to the formula
-$$
-Y = 0.4X - 50,
-$$
-where $X$ is uniformly distributed between \$100 and \$300.  
-(a) Compute $\mathbb{E}[Y]$.  
-(b) Compute $\mathrm{Var}(Y)$.  
+<!-- -->
+
+19. Suppose a player’s net profit $Y$ from a hand depends linearly on
+    their raise size $X$ according to the formula $$
+    Y = 0.4X - 50,
+    $$ where $X$ is uniformly distributed between \$100 and \$300.\
+
+<!-- -->
+
+(a) Compute $\mathbb{E}[Y]$.\
+(b) Compute $\mathrm{Var}(Y)$.\
 (c) Determine whether the betting strategy is profitable in expectation.
 
+<!-- -->
+
 20. A player chooses between folding, calling, and raising as follows:
-- With probability $0.4$, they fold and earn \$0.
-- With probability $0.3$, they call and earn a fixed payoff of \$40.
-- With probability $0.3$, they raise, choosing a raise size uniformly between \$100 and \$200, and their net payoff equals half the raise size minus \$30.
 
-Define an appropriate random variable for the player’s payoff and compute its expected value.
+-   With probability $0.4$, they fold and earn \$0.
+-   With probability $0.3$, they call and earn a fixed payoff of \$40.
+-   With probability $0.3$, they raise, choosing a raise size uniformly
+    between \$100 and \$200, and their net payoff equals half the raise
+    size minus \$30.
 
-21. Let $X$ be a continuous random variable representing the amount a player invests in a speculative financial asset, with probability density function
-$$
-f_X(x) =
-\begin{cases}
-\frac{1}{1000}, & 0 \le x \le 1000, \\
-0, & \text{otherwise}.
-\end{cases}
-$$
-Suppose the net return is given by
-$$
-Y = 1.2X - X.
-$$
-(a) Compute $\mathbb{E}[Y]$.  
-(b) Compute $\mathrm{Var}(Y)$.  
-(c) Explain how this model parallels the evaluation of a poker bet with uncertain payoff.
+Define an appropriate random variable for the player’s payoff and
+compute its expected value.
 
-22. Let $X$ be a continuous random variable with probability density function $f_X(x)$ and finite expected value.  
-(a) Prove that for any constant $c$,
-$$
-\mathbb{E}[X + c] = \mathbb{E}[X] + c.
-$$
-(b) Prove that for any constant $a$,
-$$
-\mathrm{Var}(aX) = a^2 \mathrm{Var}(X).
-$$
-(c) Explain why these identities are essential for analyzing continuous betting strategies in poker.
+21. Let $X$ be a continuous random variable representing the amount a
+    player invests in a speculative financial asset, with probability
+    density function $$
+    f_X(x) =
+    \begin{cases}
+    \frac{1}{1000}, & 0 \le x \le 1000, \\
+    0, & \text{otherwise}.
+    \end{cases}
+    $$ Suppose the net return is given by $$
+    Y = 1.2X - X.
+    $$
+
+<!-- -->
+
+(a) Compute $\mathbb{E}[Y]$.\
+(b) Compute $\mathrm{Var}(Y)$.\
+(c) Explain how this model parallels the evaluation of a poker bet with
+    uncertain payoff.
+
+<!-- -->
+
+22. Let $X$ be a continuous random variable with probability density
+    function $f_X(x)$ and finite expected value.\
+
+<!-- -->
+
+(a) Prove that for any constant $c$, $$
+    \mathbb{E}[X + c] = \mathbb{E}[X] + c.
+    $$
+(b) Prove that for any constant $a$, $$
+    \mathrm{Var}(aX) = a^2 \mathrm{Var}(X).
+    $$
+(c) Explain why these identities are essential for analyzing continuous
+    betting strategies in poker.
 
 ## Extension Activity
 
