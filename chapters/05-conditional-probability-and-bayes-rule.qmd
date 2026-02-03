@@ -1436,9 +1436,6 @@ When interpreting results, distinguish carefully between probabilities, densitie
          {\int_0^1 f_{B\mid E}(b\mid e')f_E(e')\,de'}.
     $$
 
-
-### Optional Extensions
-
 18. **Alternative betting model.**  
 Propose a joint density on $[0,1]^2$ in which very large bets occur both with very high and very low equity.  Describe qualitatively how this would affect posterior inference.
 
