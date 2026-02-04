@@ -748,7 +748,7 @@ $$ on the unit square.
 
 ```{r} 
 # Set dependence parameter
-lambda <- 0.7
+lambda <- .5
 
 # Create grid
 
@@ -766,7 +766,7 @@ grid$f <- 1 + lambda * (2 * grid$e - 1) * (2 * grid$b - 1)
 
 library(ggplot2)
 
-ggplot(grid, aes(x = b, y = e, fill = f)) + geom_raster() + scale_fill_viridis_c(name = "Density") + labs( x = "Bet size (fraction of pot)", y = "Equity", title = expression(paste("Joint density f(e,b) = 1 + ", lambda, "(2e-1)(2b-1)")) ) + theme_minimal()
+ggplot(grid, aes(x = b, y = e, fill = f)) + geom_raster() + scale_fill_viridis_c(name = "Density", limit=c(0,2)) + labs( x = "Bet size (fraction of pot)", y = "Equity", title = expression(paste("Joint density f(e,b) = 1 + ", lambda, "(2e-1)(2b-1)")) ) + theme_minimal()
 ```
 ------------------------------------------------------------------------
 
@@ -871,6 +871,168 @@ This function is a valid density in $e$ for each fixed value of $b$.
 
 In all cases, the cards have not changed.  
 Only the *distribution describing our beliefs* has changed.
+### Worked Example: \(\mathbb{P}(E>0.75 \mid B=0.75)\) from Our Joint Density
+
+Let \(E\in[0,1]\) denote **equity** and \(B\in[0,1]\) denote **bet size in pot units**.  
+In our model, the **joint density** of \((E,B)\) on the unit square is
+
+$$
+f_{E,B}(e,b) \;=\; 1 + \lambda(2e-1)(2b-1),
+\qquad 0\le e\le 1,\; 0\le b\le 1.
+$$
+
+(For this to be a valid density everywhere on \([0,1]^2\), we need \(|\lambda|\le 1\), since \((2e-1)(2b-1)\in[-1,1]\).)
+
+Our goal is to compute
+
+$$
+\mathbb{P}(E>0.75 \mid B=0.75).
+$$
+
+---
+
+#### Step 1: Compute the marginal density of \(B\)
+
+By definition,
+
+$$
+f_B(b) \;=\; \int_0^1 f_{E,B}(e,b)\,de
+\;=\; \int_0^1 \left[1+\lambda(2e-1)(2b-1)\right]de.
+$$
+
+Split the integral:
+
+$$
+f_B(b)
+=
+\int_0^1 1\,de
++
+\lambda(2b-1)\int_0^1 (2e-1)\,de.
+$$
+
+Now,
+
+$$
+\int_0^1 1\,de = 1,
+\qquad
+\int_0^1 (2e-1)\,de
+=
+\left[e^2-e\right]_0^1
+=
+(1-1)-(0-0)=0.
+$$
+
+So the marginal is especially simple:
+
+$$
+\boxed{f_B(b)=1 \quad \text{for } 0\le b\le 1.}
+$$
+
+That is, \(B\) is uniformly distributed on \([0,1]\) under this joint model.
+
+---
+
+#### Step 2: Write down the conditional density of \(E\) given \(B=b\)
+
+For a continuous pair \((E,B)\), the conditional density is
+
+$$
+f_{E\mid B}(e\mid b) \;=\; \frac{f_{E,B}(e,b)}{f_B(b)}.
+$$
+
+Since \(f_B(b)=1\), we get
+
+$$
+\boxed{
+f_{E\mid B}(e\mid b) = 1+\lambda(2e-1)(2b-1),
+\quad 0\le e\le 1.
+}
+$$
+
+Now plug in \(b=0.75\). Since \(2b-1 = 2(0.75)-1 = 0.5\),
+
+$$
+f_{E\mid B}(e\mid 0.75)
+=
+1 + \lambda(2e-1)\cdot 0.5
+=
+1 + \lambda(e-0.5).
+$$
+
+---
+
+#### Step 3: Integrate over \(e>0.75\)
+
+By definition,
+
+$$
+\mathbb{P}(E>0.75 \mid B=0.75)
+=
+\int_{0.75}^{1} f_{E\mid B}(e\mid 0.75)\,de
+=
+\int_{0.75}^{1} \left[1+\lambda(e-0.5)\right]de.
+$$
+
+Compute the two pieces:
+
+$$
+\int_{0.75}^{1} 1\,de = 0.25,
+$$
+
+and
+
+$$
+\int_{0.75}^{1} (e-0.5)\,de
+=
+\left[\frac{1}{2}e^2-\frac{1}{2}e\right]_{0.75}^{1}
+=
+\left(\frac{1}{2}-\frac{1}{2}\right)
+-
+\left(\frac{1}{2}\cdot 0.75^2-\frac{1}{2}\cdot 0.75\right).
+$$
+
+Since \(0.75^2=0.5625\),
+
+$$
+\frac{1}{2}\cdot 0.5625-\frac{1}{2}\cdot 0.75
+=
+0.28125-0.375
+=
+-0.09375,
+$$
+
+so the integral equals \(0 - (-0.09375)=0.09375 = \frac{3}{32}\). Therefore,
+
+$$
+\mathbb{P}(E>0.75 \mid B=0.75)
+=
+0.25 + \lambda\cdot \frac{3}{32}
+=
+\frac{1}{4}+\frac{3\lambda}{32}.
+$$
+
+So the final answer is:
+
+$$
+\boxed{
+\mathbb{P}(E>0.75 \mid B=0.75)
+=
+\frac{1}{4}+\frac{3\lambda}{32}
+=
+\frac{8+3\lambda}{32}.
+}
+$$
+
+#### Quick interpretation
+
+- If \(\lambda=0\), then \(f_{E,B}(e,b)=1\) (independence/uniform on the square), and
+  $$
+  \mathbb{P}(E>0.75 \mid B=0.75)=\frac{1}{4}.
+  $$
+- If \(\lambda>0\), then higher bets are associated with higher equity, so conditioning on \(B=0.75\) increases the probability above \(1/4\).
+- If \(\lambda<0\), it decreases the probability below \(1/4\).
+
+(Recall \(|\lambda|\le 1\) keeps the density nonnegative everywhere.)
 
 ### Bayes’ Theorem in the Continuous Setting
 
