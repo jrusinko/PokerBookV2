@@ -25,90 +25,2691 @@ sidebar:
 
 :::
 
-## Motivating Example
 
-After a sequence of actions, you try to infer what hands are still plausible. Good players do it intuitively—this chapter makes it explicit.
+# 1. Motivating Example
 
-**Guiding question.** How do we represent and update uncertainty about hidden information?
+In a televised high-stakes cash game, two experienced professionals find themselves heads-up on the river. One player, after a long pause, says quietly:
 
-- Situation: After a sequence of actions, you try to infer what hands are still plausible. Good players do it intuitively—this chapter makes it explicit.
-- Why it matters: this introduces 6 Hand Ranges (Not Hands), 7 Range Construction and Narrowing.
+> “You have exactly Ace–Queen.”
 
-## Mathematical Framework and Poker Theory
+He calls.
 
-### Roadmap
+The opponent turns over Ace–Queen.
 
-- Representing ranges as distributions
-- Action filters and likelihoods
-- Blockers and combinatorial weighting
-- Posterior ranges and strategy implications
+Moments like this are often narrated as intuition, psychology, or mysticism.  
+But there is nothing mystical here.  
 
-### Definitions
+What does it mean to “know” an opponent’s hand?
 
-**probability distribution on a finite set.** *[Definition.]*
+Consider a concrete version of such a hand.
 
-**range (belief distribution).** *[Definition.]*
+Two players see a flop after a preflop raise and call.  
+The board runs out:
 
-**likelihood.** *[Definition.]*
+$$
+K^\heartsuit \; 8^\clubsuit \; 4^\diamondsuit \; 2^\spadesuit \; 2^\clubsuit
+$$
 
-**posterior distribution.** *[Definition.]*
+The preflop raiser bets the flop.  
+The caller continues.  
+The turn checks through.  
+On the river, the preflop raiser bets again.
 
-**blocker (card removal).** *[Definition.]*
+The caller studies the situation and announces:  
 
-### Core concepts
+> “You missed your draw. You have Ace–Queen.”
 
-- belief modeling
-- conditional distributions
-- combinatorial weighting
-- card removal effects
+He calls. The opponent reveals $A Q$.
 
-### Core results
 
-**Bayes’ theorem (applied).** *[Statement / proof placeholder.]*
 
-**normalization of distributions.** *[Statement / proof placeholder.]*
+## What Just Happened?
 
-### Worked example ideas
+The caller did not divine a specific hand.
 
-- Start with a preflop range; update through flop/turn actions; compute posterior weights for a few hand classes
+Instead, he reasoned through a sequence of shrinking probability distributions.
 
-### Computation notes
+Let:
 
-['Optional: simple range-tracking spreadsheet or script']
+$$
+\Omega_0 = \{\text{all preflop raising hands}\}.
+$$
 
-## Beyond Poker
+After the flop bet:
 
-These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+$$
+\Omega_1 \subseteq \Omega_0.
+$$
 
-Possible directions:
+After the turn check:
 
-- forensics (constraint-based inference)
-- ecology (presence/absence inference)
-- intelligence analysis (hypothesis filtering)
+$$
+\Omega_2 \subseteq \Omega_1.
+$$
 
-## Liberal Arts Sidebar
+After the river bet:
 
-**Profiling, Stereotypes, and Inference**
+$$
+\Omega_3 \subseteq \Omega_2.
+$$
 
-*Lens:* Sociology & ethics
+At each stage, hands inconsistent with rational betting behavior were eliminated or reweighted.
 
-*Theme:* When inference from limited evidence becomes unjustified assumption; parallels between hand ranges and social profiling.
+By the river, most value hands would have bet the turn.  
+Many weak hands would not have bet the river.  
 
-> When does inference become unjustified assumption? How should we handle uncertainty ethically?
+What remained was a narrow region of the range:
 
-## Homework Problems
+- Missed overcards
+- Specifically, combinations like $A Q$ and $A J$
 
-Use these as problem prompts to develop a full set:
+Among these, blockers and combinatorial counts may have made $A Q$ the most likely remaining candidate.
 
-1. Compute with definitions and formulas
-2. Explain a concept in words
-3. Short proof or justification (when appropriate)
+The announcement was not certainty.
 
-1. *[Problem to be written.]*
-2. *[Problem to be written.]*
-3. *[Problem to be written.]*
+It was inference over a discrete probability space.
 
-## Extension Activity
 
-Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
 
+## The Mathematical Question
+
+Suppose
+
+$$
+\Omega = V \cup L \cup M \cup J
+$$
+
+where:
+
+- $V$ = value hands  
+- $L$ = bluffs  
+- $M$ = middling hands  
+- $J$ = junk  
+
+A river bet from a rational opponent must be drawn from some mixture of $V$ and $L$.
+
+If the earlier streets have reduced $V$ to a small set of combinations, and $M$ rarely bets, then the posterior distribution concentrates on $L$.
+
+The “call-out” of a specific hand is the limit of this reasoning:
+
+> When the probability mass of the distribution becomes highly concentrated on one element of $\Omega$, the distribution appears as a single hand.
+
+But it is still a distribution.
+
+
+This chapter studies how such distributions are constructed, filtered, partitioned, and exploited.
+
+We will not attempt to read minds.
+
+We will attempt to model ranges.
+
+# 2. Mathematical Framework and Poker Theory
+
+## Section 1: Range Thinking
+
+### 1.1 What Is a Range?
+
+We begin with the underlying mathematical object.
+
+#### Definition 1.1 (Two–Card Sample Space)
+
+Fix a game of Texas Hold’em.  
+Let $\Omega$ denote the set of all unordered two–card combinations drawn from a standard 52–card deck.
+
+Thus,
+
+$$
+|\Omega| = \binom{52}{2}.
+$$
+
+
+::contentReference[oaicite:0]{index=0}
+
+
+In particular,
+
+$$
+|\Omega| = \binom{52}{2} = 1326.
+$$
+
+Each element $\omega \in \Omega$ is a specific two-card holding, such as
+$A^\spadesuit K^\spadesuit$ or $7^\heartsuit 7^\clubsuit$.
+
+An element of $\Omega$ is an **outcome**.  
+It is a concrete, realized hand.
+
+
+
+#### Definition 1.2 (Range)
+
+A **range** is a discrete probability distribution
+
+$$
+p : \Omega \to [0,1]
+$$
+
+such that
+
+$$
+\sum_{\omega \in \Omega} p(\omega) = 1.
+$$
+
+A range assigns probability mass to each possible two–card holding.
+
+The distinction is fundamental:
+
+- A **hand** is an element of $\Omega$.
+- A **range** is a probability distribution over $\Omega$.
+
+Players hold hands.  
+Strategic reasoning concerns ranges.
+
+
+
+### Uniform Preflop Distribution
+
+Before any cards are revealed or actions taken, symmetry implies that each two–card combination is equally likely.
+
+Thus the initial distribution is uniform:
+
+$$
+p(\omega) = \frac{1}{|\Omega|} = \frac{1}{1326}.
+$$
+
+At this stage, there is no strategic information — only combinatorics.
+
+
+
+### Combinatorial Structure of $\Omega$
+
+Although each element of $\Omega$ is equally likely preflop, different *hand classes* contain different numbers of combinations.
+
+For example:
+
+- A pocket pair (e.g., $AA$) consists of
+
+$$
+\binom{4}{2} = 6
+$$
+
+distinct combinations.
+
+- A suited non-pair (e.g., $AK^\text{s}$) consists of 4 combinations.
+- An offsuit non-pair (e.g., $AK^\text{o}$) consists of 12 combinations.
+
+Thus, while $AA$ and $AK^\text{o}$ are both “single hands” in informal language, they do not occupy equal probability mass under the uniform distribution.
+
+Combinatorics precedes probability.
+
+
+
+### Action-Induced Reweighting
+
+Once a player takes an action, the distribution over $\Omega$ changes.
+
+Suppose a player raises preflop from early position.
+
+Let
+
+$$
+\Omega_{\text{EP}} \subset \Omega
+$$
+
+denote the set of hands with which that player raises.
+
+The observed action “raise” restricts the sample space from $\Omega$ to $\Omega_{\text{EP}}$.
+
+If we assume the player raises uniformly within that subset, then the updated distribution becomes:
+
+$$
+p(\omega \mid \text{raise}) =
+\begin{cases}
+\frac{1}{|\Omega_{\text{EP}}|} & \text{if } \omega \in \Omega_{\text{EP}}, \\
+0 & \text{otherwise}.
+\end{cases}
+$$
+
+More generally, players need not assign equal frequency to each hand in $\Omega_{\text{EP}}$.  
+Thus a range may be non-uniform even within its support.
+
+The crucial point is structural:
+
+> A betting action does not reveal a hand.  
+> It transforms a probability distribution.
+
+
+
+### Example: Early Position Opening Range
+
+Suppose a player opens with:
+
+- All pairs $77^+$
+- $AQ^\text{s}+$
+- $AK^\text{o}$
+
+This description names *hand classes*, but the distribution lives on combinations.
+
+Let $\Omega_{\text{EP}}$ be the set of all combinations consistent with this description.
+
+The probability mass of the event “pocket pair” is not proportional to the number of pair ranks, but to the total number of combinations contained in those ranks.
+
+Thus:
+
+- Each pair rank contributes 6 combinations.
+- Each suited hand contributes 4 combinations.
+- Each offsuit hand contributes 12 combinations.
+
+Range construction is therefore a combinatorial counting problem before it is a probabilistic one.
+
+
+
+### Conceptual Shift
+
+To summarize:
+
+- A hand is a realized outcome.
+- A range is a probability distribution over possible outcomes.
+- Actions restrict and reweight the sample space.
+- Strategic inference operates on distributions, not certainties.
+
+This shift — from individual hands to distributions over hands — is the foundation of modern poker analysis and the central object of this chapter.
+
+### 1.2 Range Filtering by Street
+
+A poker hand unfolds across four betting rounds:
+
+- Preflop  
+- Flop  
+- Turn  
+- River  
+
+At each stage, new public information and observed actions modify the probability distribution over possible hands.
+
+We formalize this process as a sequence of nested hypothesis spaces.
+
+
+
+#### Definition 1.3 (Sequential Range Restriction)
+
+Let $\Omega_0$ denote the initial preflop range of a player.
+
+After observing action on the flop, define
+
+$$
+\Omega_1 \subseteq \Omega_0.
+$$
+
+After observing turn action, define
+
+$$
+\Omega_2 \subseteq \Omega_1.
+$$
+
+After observing river action, define
+
+$$
+\Omega_3 \subseteq \Omega_2.
+$$
+
+Thus we obtain a nested sequence
+
+$$
+\Omega_0 \supseteq \Omega_1 \supseteq \Omega_2 \supseteq \Omega_3.
+$$
+
+Each $\Omega_i$ represents the set of hands still considered plausible after incorporating information up to that street.
+
+
+
+### Conditioning on Betting Actions
+
+Let $A_i$ denote the observed action on street $i$.
+
+Then the updated probability distribution satisfies
+
+$$
+p_{i}(\omega) = p(\omega \mid A_1, \dots, A_i).
+$$
+
+
+::contentReference[oaicite:0]{index=0}
+
+
+This is ordinary conditional probability in a finite space.
+
+In poker language:
+
+- The flop bet is evidence.
+- The turn check is evidence.
+- The river bet is evidence.
+
+Each action conditions the prior distribution.
+
+
+
+### Elimination vs Reweighting
+
+There are two distinct mathematical effects.
+
+#### 1. Elimination
+
+If a hand is inconsistent with rational play under the observed action, it may be assigned probability zero.
+
+Example:
+
+Suppose a player raises preflop only with $\{88^+, AQ^+, KQ\}$.
+
+Then all other combinations are eliminated:
+
+$$
+p(\omega \mid \text{raise}) = 0 \quad \text{for } \omega \notin \Omega_{\text{raise}}.
+$$
+
+The sample space shrinks.
+
+
+
+#### 2. Reweighting
+
+More commonly, hands are not eliminated entirely, but their probabilities change.
+
+Example:
+
+On a dry flop $K\text{–}8\text{–}2$, suppose the preflop raiser continuation-bets with:
+
+- High frequency using $AA, KK, AK$  
+- Lower frequency using $AQ, AJ$
+
+Then all these hands remain in $\Omega_1$, but with different conditional probabilities.
+
+The support of the distribution remains similar; the weights shift.
+
+Formally:
+
+$$
+p_1(\omega) = \frac{p_0(\omega)\,\ell_1(\omega)}{\sum_{\omega' \in \Omega_0} p_0(\omega')\,\ell_1(\omega')}
+$$
+
+where $\ell_1(\omega)$ represents the likelihood that hand $\omega$ would produce the observed action.
+
+Thus filtering is not merely set subtraction; it is Bayesian updating in a finite space.
+
+
+
+### Progressive Narrowing of the Hypothesis Space
+
+Consider a concrete example.
+
+**Preflop.**  
+A player opens from early position.
+
+Let $\Omega_0$ consist of:
+
+- $77^+$
+- $AQ^+$
+- $KQs$
+
+**Flop:** $K^\heartsuit 8^\clubsuit 4^\diamondsuit$  
+The player bets.
+
+Hands like $QQ$ remain possible.  
+Hands like $77$ may bet less frequently.
+
+Thus $\Omega_1$ may largely equal $\Omega_0$, but weights shift.
+
+**Turn:** $2^\spadesuit$  
+The player checks.
+
+Very strong hands such as $KK$ may check rarely.  
+Some medium-strength hands check frequently.
+
+Now the distribution concentrates toward:
+
+- Middling hands
+- Missed overcards
+
+Thus $\Omega_2$ is effectively narrower.
+
+**River:** $2^\clubsuit$  
+The player bets.
+
+If strong hands would have bet the turn, their probability mass is already reduced.  
+If pure junk rarely bets river, that mass shrinks as well.
+
+What remains is a concentrated region of $\Omega_3$.
+
+The visible outcome may be a single hand.
+
+The underlying object is still a distribution.
+
+
+
+### Structural Interpretation
+
+The sequence
+
+$$
+\Omega_0 \supseteq \Omega_1 \supseteq \Omega_2 \supseteq \Omega_3
+$$
+
+is a sequence of progressively refined hypothesis spaces.
+
+Each street does not reveal a hand.
+
+It sharpens a distribution.
+
+The mathematical structure is simple:
+
+- Finite sample space
+- Conditional probability
+- Likelihood-based reweighting
+
+The strategic consequence is profound:
+
+By the river, rational inference may reduce a 1326-element space to a handful of highly weighted possibilities.
+
+This is range filtering.
+
+### 1.3 Functional Partition: V–L–M–J Structure
+
+Up to this point, a range has been treated as a probability distribution over individual two–card combinations.  
+For strategic reasoning, however, it is often useful to group hands according to their *function* within a betting decision.
+
+We now formalize this partition.
+
+
+
+#### Definition 1.4 (Functional Partition)
+
+Let $\Omega$ be the current range of a player at a given decision node.
+
+We define a partition of $\Omega$ into four disjoint subsets:
+
+- **V** — Value hands  
+- **L** — Bluff hands  
+- **M** — Middling hands (bluff-catchers / medium strength)  
+- **J** — Junk hands (very low equity; negligible showdown value)
+
+These sets satisfy
+
+$$
+\Omega = V \cup L \cup M \cup J,
+$$
+
+and
+
+$$
+V \cap L = V \cap M = V \cap J = L \cap M = L \cap J = M \cap J = \varnothing.
+$$
+
+Thus $\{V, L, M, J\}$ forms a disjoint decomposition of $\Omega$.
+
+
+
+### Interpretation of the Classes
+
+The categories are defined relative to a specific board and decision.
+
+- **Value (V):**  
+  Hands that expect to win when called by the opponent’s continuing range.
+
+- **Bluff (L):**  
+  Hands that expect to lose at showdown but may profit through fold equity.
+
+- **Middling (M):**  
+  Hands with moderate showdown value; often indifferent between betting and checking.
+
+- **Junk (J):**  
+  Hands with negligible equity and limited strategic utility.
+
+These are functional categories, not static hand labels.  
+A hand such as $A K$ may be $V$ on one board and $M$ on another.
+
+
+
+### Probability Mass Assigned to Each Class
+
+Since $\Omega$ carries a probability distribution $p$, each class inherits total probability mass:
+
+$$
+P(V) = \sum_{\omega \in V} p(\omega), \quad
+P(L) = \sum_{\omega \in L} p(\omega),
+$$
+
+and similarly for $M$ and $J$.
+
+Thus the range is not merely partitioned combinatorially; it is partitioned probabilistically.
+
+For example, on a river decision:
+
+- If $P(V)$ is large relative to $P(L)$, betting frequency must reflect that imbalance.
+- If $P(M)$ dominates, checking may be structurally favored.
+
+Strategic decisions operate on these aggregate masses.
+
+
+
+### Polarized, Linear, and Checking Ranges
+
+The functional partition allows us to describe common structural forms of betting ranges.
+
+#### Polarized Range
+
+A betting range is **polarized** if it consists primarily of
+
+$$
+V \cup L.
+$$
+
+That is, the player bets very strong hands and very weak hands, while checking middling hands.
+
+This structure often arises on river decisions.
+
+
+
+#### Linear Range
+
+A betting range is **linear** if it consists of
+
+$$
+V \cup M \cup L,
+$$
+
+with strength distributed more continuously.
+
+This structure often appears on earlier streets, where equity realization matters and middling hands benefit from protection.
+
+
+
+#### Checking Range
+
+A checking range frequently consists of
+
+$$
+M \cup J.
+$$
+
+That is, medium-strength hands that do not wish to inflate the pot and very weak hands that lack fold equity.
+
+
+
+### Mixture Interpretation of Betting Distributions
+
+Suppose a player bets at some frequency $f$.
+
+The betting range can be interpreted as a mixture distribution supported on a subset $B \subseteq \Omega$.
+
+For instance, in a polarized configuration:
+
+$$
+B = V \cup L.
+$$
+
+Then the conditional betting distribution is
+
+$$
+p(\omega \mid \text{bet}) =
+\begin{cases}
+\frac{p(\omega)}{P(V)+P(L)} & \text{if } \omega \in V \cup L, \\
+0 & \text{otherwise}.
+\end{cases}
+$$
+
+Thus betting is not the act of a single hand, but the selection of a mixture drawn from functionally defined subsets.
+
+The strategic problem becomes:
+
+- How large should $P(L)$ be relative to $P(V)$?
+- Which hands should populate $M$ rather than $L$?
+- How should $J$ be treated when fold equity is small?
+
+The V–L–M–J structure transforms a list of combinations into an analyzable mixture model.
+
+
+
+The partition is conceptual, but the mathematics is precise:
+
+- A range is a distribution over $\Omega$.
+- $\Omega$ is decomposed into disjoint functional classes.
+- Strategic actions correspond to selecting mixtures from these classes.
+
+Subsequent sections will analyze how incentives and board texture shape the relative sizes of $V$, $L$, $M$, and $J$.
+
+### 1.4 Blockers and Unblockers
+
+Up to this point, we have treated $\Omega$ as the set of all hands consistent with public information and betting actions.  
+We now incorporate a further structural constraint: **private information.**
+
+When you hold specific cards, certain opponent holdings become impossible.  
+This is not psychological.  
+It is combinatorial.
+
+
+
+#### Definition 1.5 (Card Removal)
+
+Let $H$ denote your private hand.
+
+Define the reduced opponent sample space
+
+$$
+\Omega' = \{ \omega \in \Omega : \omega \cap H = \varnothing \}.
+$$
+
+Thus $\Omega'$ consists of all two–card combinations that do not contain any card you hold.
+
+We immediately have
+
+$$
+\Omega' \subseteq \Omega.
+$$
+
+This is sample space reduction induced by private information.
+
+
+
+### Combinatorial Impact
+
+The reduction is not uniform across hand classes.
+
+Consider a simple example.
+
+Suppose the opponent’s value region $V$ contains pocket Aces.
+
+Without blockers:
+
+$$
+|AA| = \binom{4}{2} = 6.
+$$
+
+If you hold one Ace, the opponent can only hold combinations formed from the remaining three Aces:
+
+$$
+|AA \mid \text{one Ace blocked}| = \binom{3}{2} = 3.
+$$
+
+
+::contentReference[oaicite:0]{index=0}
+
+
+If you hold two Aces, the number becomes zero.
+
+Thus card removal changes:
+
+- $|V|$
+- $|L|$
+- $|M|$
+- $|J|$
+
+but generally not in equal proportions.
+
+
+
+### Relative Density Shifts
+
+Recall that each class carries probability mass:
+
+$$
+P(V), \quad P(L), \quad P(M), \quad P(J).
+$$
+
+After card removal, the updated masses become
+
+$$
+P'(V), \quad P'(L), \quad P'(M), \quad P'(J).
+$$
+
+Even if the prior distribution within $\Omega$ was uniform over combinations, the induced distribution on $\Omega'$ is no longer uniform across functional classes.
+
+If your hand blocks more value combinations than bluff combinations, then
+
+$$
+\frac{P'(V)}{P'(L)} < \frac{P(V)}{P(L)}.
+$$
+
+The *relative density* of bluffs increases.
+
+This is the mathematical core of a “good blocker.”
+
+### Blockers and Functional Regions
+
+A **blocker** is a card in $H$ whose removal reduces the number of combinations in a strategically important region.
+
+Examples:
+
+- Blocking $V$:  
+  Holding an Ace on an Ace-high board reduces the number of strong top-pair value combinations in the opponent’s range.
+
+- Blocking $L$:  
+  Holding a card that reduces missed draw combinations reduces bluff density.
+
+Blockers therefore affect value-heavy and bluff-heavy regions differently.
+
+The effect is structural, not anecdotal.
+
+### Unblockers
+
+An **unblocker** is a card in $H$ that preserves bluff density while not reducing value density significantly.
+
+Suppose on a river the opponent’s bluffs consist of missed heart draws.
+
+Holding a heart reduces $|L|$.
+
+Holding a non-heart preserves $|L|$.
+
+Thus, when considering a bluff-catching decision, an unblocker of the bluff region is often preferable.
+
+Formally, if
+
+$$
+|L'| \approx |L|
+$$
+
+while
+
+$$
+|V'| < |V|,
+$$
+
+then the ratio
+
+$$
+\frac{|L'|}{|V'|}
+$$
+
+increases.
+
+Your call becomes more attractive.
+
+### Distributional Distortion Under Private Information
+
+Card removal induces a transformation
+
+$$
+p(\omega) \longrightarrow p'(\omega)
+$$
+
+supported on $\Omega'$.
+
+Even if $p$ was uniform on $\Omega$, $p'$ need not preserve the same proportional balance between $V$, $L$, $M$, and $J$.
+
+Thus blockers distort the functional partition.
+
+They do not create information about what the opponent holds.
+
+They change the structure of the remaining possibilities.
+
+
+### Conceptual Summary
+
+Blockers and unblockers are often described informally.
+
+Mathematically, they are:
+
+- Sample space reductions,
+- Combinatorial adjustments,
+- Relative density transformations within a partitioned probability space.
+
+Private information reshapes the distribution.
+
+Strategic inference must account for this reshaping.
+
+Range thinking is incomplete without card removal.
+
+## Section 2: Preflop Play as Distributional Structure
+### 2.1 Tighter Early Position Play
+
+One of the most widely observed structural features of Texas Hold’em is this:
+
+> Players act more conservatively from early position than from late position.
+
+This is not tradition.  
+It is a consequence of probability aggregation.
+
+#### Opponent Count as a Parameter
+
+Let $n$ denote the number of players remaining to act after you open the pot.
+
+From early position, $n$ is large.  
+From late position, $n$ is small.
+
+Thus position may be modeled as a parameter governing the number of independent opponent ranges that follow yours.
+
+### Increasing Probability of Domination
+
+Fix a particular hand $h \in \Omega$.
+
+Suppose that for a single opponent, the probability that their range contains a hand that strictly dominates $h$ is $p$.
+
+Assuming (for modeling purposes) independence across opponents, the probability that at least one of $n$ opponents holds a dominating hand is
+
+$$
+1 - (1-p)^n.
+$$
+
+
+::contentReference[oaicite:0]{index=0}
+
+
+This function is strictly increasing in $n$ whenever $0 < p < 1$.
+
+Thus:
+
+- As the number of opponents increases,
+- The probability that your hand is dominated increases.
+
+This is a structural property of independent aggregation.
+
+### Positional Asymmetry as Distributional Asymmetry
+
+Position changes not only information but distributional structure.
+
+Let $\Omega_{\text{EP}}$ denote a plausible early-position opening range.  
+Let $\Omega_{\text{LP}}$ denote a plausible late-position opening range.
+
+Because early position faces more opponents:
+
+- The acceptable threshold for domination probability must be lower.
+- Therefore, weaker marginal hands must be removed.
+
+Formally, if $T$ is a maximum acceptable domination probability, then $h$ is playable only if
+
+$$
+1 - (1-p(h))^n \leq T.
+$$
+
+As $n$ increases, fewer hands satisfy this inequality.
+
+Thus
+
+$$
+\Omega_{\text{EP}} \subseteq \Omega_{\text{LP}}.
+$$
+
+Early position range contraction is a consequence of increasing opponent count.
+
+### Example
+
+Consider two candidate hands:
+
+- $A K$
+- $A 9$
+
+Against a single opponent, the probability of being dominated when holding $A 9$ may be moderate.
+
+Against five opponents, the probability that at least one holds $A J$, $A Q$, or $A K$ increases substantially.
+
+Thus $A 9$ may remain in a late-position opening range but be excluded from an early-position range.
+
+The mathematics does not refer to psychology.
+
+It refers to the increasing union of independent risk events.
+
+### Early Position Range Contraction
+
+As $n$ increases:
+
+- The lower tail of $\Omega$ (marginal hands) must be truncated.
+- The distribution shifts toward hands with:
+  - High raw equity,
+  - Strong domination resistance,
+  - Clear postflop realization.
+
+Thus early position produces narrower, more concentrated distributions.
+
+### Late Position Range Expansion
+
+Conversely, when $n$ is small:
+
+- The probability of domination decreases.
+- Fold equity increases.
+- Information advantage postflop increases.
+
+Therefore, weaker hands may be profitably included.
+
+Formally, the constraint
+
+$$
+1 - (1-p(h))^n \leq T
+$$
+
+is satisfied for more $h$ as $n$ decreases.
+
+Hence $\Omega_{\text{LP}}$ strictly contains $\Omega_{\text{EP}}$ under rational play.
+
+
+### Structural Conclusion
+
+“Tight early, loose late” is not stylistic advice.
+
+It is a mathematical consequence of:
+
+- Increasing opponent count,
+- Aggregated domination probability,
+- Distributional asymmetry induced by position.
+
+Preflop ranges contract or expand in direct response to the number of independent random variables yet to act.
+
+### 2.2 Opening Bet Size
+
+Preflop play involves not only the choice of range $\Omega_0$, but the choice of *bet size*.  
+Bet sizing determines the incentive structure faced by the remaining players and therefore reshapes the viability of the opening distribution.
+
+We analyze this through minimum defense constraints.
+
+## Open–Raise vs Limp
+
+A **limp** places one blind into the pot without increasing the price to opponents.  
+An **open–raise** increases the cost for subsequent players to continue.
+
+The distinction is structural.
+
+- Limping leaves the defending players facing minimal cost.
+- Raising introduces a price that creates fold equity.
+
+Fold equity is the source of profitability for the bluff portion $L$ of an opening range.
+
+Without it, $L$ collapses.
+
+## Big Blind Minimum Defense Frequency (MDF)
+
+Suppose blinds are $1/2$, and you open to $R$.
+
+Before the Big Blind acts, the pot is
+
+$$
+P = 1 + 2 + R.
+$$
+
+The Big Blind must call $R - 2$ to continue.
+
+To prevent automatic profit from bluffing, the Big Blind must defend with frequency at least
+
+$$
+\frac{P}{P + (R-2)}.
+$$
+
+
+::contentReference[oaicite:0]{index=0}
+
+
+(Here $b = R-2$.)
+
+This quantity is the **Minimum Defense Frequency (MDF)**.
+
+If the Big Blind defends less often than this threshold, then an opener could profit by bluffing with any two cards.
+
+## Effect of Open Size on Required Defense
+
+Observe that as $R$ increases:
+
+- $b = R-2$ increases,
+- The MDF threshold decreases.
+
+Thus larger opens require the Big Blind to defend less frequently.
+
+Conversely, smaller opens require higher defense frequency.
+
+This relationship directly affects the structure of $\Omega_0$.
+
+## Viability of the Bluff Region $L$
+
+Let the opening range be partitioned into
+
+$$
+\Omega_0 = V \cup L.
+$$
+
+The profitability of $L$ depends on fold frequency.
+
+If the open size is too large, the risk per bluff increases.  
+The break-even fold frequency rises accordingly.
+
+If the open size is small:
+
+- The cost per bluff decreases,
+- The required fold frequency decreases,
+- A wider $L$ becomes sustainable.
+
+Thus smaller opens support greater range width.
+
+This explains the structural shift in modern play toward smaller opening sizes.
+
+The mathematics precedes the trend.
+
+## Smaller Opens and Greater Range Width
+
+Let $b$ denote the incremental risk of the bluff portion.
+
+Expected value of a pure bluff is
+
+$$
+\text{EV} = \text{Fold\%} \cdot P - (1 - \text{Fold\%}) \cdot b.
+$$
+
+Smaller $b$ reduces downside risk.
+
+Thus hands in $J$ or marginal $L$ categories may become viable as part of the opening distribution.
+
+Range expansion is therefore directly linked to open size.
+
+## Limping and Loss of Fold Equity
+
+In a limp scenario:
+
+- Opponents face minimal additional cost.
+- MDF approaches 100%.
+- Fold equity approaches zero.
+
+Without fold equity:
+
+- Bluff hands ($L$) lose profitability.
+- The opening distribution collapses toward purely value-heavy hands.
+
+Thus limping destroys the structural incentive for a mixed range.
+
+Raising is not merely aggression.
+
+It is the mechanism that sustains a viable mixture of $V$ and $L$.
+
+
+## Structural Summary
+
+Opening bet size determines:
+
+- The defense threshold imposed on opponents,
+- The sustainable proportion of bluffs,
+- The overall width of $\Omega_0$.
+
+Preflop structure is therefore not arbitrary.
+
+It is the equilibrium response to minimum defense constraints.
+
+Bet size is a distributional parameter.
+
+### 2.3 Distribution of MDF Across Multiple Players
+
+In the previous subsection, we analyzed the Big Blind’s minimum defense frequency (MDF) in a heads-up setting.
+
+When multiple players remain to act, the structure changes.
+
+Defense responsibility becomes distributed.
+
+## Multi-Player Defense Structure
+
+Suppose you open-raise and $k$ players remain to act.
+
+Let $P$ denote the pot before their decisions, and let $b$ denote the incremental cost each faces to continue.
+
+To prevent automatic profit from bluffing, the **collective** defense frequency must satisfy
+
+$$
+\text{Total Continue\%} \ge \frac{P}{P + b}.
+$$
+
+
+::contentReference[oaicite:0]{index=0}
+
+
+This threshold applies to the aggregate probability that *at least one* opponent continues.
+
+
+## Shared Defense Burden
+
+Let $f_i$ denote the continuation frequency of player $i$, for $i=1,\dots,k$.
+
+Assuming independence for modeling purposes, the probability that all players fold is
+
+$$
+\prod_{i=1}^{k} (1 - f_i).
+$$
+
+Therefore, the probability that at least one continues is
+
+$$
+1 - \prod_{i=1}^{k} (1 - f_i).
+$$
+
+
+::contentReference[oaicite:1]{index=1}
+
+
+To satisfy minimum defense constraints, we require
+
+$$
+1 - \prod_{i=1}^{k} (1 - f_i) \ge \frac{P}{P + b}.
+$$
+
+Thus the defense burden is shared.
+
+No single player must individually meet the full MDF threshold.
+
+## Independent vs Correlated Defense Modeling
+
+The independence assumption is a modeling simplification.
+
+In reality:
+
+- Defense decisions may be correlated.
+- Later players observe earlier folds.
+- Range composition influences collective behavior.
+
+Nevertheless, independence provides structural insight:
+
+- As $k$ increases,
+- The probability that *all* players fold decreases rapidly,
+- Even if individual $f_i$ are modest.
+
+Thus fold equity declines in multiway settings.
+
+The opener’s bluff region $L$ becomes less viable as $k$ increases.
+
+
+## Collective Continuation Requirement
+
+Consider a symmetric model in which each of $k$ players defends with frequency $f$.
+
+Then the continuation probability becomes
+
+$$
+1 - (1 - f)^k.
+$$
+
+As $k$ increases, even small $f$ produce substantial collective defense.
+
+This implies:
+
+- Multiway pots reduce the effectiveness of pure bluffing.
+
+- Bluff-heavy opening ranges are structurally unstable against many opponents.
+
+## Impact on Open Size
+
+Because fold equity declines as $k$ increases:
+
+- Large open sizes become riskier.
+- Bluff profitability declines.
+
+To preserve the viability of $L$ in multiway environments, rational play often adjusts by:
+
+- Reducing open size,
+- Contracting range width.
+
+Open size and opponent count interact multiplicatively.
+
+
+## Impact on Range Width
+
+Let $\Omega_0 = V \cup L$ denote the opening range.
+
+As $k$ increases:
+
+- The effective fold probability declines,
+- The expected value of $L$ decreases,
+- Marginal bluff hands migrate toward $J$.
+
+Thus the opening range contracts.
+
+Conversely, in heads-up or near heads-up settings:
+
+- Collective defense is weaker,
+- Bluff frequency can expand,
+- $\Omega_0$ widens.
+
+## Structural Conclusion
+
+In multi-player settings:
+
+- Defense responsibility is distributed,
+- Fold equity decays combinatorially,
+- Bluff-heavy ranges become less stable.
+
+Preflop structure is therefore shaped not only by position, but by the number of independent ranges yet to act.
+
+Opening strategy is a response to collective minimum defense constraints.
+
+### 2.4 The 3-Bet: Size and Justification
+
+An open-raise defines an initial distribution $\Omega_0$.
+
+A 3-bet applies a second-level transformation to that distribution.
+
+It is therefore not merely a larger bet.
+
+It is a second-stage distributional filter.
+
+## The 3-Bet as a Second-Level Filter
+
+Let $\Omega_{\text{open}}$ denote the opening range.
+
+When facing a 3-bet, the opener must restrict their range to a continuation subset
+
+$$
+\Omega_{\text{continue}} \subseteq \Omega_{\text{open}}.
+$$
+
+Thus the 3-bet induces a new nested sequence
+
+$$
+\Omega_{\text{open}} \supseteq \Omega_{\text{continue}}.
+$$
+
+Hands not profitable against the 3-bet size are eliminated or reweighted.
+
+The 3-bet therefore reshapes the opponent’s distribution before the flop is even dealt.
+
+## Isolation of Capped Ranges
+
+A range is said to be **capped** if it lacks the strongest possible holdings.
+
+For example, if a player opens but never 4-bets with $AA$, then a calling range may be capped at $KK$ or lower.
+
+A 3-bet exploits capped ranges by:
+
+- Increasing pot size,
+- Forcing weaker hands to continue under pressure,
+- Concentrating action against the strongest remaining hands.
+
+Thus 3-betting often targets portions of $\Omega_{\text{open}}$ that cannot defend at sufficient frequency.
+
+
+## Polarization into $V$ and $L$
+
+A common structural response is to construct a polarized 3-bet range:
+
+$$
+\Omega_{\text{3-bet}} = V \cup L.
+$$
+
+Here:
+
+- $V$ contains hands strong enough to continue against a 4-bet.
+- $L$ contains hands too weak to call profitably but strong enough to bluff.
+
+Middling hands ($M$) may instead flat-call the open.
+
+This creates separation between:
+
+- Linear call ranges,
+- Polarized 3-bet ranges.
+
+The partition $V$–$L$ emerges from incentive constraints.
+
+
+## Relationship Between 3-Bet Size and Required Fold Frequency
+
+Suppose the opener has invested $R$, and you 3-bet to $S$.
+
+Let $P$ denote the pot before your 3-bet is called.
+
+If your 3-bet is a pure bluff, the expected value is
+
+$$
+\text{EV} = \text{Fold\%} \cdot P - (1 - \text{Fold\%}) \cdot S.
+$$
+
+Break-even occurs when
+
+$$
+\text{Fold\%} = \frac{S}{P + S}.
+$$
+
+
+::contentReference[oaicite:0]{index=0}
+
+
+Thus larger 3-bets require higher fold frequency.
+
+As $S$ increases:
+
+- Bluff profitability requires greater opponent over-folding,
+- The viable $L$ region contracts.
+
+Bet sizing directly constrains mixture proportions.
+
+
+
+## Linear vs Polarized 3-Bet Constructions
+
+Two structural constructions emerge:
+
+### Polarized Construction
+
+$$
+\Omega_{\text{3-bet}} = V \cup L.
+$$
+
+- Strong hands for value,
+- Selected bluff hands,
+- Middling hands call.
+
+This is common when opponents fold frequently to 3-bets.
+
+
+
+### Linear Construction
+
+$$
+\Omega_{\text{3-bet}} = V \cup M.
+$$
+
+- Strong and moderately strong hands 3-bet,
+- Weak hands folded,
+- Few true bluffs.
+
+This structure appears when opponents defend aggressively.
+
+The choice between linear and polarized construction depends on:
+
+- Opponent defense frequency,
+- Opening width,
+- Stack depth.
+
+
+
+## Interaction Between Opening Width and 3-Bet Frequency
+
+Let $\Omega_{\text{open}}$ have width $w$ (measured by total probability mass).
+
+As $w$ increases:
+
+- The opener contains more marginal hands,
+- More hands are vulnerable to 3-bets,
+- Fold frequency to 3-bets increases.
+
+Thus wider opening ranges permit higher 3-bet frequencies.
+
+Conversely:
+
+- If $\Omega_{\text{open}}$ is tight,
+- Its continuation region is stronger,
+- Bluff 3-bets lose profitability.
+
+3-bet frequency is therefore endogenous to opening width.
+
+
+
+## Structural Conclusion
+
+A 3-bet is not simply aggression.
+
+It is:
+
+- A distributional refinement,
+- A mechanism for exploiting capped regions,
+- A mixture selection between $V$ and $L$,
+- A sizing-dependent equilibrium constraint.
+
+Preflop structure emerges from nested filtering:
+
+$$
+\Omega \rightarrow \Omega_{\text{open}} \rightarrow \Omega_{\text{continue}}.
+$$
+
+Each transformation is governed by combinatorics, probability, and minimum defense thresholds.
+
+### 2.5 The Squeeze Play
+
+The squeeze play arises in a specific structural configuration:
+
+- Player A opens,
+- Player B calls,
+- Player C re-raises.
+
+The squeeze is not merely a large 3-bet.
+
+It is a bet applied to a pot containing **dead money** and multiple distributed defense responsibilities.
+
+
+
+## Dead Money as an Incentive Parameter
+
+Let $R$ denote the open size and suppose one player calls.
+
+Before Player C acts, the pot contains:
+
+- Blinds,
+- The open $R$,
+- The call $R$.
+
+Denote this total by $P$.
+
+If Player C 3-bets to $S$, then a bluff profits whenever both earlier players fold.
+
+Expected value of a pure squeeze bluff is
+
+$$
+\text{EV} = \text{Fold\%} \cdot P - (1 - \text{Fold\%}) \cdot S.
+$$
+
+The key feature is that $P$ already contains chips invested by two players.
+
+Dead money increases $P$ without increasing $S$ proportionally.
+
+This lowers the fold frequency required for profitability.
+
+
+## Compounded Fold Probability Across Players
+
+Let $f_1$ denote the continuation frequency of the opener and $f_2$ that of the caller.
+
+Assuming independence for modeling purposes, the probability both fold is
+
+$$
+(1 - f_1)(1 - f_2).
+$$
+
+
+::contentReference[oaicite:0]{index=0}
+
+
+Thus the probability the squeeze succeeds immediately is multiplicative.
+
+Even if each player defends moderately often, the joint fold probability may remain substantial.
+
+This compounding effect is the structural engine of the squeeze.
+
+
+
+## Capped Calling Ranges as Vulnerability
+
+The caller’s range is often **capped**:
+
+- Very strong hands may 3-bet rather than call.
+- The calling range contains many middling hands ($M$).
+
+Similarly, the opener may be constrained by position or prior commitments.
+
+Thus both $\Omega_{\text{open}}$ and $\Omega_{\text{call}}$ may lack the strongest holdings.
+
+The squeeze targets these capped regions.
+
+A large re-raise forces both players to defend ranges that were not constructed to withstand further aggression.
+
+
+
+## Structural Conditions: Open + Call
+
+The squeeze is structurally viable under three conditions:
+
+1. **Presence of dead money**  
+   The pot already contains significant chips.
+
+2. **Distributed defense responsibility**  
+   No single player bears full minimum defense obligation.
+
+3. **Capped intermediate ranges**  
+   At least one continuing range lacks its strongest elements.
+
+Under these conditions, fold equity compounds while defensive strength remains diluted.
+
+
+## Exploitation of Distributed Defense Responsibility
+
+Recall from Section 2.3 that collective defense must satisfy
+
+$$
+1 - (1-f_1)(1-f_2) \ge \frac{P}{P+S}.
+$$
+
+If neither player individually defends at sufficient frequency, and coordination is absent, the squeeze may exceed minimum defense constraints.
+
+In practice:
+
+- Each player anticipates the other may defend,
+- Responsibility is implicitly diffused,
+- Over-folding may occur.
+
+The squeeze exploits this distributed structure.
+
+
+## Distributional Interpretation
+
+Let
+
+- $\Omega_{\text{open}}$ denote the opener’s range,
+- $\Omega_{\text{call}}$ denote the caller’s range.
+
+The squeeze applies a second-level filter to both simultaneously:
+
+$$
+\Omega_{\text{open}} \rightarrow \Omega'_{\text{open}},
+$$
+$$
+\Omega_{\text{call}} \rightarrow \Omega'_{\text{call}}.
+$$
+
+Hands unable to withstand the re-raise are eliminated.
+
+The squeeze therefore reshapes two distributions at once.
+
+
+## Structural Conclusion
+
+The squeeze play is not opportunistic aggression.
+
+It is the exploitation of:
+
+- Dead money,
+- Multiplicative fold probabilities,
+- Capped intermediate ranges,
+- Distributed defense burdens.
+
+Its profitability arises from the combinatorial interaction of multiple filtered distributions.
+
+In multi-player environments, fold equity does not merely add.
+
+It compounds.
+
+## Section 3: Postflop Distributional Play
+
+### 3.1 Continuation Betting (C-Betting)
+
+- Preflop aggressor range advantage  
+- Range advantage vs nut advantage  
+- C-bet range composition:
+  - Polarized: $V \cup L$  
+  - Linear: $V \cup M \cup L$  
+- Interaction between board texture and:
+  - Density of $V$  
+  - Density of $L$  
+- Defender’s response structure  
+
+
+### 3.1 Continuation Betting (C-Betting)
+
+A continuation bet (c-bet) occurs when the preflop aggressor bets on the flop, regardless of whether their specific hand improved.
+
+From a distributional perspective, the c-bet is the first postflop transformation of preflop ranges.
+
+It is not a statement about a hand.
+
+It is a statement about a range.
+
+
+
+## Preflop Aggressor Range Advantage
+
+Let
+
+- $\Omega_A$ denote the preflop aggressor’s range,
+- $\Omega_D$ denote the defender’s range.
+
+After the flop, both ranges are restricted to combinations consistent with the public board.
+
+We say the aggressor has **range advantage** if, on average, hands in $\Omega_A$ have greater equity against $\Omega_D$.
+
+Formally, if
+
+$$
+\mathbb{E}_{\omega \sim \Omega_A}[\text{Equity}(\omega \text{ vs } \Omega_D)]
+>
+\mathbb{E}_{\omega \sim \Omega_D}[\text{Equity}(\omega \text{ vs } \Omega_A)],
+$$
+
+then $\Omega_A$ has range advantage.
+
+Range advantage concerns average equity across the entire distribution.
+
+
+## Range Advantage vs Nut Advantage
+
+Range advantage does not imply possession of the strongest possible hands.
+
+Define **nut advantage** as the concentration of probability mass in the top tail of the hand-strength distribution.
+
+A player may:
+
+- Have range advantage (higher mean equity),
+- But lack nut advantage (fewer combinations of the absolute strongest hands).
+
+These two notions diverge on certain board textures.
+
+For example:
+
+- On a dry high-card board (e.g., $A$–$K$–$5$), the aggressor often holds more strong top-pair combinations.
+- On a coordinated low board (e.g., $7$–$6$–$5$), the defender may hold more sets and two-pair combinations.
+
+C-bet strategy depends on both quantities.
+
+
+
+## C-Bet Range Composition
+
+Using the V–L–M–J partition, a c-betting range may take two principal forms.
+
+
+The choice between polarized and linear betting is a function of distributional geometry.
+
+
+
+## Board Texture and Functional Density
+
+Let the flop be $B$.
+
+The texture of $B$ affects:
+
+- $|V|$ — number of strong made hands,
+- $|L|$ — number of viable bluff candidates,
+- $|M|$ — density of middling holdings.
+
+On a dry board (e.g., $A$–$7$–$2$ rainbow):
+
+- $\Omega_A$ often retains many strong top-pair combinations,
+- $\Omega_D$ may contain many $J$ hands,
+- Bluff density may be limited.
+
+On a wet board (e.g., $J$–$T$–$9$ two-tone):
+
+- Both ranges contain strong combinations,
+- Draw density increases,
+- Nut advantage may shift toward the defender.
+
+Thus board texture reshapes the V–L–M–J partition.
+
+C-bet frequency and size must respond accordingly.
+
+
+
+## Defender’s Response Structure
+
+Upon facing a c-bet, the defender partitions $\Omega_D$ into:
+
+- Continue region ($V \cup M$),
+- Raise region (strong $V$ and selected bluffs),
+- Fold region ($J$).
+
+The defender’s minimum defense frequency must satisfy pot-odds constraints, but the composition of continuation hands depends on:
+
+- Range advantage,
+- Nut advantage,
+- Blockers,
+- Future street realization.
+
+Thus continuation betting creates a new pair of filtered distributions:
+
+$$
+\Omega_A \rightarrow \Omega'_A,
+$$
+
+$$
+\Omega_D \rightarrow \Omega'_D.
+$$
+
+Postflop play is a sequence of distributional refinements driven by board texture and incentive constraints.
+
+
+## Structural Conclusion
+
+Continuation betting is not an automatic follow-through.
+
+It is a probabilistic statement about:
+
+- Relative distributional advantage,
+- Functional partition density,
+- Incentive compatibility.
+
+The flop does not reveal hands.
+
+It reshapes ranges.
+
+C-betting is the first structured response to that reshaping.
+
+
+### 3.3 Wet and Dry Boards
+
+Board texture determines how probability mass is distributed across the functional partition
+
+$$
+\Omega = V \cup L \cup M \cup J.
+$$
+
+The distinction between **dry** and **wet** boards is not aesthetic.  
+It describes the combinatorial structure of the remaining hypothesis space.
+
+
+## Dry Boards
+
+A board is **dry** if it has:
+
+- Low rank connectivity,
+- Few straight possibilities,
+- Limited flush draws,
+- Sparse overlap between ranges.
+
+Examples:
+
+- $A$–$7$–$2$ rainbow  
+- $K$–$8$–$3$ disconnected
+
+On dry boards:
+
+- The number of strong made hands ($|V|$) is limited.
+- Draw density is low.
+- Many hands fall into $J$ or weak $M$.
+
+Because equity changes little across future streets, such boards are often described as **static**.
+
+## Wet Boards
+
+A board is **wet** if it has:
+
+- High rank connectivity,
+- Multiple straight possibilities,
+- Flush draws,
+- High interaction between ranges.
+
+Examples:
+
+- $J$–$T$–$9$ two-tone  
+- $8$–$7$–$6$ with a flush draw
+
+On wet boards:
+
+- $|V|$ increases for both players.
+- $|L|$ increases due to draw-heavy combinations.
+- Many hands possess significant equity.
+
+Because equity can shift dramatically on later streets, such boards are often described as **dynamic**.
+
+
+## Impact on the Size of $V$ and $L$
+
+Let $B$ denote the board.
+
+The board determines how many combinations from $\Omega$ enter each functional region.
+
+On dry boards:
+
+- $|V|$ may be concentrated in one range (often the preflop aggressor).
+- $|L|$ may be limited because few drawing combinations exist.
+- $|M|$ may contain hands with modest showdown value.
+
+On wet boards:
+
+- Both players may hold many strong combinations.
+- $|L|$ expands because drawing hands can serve as semi-bluffs.
+- $|M|$ shrinks as hands polarize toward strong made hands or high-equity draws.
+
+Thus board texture reshapes the functional density of the partition.
+
+
+
+## Polarization Tendencies by Board Texture
+
+On dry boards:
+
+- Range advantage is often clear.
+- A linear betting strategy ($V \cup M \cup L$) may be sustainable.
+- Small bet sizes may efficiently pressure $J$.
+
+On wet boards:
+
+- Nut advantage may shift or become symmetric.
+- Polarized betting ($V \cup L$) becomes more common.
+- Middling hands ($M$) may prefer checking due to vulnerability.
+
+Dynamic boards increase the incentive to separate:
+
+- Strong hands that can withstand aggression,
+- Draw-heavy bluffs that benefit from fold equity.
+
+
+
+## Bet Sizing and Equity Distribution Spread
+
+Let the equity of hand $\omega$ against the opponent’s range be denoted by $E(\omega)$.
+
+On dry boards:
+
+- The distribution of $E(\omega)$ is tightly clustered.
+- Few hands are highly vulnerable.
+- Small bet sizes may suffice.
+
+On wet boards:
+
+- The distribution of $E(\omega)$ has greater spread.
+- Strong hands are vulnerable to many turn cards.
+- Larger bet sizes may:
+  - Deny equity,
+  - Charge draws,
+  - Polarize the range.
+
+Thus bet size becomes a response to the *variance* of the equity distribution.
+
+
+
+## Vulnerability of $V$
+
+On static boards:
+
+- $V$ hands often remain strong on future streets.
+- Their equity is relatively stable.
+
+On dynamic boards:
+
+- $V$ hands may be vulnerable to numerous runouts.
+- Future equity realization becomes uncertain.
+
+As vulnerability increases:
+
+- Incentive to bet larger increases,
+- Polarization strengthens,
+- Checking $M$ becomes more common.
+
+
+
+## Structural Conclusion
+
+Wet and dry boards are not stylistic labels.
+
+They describe how the board reshapes:
+
+- The density of $V$, $L$, $M$, and $J$,
+- The variance of equity across ranges,
+- The stability of advantage across streets.
+
+Board texture alters the geometry of the distribution.
+
+Bet sizing and polarization are rational responses to that altered geometry.
+
+### 3.4 Pot Odds in Decision Making
+
+When facing a bet, a player must decide whether to fold, call, or raise.
+
+At its core, the calling decision reduces to a comparison between:
+
+- The price being offered,
+- The probability of winning at showdown.
+
+Pot odds formalize this comparison.
+
+
+
+## Break-Even Equity Threshold
+
+Suppose the pot is $P$ and an opponent bets $b$.
+
+If you call, the final pot becomes $P + b + b = P + 2b$.
+
+If you fold, your payoff is $0$.
+
+If you call, your expected value is
+
+$$
+\text{EV(call)} = \text{Equity} \cdot (P + 2b) - b.
+$$
+
+Calling is break-even when
+
+$$
+\text{Equity} \cdot (P + 2b) = b.
+$$
+
+Solving for Equity gives the required winning probability.
+
+
+::contentReference[oaicite:0]{index=0}
+
+
+This is the **break-even equity threshold**.
+
+If your probability of winning exceeds this fraction, calling is profitable.
+
+
+
+## Relationship Between Bet Size and Required Winning Probability
+
+Observe that as $b$ increases:
+
+- The required equity increases.
+- Bluff-catching becomes more difficult.
+- Drawing hands must realize more equity.
+
+Small bets offer attractive pot odds.  
+Large bets demand stronger hands.
+
+Bet size therefore determines the defender’s minimum continuation equity.
+
+
+
+## Application: Bluff-Catching with $M$
+
+Let your hand lie in the middling category $M$.
+
+Suppose the opponent’s betting range is
+
+$$
+B = V \cup L.
+$$
+
+Let
+
+- $|V|$ denote the number of value combinations,
+- $|L|$ denote the number of bluff combinations.
+
+If we assume equal likelihood within $B$, then the probability the opponent is bluffing is
+
+$$
+\frac{|L|}{|V| + |L|}.
+$$
+
+Calling is profitable if
+
+$$
+\frac{|L|}{|V| + |L|}
+>
+\frac{b}{P+b}.
+$$
+
+Thus pot odds translate directly into constraints on the composition of the opponent’s range.
+
+
+
+## Application: Drawing Hands
+
+Suppose you hold a flush draw on the flop.
+
+Let $q$ denote the probability of completing the draw by the river.
+
+If facing a bet $b$ into pot $P$, a call is profitable if
+
+$$
+q > \frac{b}{P+b}.
+$$
+
+This ignores future betting for simplicity, but the structural logic remains:
+
+Pot odds compare:
+
+- Immediate cost,
+- Probabilistic gain.
+
+Drawing hands convert combinatorial completion counts into equity estimates, which are then compared to the break-even threshold.
+
+
+
+## Quantifying Bluff Proportion Required to Justify a Call
+
+Rewriting the bluff-catching condition,
+
+$$
+\frac{|L|}{|V| + |L|}
+>
+\frac{b}{P+b}
+$$
+
+implies
+
+$$
+|L|
+>
+\frac{b}{P}
+|V|.
+$$
+
+Thus the ratio of bluffs to value must exceed $\frac{b}{P}$.
+
+This ratio is not psychological.
+
+It is determined entirely by:
+
+- Bet size,
+- Pot size.
+
+Pot odds therefore impose structural constraints on optimal bluff frequency.
+
+
+
+## Structural Conclusion
+
+Pot odds transform betting decisions into inequalities.
+
+A call is justified not because a hand “looks good,” but because:
+
+- The price offered is favorable relative to equity,
+- The opponent’s distribution contains sufficient $L$ mass.
+
+The defender’s problem is not to guess a hand.
+
+It is to evaluate whether the probability mass of bluffs exceeds a threshold determined by bet size.
+
+In this sense, pot odds close the loop:
+
+- Range construction creates $V$ and $L$,
+- Bet size sets the threshold,
+- Calling decisions test whether the mixture is balanced. 
+
+### 3.5 Check-Raising as Range Transformation
+
+A check-raise is structurally different from a bet.
+
+A bet selects a mixture from $\Omega$.  
+A check-raise selects a mixture **after observing the opponent’s betting range**.
+
+Thus a check-raise is a conditional second-level transformation.
+
+
+## Sequential Structure
+
+Let
+
+- $\Omega_A$ denote the aggressor’s range,
+- $\Omega_D$ denote the defender’s range.
+
+After the aggressor continuation-bets, their range is restricted to
+
+$$
+\Omega_A^{\text{bet}} \subseteq \Omega_A.
+$$
+
+The defender’s check-raising range is then selected from
+
+$$
+\Omega_D.
+$$
+
+Thus the check-raise operates on a filtered distribution rather than the full preflop range.
+
+
+## Check-Raise as Polarized Response
+
+A common structural form is
+
+$$
+\Omega_{\text{XR}} = V \cup L.
+$$
+
+- Strong made hands for value,
+- Selected bluffs (often draws),
+- Middling hands ($M$) frequently call rather than raise.
+
+The check-raise therefore mirrors the polarized construction seen in 3-betting.
+
+
+
+## Fold Equity and Required Fold Frequency
+
+Suppose the pot is $P$ and the aggressor bets $b$.
+
+If the defender check-raises to $R$, the aggressor must call $R - b$ to continue.
+
+From the defender’s perspective, a pure bluff check-raise has expected value
+
+$$
+\text{EV} = \text{Fold\%} \cdot (P + b) - (1 - \text{Fold\%}) \cdot (R - b).
+$$
+
+Break-even fold frequency occurs when
+
+
+::contentReference[oaicite:0]{index=0}
+
+
+Larger raises require greater fold frequency.  
+Smaller raises reduce the threshold.
+
+As in prior sections, sizing determines mixture viability.
+
+
+
+## Board Texture and Bluff Selection
+
+Check-raise bluffs frequently arise from high-equity draws.
+
+On wet boards:
+
+- $|L|$ may contain strong semi-bluffs,
+- Equity realization improves if called,
+- Polarized construction is natural.
+
+On dry boards:
+
+- Bluff density is lower,
+- Check-raises tend to represent concentrated $V$ regions,
+- Bluff frequency must be smaller to satisfy fold constraints.
+
+Thus board texture again reshapes the V–L–M–J partition.
+
+
+## Defender’s Distributional Leverage
+
+The check-raise exploits a structural asymmetry:
+
+- The aggressor has already revealed partial commitment through betting.
+- Their betting range is narrower than $\Omega_A$.
+- Their continuation region is constrained by pot odds.
+
+Thus the check-raise applies pressure to a partially filtered distribution.
+
+It is a second-stage filter applied to an already transformed range.
+
+
+## Structural Conclusion
+
+Check-raising is not an emotional response.
+
+It is:
+
+- A conditional transformation of distributions,
+- A polarized mixture over $V$ and $L$,
+- A sizing-dependent fold-equity calculation,
+- A response shaped by board texture and range interaction.
+
+Like the 3-bet and the squeeze, it operates by exploiting minimum defense constraints.
+
+The geometry of the distribution governs the strategy.
+
+# 3. Beyond Poker
+
+- Finite hypothesis spaces in:
+  - Medical testing  
+  - Fraud detection  
+  - Legal inference  
+- Decision-making against distributions rather than certainties  
+- Structural analogy: betting ranges ↔ hypothesis sets  
+
+# Liberal Arts Sidebar  
+## Why Humans Resist Distributional Reasoning
+
+To reason in distributions is to accept that certainty is rare.
+
+Mathematically, we have spent this chapter working with objects of the form
+
+$$
+p : \Omega \to [0,1],
+$$
+
+probability distributions over possible states of the world.
+
+But psychologically, humans prefer a different object:
+
+> A single story.
+
+
+
+## The Narrative Instinct
+
+Cognitive scientists have long observed that human reasoning evolved in environments where:
+
+- Immediate threats demanded quick binary judgments,
+- Social interactions required interpretation of intentions,
+- Memory was organized through narrative rather than statistical abstraction.
+
+A distribution does not feel like knowledge.  
+A story does.
+
+If a patient becomes ill after a vaccine, the vivid case may dominate perception, even when the distribution of outcomes overwhelmingly supports safety.
+
+If a poker player loses a large pot after making a mathematically correct call, the loss may override the expected value calculation.
+
+The human mind compresses distributions into episodes.
+
+
+
+## The Outcome Bias
+
+One well-documented phenomenon is **outcome bias**:
+
+> Judging a decision by its realized outcome rather than by the information available at the time.
+
+In poker:
+
+- A correct call that loses is judged as “bad.”
+- A reckless bluff that succeeds is judged as “brilliant.”
+
+In medicine:
+
+- A risky surgery that succeeds is praised,
+- The same surgery that fails is condemned.
+
+Mathematically, however, rationality is evaluated by expected value:
+
+$$
+\mathbb{E}[\text{Outcome}],
+$$
+
+not by a single realization.
+
+Distributional thinking requires separating:
+
+- Decision quality,
+- Outcome realization.
+
+That separation is emotionally difficult.
+
+
+
+## The Illusion of Determinism
+
+Humans prefer deterministic explanations.
+
+Once an outcome is observed, it appears inevitable.
+
+This is known as hindsight bias.
+
+After seeing the river card, it feels as though the entire hand was leading toward that result.  
+But before the river was dealt, the outcome was distributed across many possibilities.
+
+Distributional reasoning requires us to remember the unrealized branches of the tree.
+
+# Beyond Poker  
+## Fraud Detection and the Geometry of Suspicion
+
+Fraud detection systems face a problem structurally identical to poker inference.
+
+A single transaction occurs.  
+The system must decide:
+
+- Approve,
+- Flag for review,
+- Block.
+
+But the system does not know whether the transaction is fraudulent.
+
+It knows only a distribution over possibilities.
+
+
+## The Hypothesis Space
+
+Let
+
+$$
+\Omega = \{\text{Legitimate}, \text{Fraudulent}\}.
+$$
+
+Before observing transaction features, the system assigns a prior probability
+
+$$
+P(\text{Fraudulent}) = \pi.
+$$
+
+In most financial systems, $\pi$ is small.  
+Fraud is rare.
+
+This asymmetry mirrors poker:
+
+- Strong value hands are rare.
+- Bluff density depends on context.
+
+
+
+## Updating the Distribution
+
+Suppose the transaction has observable features:
+
+- Unusual geographic location,
+- Large purchase amount,
+- Rapid sequence of transactions.
+
+Let $X$ denote the observed feature vector.
+
+The system updates via conditional probability:
+
+
+::contentReference[oaicite:0]{index=0}
+
+
+This is not a guess about a specific transaction.
+
+It is a transformation of a probability distribution over $\Omega$.
+
+
+## Threshold Decision Rules
+
+The system must decide whether to block the transaction.
+
+Let:
+
+- $C_F$ = cost of failing to block fraud,
+- $C_L$ = cost of falsely blocking a legitimate transaction.
+
+A rational decision rule is:
+
+Block if
+
+$$
+P(\text{Fraudulent} \mid X) > \tau,
+$$
+
+where
+
+$$
+\tau = \frac{C_L}{C_F + C_L}.
+$$
+
+This is a pot-odds inequality in disguise.
+
+- $C_F$ parallels the cost of calling incorrectly.
+- $C_L$ parallels the cost of folding incorrectly.
+
+The decision depends on relative magnitudes, not certainty.
+
+
+
+## Rare Events and Base Rate Neglect
+
+Fraud detection highlights a key difficulty in distributional reasoning.
+
+Because fraud is rare, even strong indicators may not produce a high posterior probability.
+
+Suppose:
+
+- $P(\text{Fraud}) = 0.01$,
+- A feature occurs 80% of the time in fraud cases,
+- But also 10% of the time in legitimate cases.
+
+Then even with strong evidence, the posterior may remain below 50%.
+
+Humans often neglect the base rate.
+
+This parallels poker intuition errors:
+
+- Overestimating rare bluffs,
+- Ignoring the combinatorial scarcity of strong hands.
+
+Distributional reasoning requires constant attention to base frequencies.
+
+
+## Mixture Modeling and Behavioral Patterns
+
+Modern fraud systems use mixture models over thousands of features.
+
+Transactions are evaluated not in isolation but relative to distributions:
+
+- Customer spending patterns,
+- Merchant risk categories,
+- Temporal behavior.
+
+Each feature reshapes the distribution.
+
+The final action reflects the cumulative reweighting of hypotheses.
+
+This mirrors range filtering by street:
+
+$$
+\Omega_0 \rightarrow \Omega_1 \rightarrow \Omega_2.
+$$
+
+Each new piece of evidence narrows or reweights the hypothesis space.
+
+
+
+## Structural Parallels with Poker
+
+| Poker                         | Fraud Detection                     |
+|------------------------------|--------------------------------------|
+| Opponent’s range             | Legitimate vs fraudulent hypothesis |
+| Betting action               | Observed transaction features       |
+| Pot odds                     | Cost-sensitive threshold            |
+| Bluff density                | False-positive / false-negative mix |
+| Blockers                     | Feature interactions                 |
+
+In both domains:
+
+- You never observe the hidden state directly.
+- You update a distribution.
+- You act based on expected value under cost constraints.
+
+
+## Final Reflection
+
+Fraud detection systems do not ask:
+
+> “Is this transaction fraudulent?”
+
+They ask:
+
+> “Given this evidence, what is the probability distribution over possible states, and which action minimizes expected loss?”
+
+Poker players who think in ranges are doing the same.
+
+Both domains reward those who can tolerate uncertainty, quantify risk, and act before the hidden variable is revealed.
+
+The mathematics is identical.
+
+Only the stakes differ.
+
+## Moral Discomfort with Probability
+
+Distributional reasoning can feel ethically unsettling.
+
+To say:
+
+> “This action increases survival probability from 82% to 87%”
+
+is less emotionally satisfying than saying:
+
+> “This action saves lives.”
+
+Probability language introduces uncertainty, and uncertainty can feel like weakness.
+
+Yet ethical decisions in law, public health, and economics depend precisely on managing distributions rather than guaranteeing outcomes.
+
+
+## The Discipline of Mathematical Humility
+
+To think in distributions is to accept:
+
+- Partial knowledge,
+- Incomplete information,
+- Structural uncertainty.
+
+It requires humility.
+
+Poker forces this humility in compressed form:
+
+- You rarely know the opponent’s hand.
+- You act against a weighted hypothesis space.
+- You accept that correct decisions sometimes lose.
+
+Mathematics provides the language to do this without illusion.
+
+
+## Returning to the Chapter
+
+Throughout this chapter, we have:
+
+- Defined ranges as distributions,
+- Filtered them by evidence,
+- Partitioned them into functional classes,
+- Acted according to threshold inequalities.
+
+This mode of thinking resists narrative simplicity.
+
+But it cultivates a habit of mind that extends beyond poker:
+
+> Judge decisions by the structure of the distribution, not by the drama of the outcome.
+
+Distributional reasoning may not come naturally.
+
+It can, however, be learned.
+
+And once learned, it changes how we interpret the world.
+
+# 5. Homework Problems
+
+The problems below explore range thinking, distributional updating, pot odds, and structural incentives in multi-stage decision environments.
+
+## Part I: Structural and Proof Problems
+
+1. **Monotonicity of Domination Probability.**  
+   Let $0 < p < 1$ and define
+
+   $$
+   f(n) = 1 - (1 - p)^n.
+   $$
+
+   
+::contentReference[oaicite:0]{index=0}
+
+
+   (a) Prove that $f(n)$ is strictly increasing in $n$.  
+   (b) Interpret this result in the context of early-position range contraction.
+
+2. **Nested Range Filtering.**  
+   Suppose
+
+   $$
+   \Omega_0 \supseteq \Omega_1 \supseteq \Omega_2 \supseteq \Omega_3
+   $$
+
+   are ranges induced by sequential betting actions.
+
+   (a) Prove that if elimination (not reweighting) is the only update mechanism, then support sizes are weakly decreasing.  
+   (b) Construct an example where support size remains constant but weights change substantially.
+
+3. **Bluff-to-Value Ratio Theorem.**  
+   Suppose a polarized betting range is $V \cup L$, and the opponent faces a bet $b$ into pot $P$.
+
+   (a) Derive the inequality relating $|L|/|V|$ to $b/P$.  
+   (b) Prove that larger bet sizes require strictly larger bluff-to-value ratios to remain unexploitable.
+
+4. **Collective Defense.**  
+   Let $k$ players each defend with probability $f$ independently.
+
+   (a) Prove that the probability all fold is $(1-f)^k$.  
+   (b) Show that as $k \to \infty$, the probability at least one continues approaches 1 whenever $f>0$.  
+   (c) Interpret this limit in terms of squeeze play viability.
+
+5. **Card Removal and Density Shifts.**  
+   Suppose $V$ consists of 18 combinations and $L$ consists of 12 combinations.
+
+   (a) If you block 6 value combinations and 2 bluff combinations, compute the new bluff density.  
+   (b) Prove that blocking a greater proportion of $V$ than $L$ strictly increases $\frac{|L|}{|V|}$.
+
+## Part II: Computational Problems
+
+6. **Preflop Combinatorics.**  
+   Consider an opening range consisting of
+
+   - $88^+$
+   - $AQ^+$
+   - $KQs$
+
+   (a) Compute the total number of combinations in the range.  
+   (b) Compute the proportion of the full 1326-hand space this represents.  
+   (c) If the player 4-bets only $QQ^+$ and $AK$, compute the percentage of their opening range that continues versus a 3-bet.
+
+7. **Pot Odds and Equity Threshold.**  
+   You face a river bet of $b=75$ into pot $P=100$.
+
+   (a) Compute the break-even equity threshold.  
+   (b) If the opponent’s betting range contains 14 value combinations and 8 bluff combinations, should you call with a pure bluff-catcher? Justify mathematically.
+
+8. **Squeeze EV.**  
+   Suppose an open to 3BB and one call creates a pot of 7.5BB.  
+   You squeeze to 12BB.
+
+   (a) Compute the break-even fold frequency.  
+   (b) If the opener folds 40% and the caller folds 60%, assuming independence, compute the squeeze success probability.  
+   (c) Determine whether the bluff is profitable ignoring postflop play.
+
+9. **Board Texture and Density.**  
+   Consider the flop $A$–$7$–$2$ rainbow.
+
+   Suppose the aggressor opened with all $Ax$, all pocket pairs $88^+$, and $KQ$.
+
+   (a) Compute how many combinations fall into $V$ (top pair or better).  
+   (b) Compare to the same calculation on $J$–$T$–$9$ two-tone.  
+   (c) Explain how the difference affects c-bet frequency.
+
+10. **Check-Raise Threshold.**  
+   Pot $P=50$, bet $b=30$, check-raise to $R=110$.
+
+   (a) Compute required fold frequency for a pure bluff check-raise.  
+   (b) Suppose the bettor continues with $V$ 70% of the time and $L$ 30% of the time. Under what conditions is your bluff profitable?
+
+## Part III: Conceptual and Modeling Problems
+
+11. **Range vs Hand Fallacy.**  
+   Explain formally why asking “What hand does the opponent have?” is a mathematically ill-posed question prior to showdown.
+
+12. **Linear vs Polarized Construction.**  
+   Provide a rigorous argument for why polarized betting structures are more common on dynamic boards than static boards.
+
+13. **Dominance and Realization.**  
+   Construct a probabilistic model showing why $A9$ loses value in early position but gains value in late position, even if raw equity versus a random hand is unchanged.
+
+14. **Fraud Detection Analogy.**  
+   Let $P(\text{Fraud}) = 0.02$.  
+   A feature appears in 80% of fraud cases and 10% of legitimate cases.
+
+   (a) Compute the posterior probability of fraud given the feature.  
+   (b) Explain how base-rate neglect parallels overestimating bluff frequency in poker.
+
+15. **Distributional Humility.**  
+   Provide a formal argument showing that a strategy maximizing expected value can produce arbitrarily long losing streaks with positive probability.  
+   Interpret this in terms of outcome bias.
+
+## Part IV: Advanced Proof Problems
+
+16. **Equilibrium Bluff Ratio.**  
+   Assume an opponent calls with frequency exactly equal to minimum defense frequency.
+
+   Prove that in equilibrium, the optimal bluff-to-value ratio equals $\frac{b}{P}$.
+
+17. **Monotonicity of Required Equity.**  
+   Let
+
+   $$
+   g(b) = \frac{b}{P+b}.
+   $$
+
+   
+::contentReference[oaicite:1]{index=1}
+
+
+   Prove that $g(b)$ is strictly increasing in $b$ and concave.  
+   Interpret economically.
+
+18. **Support Preservation Under Reweighting.**  
+   Let $p$ be a distribution on finite $\Omega$ and define
+
+   $$
+   p'(\omega) = \frac{p(\omega)\ell(\omega)}{\sum_{\omega'} p(\omega')\ell(\omega')}.
+   $$
+
+   Prove that $\text{supp}(p') \subseteq \text{supp}(p)$ and determine when equality holds.
+
+
+
+19. **Asymptotics of Multiway Defense.**  
+   Let each of $k$ players defend with probability $f_k = c/k$ for fixed $c>0$.
+
+   (a) Show that the probability all fold approaches $e^{-c}$ as $k \to \infty$.  
+   (b) Interpret this limit in the context of distributed defense.
+
+
+
+20. **Variance of Equity Across Board Classes.**  
+   Model equity of a range as a random variable $E(\omega)$.
+
+   (a) Define formally what it means for a board to have higher “equity variance.”  
+   (b) Show how increased variance affects optimal bet sizing in a simplified two-class ($V$–$L$) model.
+
+
+These problems are intended to deepen your understanding of:
+
+- Distributional reasoning,
+- Incentive constraints,
+- Structural filtering,
+- Range geometry,
+- Decision thresholds.
+
+In this chapter, the central object is not a hand.
+
+It is a probability distribution.
+
+# 6. Extension Activity
+
+## Preflop Range Design Project
+
+- Construct an opening range for a specified position  
+- Specify open size  
+- Justify:
+  - Range width  
+  - Bluff proportion  
+  - Defense robustness  
+- Analyze vulnerability to 3-bets or squeezes  
+- Ensure internal mathematical consistency  

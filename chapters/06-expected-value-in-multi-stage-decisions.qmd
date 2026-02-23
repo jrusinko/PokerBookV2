@@ -15,394 +15,1560 @@ sidebar:
   lens: "Moral philosophy"
   title: "Short-Term Pain, Long-Term Gain"
   theme: "Ethical frameworks that emphasize long-run consequences—and when maximizing long-run value can conflict with other values."
+editor: 
+  markdown: 
+    wrap: 72
 ---
-::: {.callout-note}
+
+::: callout-note
 **Chapter at a glance**
 
-- **Part:** Part II: Probability, Expectation, and Belief Updating
-- **Poker topics:** 1 Expected Value (EV), 4 Equity and Realization, 5 Multi-Stage Decision Making, 17 Pot Odds and Threshold Decisions
-- **Beyond poker:** business strategy (sequential investments), environmental policy (choices with future uncertainty), AI (planning under uncertainty)
-
+-   **Part:** Part II: Probability, Expectation, and Belief Updating
+-   **Poker topics:** 1 Expected Value (EV), 4 Equity and Realization, 5
+    Multi-Stage Decision Making, 17 Pot Odds and Threshold Decisions
+-   **Beyond poker:** business strategy (sequential investments),
+    environmental policy (choices with future uncertainty), AI (planning
+    under uncertainty)
 :::
 
-## Motivating Example
+## Motivation: When a Hand Is Not a Single Decision
 
-A call looks unprofitable immediately, but it keeps open future betting opportunities that can make the overall line profitable.
+A completed poker hand has a single numerical outcome: the number of
+chips won or lost. Yet the hand itself unfolds through time. Cards are
+revealed, bets are placed, and decisions are made before uncertainty
+resolves. The mathematical problem is not how to describe the final
+outcome, but how to **evaluate decisions made along the way**.
 
-**Guiding question.** How do we evaluate decisions whose consequences unfold over multiple stages?
+Poker players often use language that already hints at deeper structure:
 
-- Situation: A call looks unprofitable immediately, but it keeps open future betting opportunities that can make the overall line profitable.
-- Why it matters: this introduces 1 Expected Value (EV), 4 Equity and Realization.
+-   “I had good equity.”
+-   “I couldn’t realize my equity.”
+-   “It was a positive expected value decision.”
 
-# Expected Value in Multi-Stage Decisions
+These phrases are not synonymous. They refer to different mathematical
+objects that only become distinguishable once decisions are spread
+across multiple stages.
 
-## Motivating Example
+This chapter develops a mathematical framework for **multi-stage
+expected value**, using poker as a concrete setting in which
+probability, information, and decision-making interact in visible ways.
 
-A poker hand is rarely a single decision. Even the simplest description — *“I bet the flop and got called”* — conceals a structured sequence of events:
+## Equity, Value, and Realization
 
-- cards are revealed over time,
-- information accumulates,
-- decisions are made under uncertainty,
-- a payoff is realized only at the end.
+Several quantities in poker are commonly described with the word
+“equity,” but they correspond to *different random variables and
+different probability models*.\
+To reason clearly about decisions, we distinguish four related but
+mathematically distinct objects.
 
-At showdown, the outcome of the hand is a single number: the number of chips won or lost. But long before that outcome is known, players must evaluate whether continuing is worthwhile. What they are really evaluating is **expected value**, conditioned on what is known *so far*.
+Throughout, let ( \mathcal{F}\_t ) denote the information available at
+decision time (t).
 
-Two phrases commonly heard at a poker table point toward a mathematical distinction:
+------------------------------------------------------------------------
 
-- “I had good equity.”
-- “That was a positive expected value decision.”
+## 1. Raw Equity
 
-These statements are related, but they are not equivalent. Equity refers to the probability of winning under fixed conditions. Expected value refers to the average payoff of a *decision*, accounting for future randomness and future choices. The difference between these ideas only becomes clear when decisions unfold across time.
+**Raw equity** measures the probability that Hero wins at showdown *if
+the remaining cards are dealt with no further decisions*.
 
-This chapter develops a mathematical framework for expected value in **multi-stage decision problems**, using poker hands as a concrete setting. Poker provides intuition and examples; the mathematics supplies structure and precision.
+Define the **equity random variable** $$
+W =
+\begin{cases}
+1, & \text{Hero wins at showdown}, \\
+0, & \text{otherwise}.
+\end{cases}
+$$
 
-Throughout the chapter we will return to two running examples.
+The raw equity at time (t) is $$
+\text{Equity}_t
+=
+\mathbb{P}(W=1 \mid \mathcal{F}_t)
+=
+\mathbb{E}[W \mid \mathcal{F}_t].
+$$
 
-### Running Example A: A Drawing Hand with No Further Betting
+Raw equity: - depends only on hidden cards and future runouts, - ignores
+betting, folding, and stopping, - treats the hand as if it is always
+taken to showdown.
 
-A player reaches the flop holding a drawing hand (for instance, four cards to a flush). From this point onward, no further betting is allowed. The hand proceeds directly to the turn and river, and then to showdown.
+This is the quantity computed by standard equity calculators (e.g. <openpokertools.com>).
 
-In this example:
-- there are no remaining decisions,
-- uncertainty comes only from future cards,
-- value depends entirely on probability.
+------------------------------------------------------------------------
 
-This example isolates the idea of **equity** and introduces conditional expectation without strategic branching.
+## 2. Chip Equity
 
-### Running Example B: A Flop Bet with a Single Response
+**Chip equity** converts raw equity into chip units by multiplying by
+the current pot size.
 
-A player reaches the flop and must choose between two actions:
+If the pot at time (t) is (P_t), define $$
+\text{ChipEquity}_t = P_t \cdot \text{Equity}_t.
+$$
 
-- **check**, ending the hand immediately,
-- **bet** a fixed amount \( b \).
+Chip equity represents: - the *expected chip share* of the pot under a
+no-decision runout model, - a convenient baseline for comparing to
+actual expected value.
 
-If the player bets, the opponent responds by either **folding** or **calling**. No raises are allowed. If the opponent calls, the hand proceeds directly to showdown with no further betting.
+Chip equity is **not** an expected value of the true payoff random
+variable; it is a rescaling of raw equity.
 
-This example introduces:
-- decision nodes,
-- simplified modeling choices,
-- expected value that depends on policy rather than probability alone.
+------------------------------------------------------------------------
 
-Both examples are deliberately simplified. They are not meant to describe poker as it is played in practice. They are models designed to make mathematical structure visible.
+## 3. Realized Equity
 
----
+Raw equity describes what *could* happen at showdown.\
+**Realized equity** describes how much of that winning probability is
+actually converted into wins **under optimal future play**.
 
-## Decision Trees as Mathematical Objects
+Let (W) be the same binary win/loss random variable as above, but now
+interpreted under the full decision tree.
 
-A **decision tree** is a rooted directed tree that represents a sequential process involving both randomness and choice.
+The **realized equity** at time (t) is $$
+\text{RealizedEquity}_t
+=
+\mathbb{E}[W \mid \mathcal{F}_t,\ \text{optimal future play}].
+$$
+
+Equivalently, this is the probability that Hero eventually wins the hand
+*given that all future decisions are made optimally*.
+
+Realized equity: - is still a probability, - does not typically equal equity.
+A hand is say to underrealize its equity, if is realized equity, is lower than the equity itself.  For instance, if Hero hold 27o preflop, the equity is non-zero, as sometimes that hand will win at showdown.  However, in most situations the optimal play is to fold this hand pre-flop, thus it is very difficulty to realize the equity in the hand.  Hands such as big pairs, and some flushdraws may overrealize their equity, since the associated aggressive actions, will drive opponents to fold their hands (and thus give up their equity). 
+
+Realized Equity is very difficult to compute explicitly, since it requires understanding the impact of optimal play across all future actions.
+
+------------------------------------------------------------------------
+
+## 4. Strategic Expected Value
+
+The quantity that ultimately matters for decision-making is **expected
+value in chips**.
+
+Let $$
+X = \text{net change in Hero’s chips at the end of the hand},
+$$ measured relative to time (t).
+
+The **strategic expected value** is $$
+V_t
+=
+\mathbb{E}[X \mid \mathcal{F}_t,\ \text{optimal future play}].
+$$
+
+We note that Realized Chip Equity could be defined as Realized Equity times number of chips in the pot.  However, as realized equity is difficult to compete explicitly, we do not emphasize this conversion into the unit of chips.
+
+Strategic EV: - incorporates equity and realized equity, - accounts for
+pot size, bet sizing, stack depth, and stopping, - is computed by
+backward induction on the decision tree.
+
+This is the correct object for comparing actions.
+
+------------------------------------------------------------------------
+
+## How the Quantities Relate
+
+These four objects answer different questions:
+
+| Quantity        | Random Variable | Units       | Future Decisions? |
+|-----------------|-----------------|-------------|-------------------|
+| Raw equity      | \(W\)           | probability | No                |
+| Chip equity     | (P_t \cdot W)   | chips       | No                |
+| Realized equity | \(W\)           | probability | Yes               |
+| Strategic EV    | \(X\)           | chips       | Yes               |
+
+Conceptually: - **Raw equity** asks *how often could I win?* -
+**Realized equity** asks *how often will I win if play is optimal?* -
+**Chip equity** asks *what is that worth if nothing else happens?* -
+**Strategic EV** asks *what is this decision worth in expectation?*
+
+
+
+## Decision Trees as Models of Sequential Decisions
+
+Poker players routinely reason in conditional statements:
+
+-   “If I call, I may face an all-in on the river.”
+-   “If I fold now, I give up whatever chance I had.”
+-   “My stack size limits what I can do later.”
+
+These statements implicitly describe branches of a **decision tree**, a rooted directed tree representing all modeled futures of the hand.
 
 Each node of the tree is one of three types:
 
-- **Chance nodes**, where outcomes occur randomly according to specified probabilities.
-- **Decision nodes**, where a player chooses among available actions.
-- **Terminal nodes**, which represent the end of the process and are labeled with numerical payoffs.
+-   **Chance nodes**, representing random events such as card deals.
+-   **Decision nodes**, representing points at which a player chooses an
+    action.
+-   **Terminal nodes**, representing the end of the hand, labeled with
+    numerical payoffs.
 
-A **path** from the root to a terminal node represents one complete possible evolution of the hand. Before the hand is played, all such paths exist simultaneously as possibilities.
+A **path** from the root to a terminal node represents one complete
+possible evolution of the hand. Before the hand is played, all such
+paths exist as possibilities. Once the hand is played, exactly one path
+is realized.
 
-In poker language, a hand corresponds to *one realized path* through the tree. In mathematical analysis, value is assigned not to the realized path, but to the entire tree.
+The purpose of the tree is not to predict which path will occur, but to
+evaluate decisions **before** the path is known.
 
----
+Some poker actions are naturally discrete: - fold, - call, - check.
 
-## From Poker Reasoning to a Decision Tree
+Others, such as bet size, are continuous in principle. A full decision
+tree allowing arbitrary bet sizes would be infinite. To make analysis
+possible, we **discretize** continuous choices, replacing them with a
+small set of representative actions. This is not a flaw of the model but
+an explicit modeling decision.
 
-Poker players routinely reason using conditional statements:
 
-- “If I bet and get called, I’m probably behind.”
-- “If I check, I’ll likely see another card.”
-- “Only a few turn cards really matter.”
+## Running Example: A Turn Decision with Constrained Actions
 
-These statements implicitly describe branches of a tree. Turning such reasoning into mathematics is a process of *explicit modeling*.
+We now introduce a single realistic running example that will anchor the
+remainder of the chapter. The purpose of the example is not to model
+poker exhaustively, but to construct a decision tree whose structure is
+determined by information, stack sizes, and constrained actions.
 
-### Identifying Decision Points
+### Flop Situation and Action
 
-The first step is to identify where decisions occur.
-
-In Running Example B, there is exactly one decision point: the flop. The available actions are
-
+Hero holds\
 $$
-A = \{\text{check}, \text{bet}\}.
+A\heartsuit 5\heartsuit
 $$
 
-This becomes a single decision node with two outgoing edges.
+The **flop** is\
+$$
+K\heartsuit\ 7\heartsuit\ 5\diamondsuit.
+$$
 
-In Running Example A, there are no decisions after the flop. From that point onward, the tree consists only of chance nodes.
+On the flop, Hero has: - **bottom pair** (a pair of fives), - an
+**Ace-high flush draw**, - limited immediate showdown value, but strong
+potential.
 
----
 
-### Identifying Chance Events
+The opponent bets on the flop, and **Hero calls**. No further raises
+occur on the flop.
 
-Next, we identify events outside the player’s control.
+At this point, Hero’s hand strength is best described probabilistically:
+Hero is usually behind at showdown, but has substantial equity due to
+the flush draw and possible improvements.
 
-In both running examples, future cards are chance events. These events are represented by chance nodes whose outgoing edges correspond to possible card outcomes, each with an associated probability.
+### Turn Situation
 
-In Running Example B, the opponent’s response to a bet is also modeled as a chance event. While an opponent is making a decision, from the perspective of a single-player model their action is treated probabilistically.
+The **turn card** is\
+$$
+2\clubsuit,
+$$ a blank card that: - does not complete the flush, - does not pair the
+board, - does not improve Hero’s hand beyond third pair.
 
----
+The pot is now ( P ) chips.
 
-### Choosing the Level of Detail
+The opponent bets **pot-sized**, so the bet is ( P ).
 
-The full decision tree of a real poker hand is far too large to analyze directly:
+Hero has exactly ( 2P ) chips remaining and Villian has (P) chips remaining after her bet.
 
-- bet sizes are continuous,
-- raises may occur multiple times,
-- future decisions depend on future information.
+These stack sizes enable us to model this situation with highly constrained decision tree.
 
-Mathematical analysis requires **simplification**.
+------------------------------------------------------------------------
 
-In Running Example B, we make the following modeling choices:
+### Available Actions on the Turn
 
-- restrict betting to a single fixed bet size \( b \),
-- allow only two opponent responses (fold or call),
-- prohibit further betting after the call.
+Hero has three possible actions:
 
-These choices reduce an intractable tree to a finite one. The resulting tree does not describe poker exhaustively; it describes a *model* of a poker situation.
+1.  **Fold**\
+    Hero forfeits the pot and realizes none of her equity.
 
-Simplification is not a loss of rigor. It is the act of defining a precise mathematical object.
+2.  **Call**\
+    Hero calls ( P ), leaving ( P ) chips behind.\
+    If Hero calls, the pot becomes ( 3P ), and **the only possible river
+    bet is all-in**.
 
----
+3.  **Reraise all-in**\
+    Hero commits her entire ( 2P ) stack immediately.
 
-### Discrete and Continuous Choices
+These constraints collapse the future betting structure into a small
+number of branches while preserving realistic poker dynamics.
 
-Some actions in poker are naturally discrete:
+------------------------------------------------------------------------
 
-- fold,
-- call,
-- check.
+### River Outcomes Considered
 
-Other choices, such as bet size, are inherently continuous. A full mathematical treatment would require optimization over a continuum.
+Conditional on reaching the river (i.e., Hero calls the turn bet), we
+group river cards into two meaningful categories:
 
-In this chapter, continuous choices are discretized. We replace a continuous range of bet sizes with a finite set of representative actions. This allows us to focus on expected value and conditional expectation without introducing unnecessary technical complications.
+1.  **River Improves Hero**\
+    Hero makes an Ace-high flush. The river is an Ace or a five, giving Hero two pair or three of a kind.
 
-The resulting decision trees are **mixed**:
-- discrete chance outcomes,
-- discrete decisions,
-- discretized continuous actions.
+2.  **Blank river**\
+    The river improves neither Hero’s flush draw nor her pair.
 
----
+This partition ignores card-by-card detail but preserves the
+distinctions relevant for equity realization and expected value. 
 
-### Assigning Payoffs
+------------------------------------------------------------------------
 
-Each terminal node of the tree is assigned a numerical payoff. This payoff represents the net change in chips relative to the current state of the hand.
+### Complete Decision Tree
 
-Once payoffs are assigned, the poker hand has been transformed into a purely mathematical object:
+The full modeled decision tree is shown below.
 
-- a finite set of paths,
-- probabilities attached to chance branches,
-- numerical payoffs at terminal nodes.
+Decision nodes correspond to strategic choices; chance nodes correspond to
+card outcomes.
 
-From this point forward, the analysis is mathematical rather than narrative.
+![](images/InductionDrawing.drawio.svg){width=90%}
 
----
 
-## From Trees to Probability Spaces
 
-Let \( \Omega \) denote the set of all terminal paths in the modeled decision tree. Each element of \( \Omega \) represents one complete evolution of the hand under the model.
+## Payoffs and the Terminal Random Variable
 
-We define a probability measure on \( \Omega \) by multiplying probabilities along chance branches. This turns \( \Omega \) into a probability space.
+We now formalize outcomes.
+
+Let ( \Omega ) denote the set of all terminal paths in the modeled
+decision tree. Each ( \omega \in \Omega ) represents a complete sequence
+of actions and chance events.
 
 The terminal payoff defines a random variable
 
 $$
-X : \Omega \to \mathbb{R}.
+X : \Omega \to \mathbb{R},
 $$
 
-Although the realized value of \( X \) is unknown until the hand ends, the random variable itself is fixed once the model is specified.
-## Information and Conditional Expectation
+where ( X(\omega) ) is the net change in Hero’s chips along path (
+\omega ).
 
-The random variable \( X \) encodes the final payoff of the hand, but it does not by itself tell us how to reason *during* the hand. At the moment a decision must be made, the value of \( X \) is unknown, and different futures remain possible. What matters is not the eventual realization of \( X \), but its behavior **conditioned on what is currently known**.
+This random variable is fixed once the model is specified, even though
+its realized value is unknown when decisions are made.
 
-This is the role of conditional expectation.
+### Expected Value Before and After the Turn Decision
 
-### Information as a Mathematical Object
+We can now compute expected values on the decision tree using the
+updated river model. Throughout, payoffs are measured **relative to the
+start of the turn**, so folding has payoff (0).
 
-As a hand unfolds, information accumulates. Cards are revealed, bets are made, and some paths through the decision tree are eliminated.
+Recall the turn situation:
 
-Mathematically, this accumulation of information is represented by a growing family of σ-algebras
+-   Pot size: (P).
+-   Villain bets pot: (P).
+-   Hero has (2P) chips behind.
+-   Hero may **fold**, **call**, or **shove all-in** for (2P).
 
-$$
-\mathcal{F}_0 \subseteq \mathcal{F}_1 \subseteq \cdots \subseteq \mathcal{F}.
-$$
+If Hero **calls** the turn bet: - the pot becomes (3P), - Hero has (P)
+remaining, - and the only river bet size considered is **all-in**.
 
-Here:
-- \( \mathcal{F}_0 \) represents the information available at the initial decision point,
-- \( \mathcal{F}_t \) represents everything known after stage \( t \),
-- \( \mathcal{F} \) contains all information revealed by the end of the hand.
+If Hero **shoves** the turn: - Villain may fold or call, - and if
+called, the hand goes to showdown with no further betting.
 
-Each σ-algebra corresponds to a *coarsening* of the decision tree: knowing \( \mathcal{F}_t \) means knowing which nodes of the tree remain possible, but not which terminal path will ultimately occur.
+#### Expected Value Prior to Acting
 
----
-
-### Conditional Expectation as Value Given Information
-
-The conditional expectation of \( X \) given \( \mathcal{F}_t \),
-
-$$
-V_t = \mathbb{E}[X \mid \mathcal{F}_t],
-$$
-
-is a new random variable. Its value depends on the information state, not on the eventual outcome.
-
-Conceptually, \( V_t \) answers the question:
-
-> “Given everything I know *right now*, what is the average payoff of this hand?”
-
-This quantity is often called the **continuation value**. It assigns a numerical value to each information set in the decision tree.
-
----
-
-### Conditional Expectation on a Finite Tree
-
-Because our modeled decision trees are finite, conditional expectation can be computed directly and concretely.
-
-Fix an information set corresponding to a node (or collection of indistinguishable nodes) in the tree. To compute \( \mathbb{E}[X \mid \mathcal{F}_t] \) at that node:
-
-1. List all terminal nodes reachable from that point.
-2. For each terminal node, record its payoff.
-3. Weight each payoff by the conditional probability of reaching that terminal node.
-4. Sum the weighted payoffs.
-
-This procedure makes precise the intuitive idea of “averaging over the remaining possibilities.”
-
----
-
-## Equity Revisited: A Special Conditional Expectation
-
-Equity is often introduced informally as the probability of winning a hand. Within the present framework, it emerges naturally as a special case of conditional expectation.
-
-Let
+Before Hero chooses an action, the expected value of the hand is not yet
+a single number; it is a value attached to a **policy**. Concretely,
 
 $$
-W = \{\text{the player wins at showdown}\}.
+\mathbb{E}[X]
+=
+\mathbb{E}[X \mid \text{fold}]\mathbb{P}(\text{fold})
++
+\mathbb{E}[X \mid \text{call}]\mathbb{P}(\text{call})
++
+\mathbb{E}[X \mid \text{shove}]\mathbb{P}(\text{shove}),
 $$
 
-The indicator random variable \( \mathbf{1}_W \) takes value 1 if the player wins and 0 otherwise. The **equity at time \( t \)** is defined by
+but since Hero controls the action, the relevant quantities are the
+three conditional expected values
 
 $$
-\text{Equity}_t = \mathbb{E}[\mathbf{1}_W \mid \mathcal{F}_t].
+\mathbb{E}[X \mid \text{fold}],\quad
+\mathbb{E}[X \mid \text{call}],\quad
+\mathbb{E}[X \mid \text{shove}].
 $$
 
-Thus equity is a conditional expectation, but of a *binary* payoff rather than a numerical one.
+Backward induction amounts to computing these values and choosing the
+maximum.
 
-This framing clarifies an important point:
 
-- Equity depends only on chance events and current information.
-- Equity ignores costs, betting structure, and future decisions.
+### Backward induction on our poker decision tree
+To calculate the expected value of any node of the decision tree, we work backward from the leaves as follows.  Choose any internal node, adjacent two two or more leaves.  We call this node the stem.
 
-Equity describes *how often* a hand will win, not *how valuable* continuing the hand will be.
+The stem node, must be of one of three categories.  Hero Decision, Villian Decision, or Chance.  In our inductive step, we remove the adjacennt leaves, and replace the stem node based on the following:
 
----
+If the stem node is a Hero Decision, we choose the higher expected value path, and thus replace the stem node, with the maximum of the adjacent leaf values.
 
-### Running Example A: Equity as Complete Information
+If the stem node is a villian decision, we assume the villian makes an optimal decision and replace the stem node with the minimum of the adjancent leaf nodes.
 
-In Running Example A, no further betting occurs after the flop. The only uncertainty lies in the turn and river cards.
+If the stem is a chance node, we replace it with the expected value, by summing the payoff of the leaf nodes, multiplied by their associated probabilities.
 
-Suppose the player holds a four-card flush draw on the flop. There are 47 unseen cards, of which 9 complete the flush. The probability that the flush completes by the river is
 
-$$
-1 - \frac{38}{47} \cdot \frac{37}{46}.
-$$
+### Assumptions for our working example.
 
-This quantity is exactly the player’s equity on the flop.
+-If the turn is good for the Hero, we have the best hand with probability 0.9.  If the turn is a blank, we have the best hand with probability 0.2.
 
-Because there are no future decisions and no additional costs, the continuation value of the hand is determined entirely by this probability. In this special case, equity and expected value coincide.
+-The probability of the turn beign good for the hero is (9+3+2)/46 = .32 % correspoinding to the 9 flush cards, 3 available aces and 2 availabe 5s, out of the 46 unknown cards in the deck.
 
-This example is pedagogically important precisely because it is atypical. It shows how simple the mathematics becomes *when decisions are absent*.
+-In this model, we do not update our win probabilities, based on whether or not the vilian takes an aggressive action, although we could certainly do so, using Bayes Theorem if we had some insight into Villians betting tendencies.
 
----
+### 
+The Following set of figures, show how we would inductively trim the decision tree, until we get to the expected value of a call, fold, or raise all in.
 
-## Expected Value Beyond Equity
+We see in this situation all of the expected values are very similiar but the highest one is 0 for the fold.  Thus the expected value of our hand at this time is 0.  Now compare this with the equity of our hand which equals (using our assumptions) .32x.9+.68x.2=.424.  From this we see the villian made a good bet, as it will result in us giving up our equity in the hand, which was nearly half the pot.
 
-Most poker situations are not like Running Example A. Betting decisions introduce costs, rewards, and optionality. Expected value must account for all of these.
+### ![](images/InductionDrawing.drawio.svg){width=90%}
 
-The continuation value
+### trim 1
+![](images/Trim1.drawio.svg){width=90%}
+### trime 2
+![](images/Copy of Trim3.drawio.svg){width=90%}
+### trim 3
+![](images/Trim3.drawio.svg){width=90%}
+### trim 4
+![](images/trim4.drawio.svg){width=90%}
+### trim 5
+![](images/trim5.drawio.svg){width=90%}
+### trime 6
+![](images/Copy of Trim6.drawio.svg){width=90%}
+------------------------------------------------------------------------
 
-$$
-V_t = \mathbb{E}[X \mid \mathcal{F}_t]
-$$
+### A Finer Filtration of σ-Algebras
 
-averages final payoffs, not just wins and losses. It incorporates:
-- the size of the pot,
-- the cost of bets,
-- the possibility of opponents folding,
-- and the structure of future play.
+To reflect the larger tree, we refine the information structure.
 
-Equity is one ingredient in this calculation, but it is rarely sufficient by itself.
+Let:
 
----
+-   ( \mathcal{F}\_\text{turn} ) be the information available **at the
+    start of the turn**:
+    -   Hero’s hole cards,
+    -   flop and turn cards,
+    -   betting history through the turn bet,
+    -   stack sizes and pot size.
+-   ( \mathcal{F}\_\text{act} ) be the information **after Hero acts on
+    the turn**:
+    -   everything in ( \mathcal{F}\_\text{turn} ),
+    -   plus Hero’s action (A \in
+        {\\text{fold},\\text{call},\\text{shove}}).
+-   ( \mathcal{F}\_\text{river} ) be the information **after the river
+    card is revealed**:
+    -   everything in ( \mathcal{F}\_\text{act} ),
+    -   plus the river category (R).
+-   ( \mathcal{F}\_\text{show} ) be the information **at showdown**:
+    -   everything in ( \mathcal{F}\_\text{river} ),
+    -   plus Villain’s revealed hole cards (hence the realized class
+        (H_T) and (H_R)).
 
-### Running Example B: When Equity Is Not Enough
-
-Consider Running Example B. Suppose:
-- the current pot size is \( P \),
-- the player may bet \( b \),
-- if the player bets, the opponent folds with probability \( f \),
-- if the opponent calls, the player’s equity at showdown is \( e \).
-
-If the player checks, the hand ends immediately with payoff \( 0 \).
-
-If the player bets, the final payoff depends on the opponent’s response and the showdown outcome.
-
-The expected value of betting is
-
-$$
-f \cdot P
-+ (1 - f)\left[ e(P + b) - (1 - e)b \right].
-$$
-
-This expression combines:
-- fold equity \( f \),
-- showdown equity \( e \),
-- pot size \( P \),
-- and bet size \( b \).
-
-A hand with low equity \( e \) can still justify a bet if the probability of folding \( f \) is large enough. Conversely, a hand with high equity may not justify a bet if the cost is too high.
-
-This example shows why equity and expected value must be kept conceptually distinct.
-
----
-
-## The Tower Property and Multi-Stage Consistency
-
-Conditional expectation satisfies the **tower property**, also called the law of iterated expectation:
+These satisfy
 
 $$
-\mathbb{E}\left[ \mathbb{E}[X \mid \mathcal{F}_{t+1}] \mid \mathcal{F}_t \right]
-= \mathbb{E}[X \mid \mathcal{F}_t].
+\mathcal{F}_\text{turn} \subseteq \mathcal{F}_\text{act} \subseteq \mathcal{F}_\text{river} \subseteq \mathcal{F}_\text{show}.
 $$
 
-This identity ensures that evaluating a hand in stages is consistent.
+Interpretation:
 
-In poker terms:
-- evaluating the value after seeing the turn,
-- and then averaging over all possible turns,
+-   Conditioning on ( \mathcal{F}\_\text{turn} ) averages over both
+    unknown river cards and unknown Villain strength.
+-   Conditioning on ( \mathcal{F}\_\text{river} ) averages over Villain
+    strength **given a specific river outcome**, which changes the
+    relevant equities.
+-   Conditioning on ( \mathcal{F}\_\text{show} ) collapses all
+    uncertainty: (X) becomes known.
 
-leads to the same value as evaluating directly from the flop.
+------------------------------------------------------------------------
 
-The tower property is what allows players to reason locally while remaining globally coherent.
+## Explicit Conditional Expectation Computations
 
----
+We now compute a few quantities explicitly to show how conditioning
+works with hidden strength classes.
 
-## Policies and Backward Induction
+Throughout, payoffs are relative to the start of the turn, and the pot
+and stacks are as before: - pot (P), - Villain bets (P), - Hero has (2P)
+behind.
 
-At a decision node, the player must choose an action. A **policy** specifies which action to take at every information set the player may reach.
+------------------------------------------------------------------------
 
-Given a policy \( \pi \), the terminal payoff becomes a random variable \( X^\pi \), and the expected value of the policy is
+### Computation 1: Probability Villain Calls a Shove
+
+Let (C) be the event “Villain calls Hero’s shove.”
+
+By the law of total probability over the hidden classes,
 
 $$
-\mathbb{E}[X^\pi].
+\mathbb{P}(C)
+=
+\sum_{h\in\{S,M,W\}} \mathbb{P}(C\mid H_T=h)\mathbb{P}(H_T=h).
 $$
 
-Expected value is therefore a property of *policies*, not of hands in isolation.
+Substitute the values:
 
----
+$$
+\begin{aligned}
+\mathbb{P}(C)
+&=
+0.95(0.30) + 0.50(0.45) + 0.10(0.25) \\
+&=
+0.285 + 0.225 + 0.025 \\
+&=
+0.535.
+\end{aligned}
+$$
 
-### Backward Induction as Rational Evaluation
+So in this model, Villain calls a shove about (53.5%) of the time.
 
-Backward induction evaluates the decision tree from the leaves inward.
+------------------------------------------------------------------------
 
-- At terminal nodes, values are known.
-- At chance nodes, values are computed by averaging.
-- At decision nodes, values are computed by maximizing.
+### Computation 2: Expected Value of Shoving (with Strength Classes)
+
+If Villain folds to the shove, Hero wins (P).
+
+If Villain calls, the pot becomes (5P), so Hero’s net payoff is: - (+3P)
+if Hero wins, - (-2P) if Hero loses.
+
+Let (e_h) denote Hero’s equity when called against class (h). We assign:
+
+$$
+e_S = 0.22,\quad e_M=0.35,\quad e_W=0.55.
+$$
+
+(Against strong hands Hero’s equity is lower; against weak holdings that
+continue, it is higher.)
+
+Then the conditional expected payoff given a call and class (h) is
+
+$$
+\mathbb{E}[X\mid C, H_T=h]
+=
+e_h(3P) + (1-e_h)(-2P)
+=
+(5e_h-2)P.
+$$
+
+Therefore,
+
+$$
+\mathbb{E}[X\mid \text{shove}]
+=
+\mathbb{P}(\text{fold})\cdot P
++
+\sum_{h}\mathbb{P}(C, H_T=h)\cdot (5e_h-2)P.
+$$
+
+Compute the fold probability: $$
+\mathbb{P}(\text{fold}) = 1-\mathbb{P}(C)=1-0.535=0.465.
+$$
+
+Also $$
+\mathbb{P}(C,H_T=h)=\mathbb{P}(C\mid H_T=h)\mathbb{P}(H_T=h).
+$$
+
+So
+
+$$
+\begin{aligned}
+\mathbb{E}[X\mid \text{shove}]
+&=
+0.465P
++ 0.95(0.30)(5e_S-2)P
++ 0.50(0.45)(5e_M-2)P
++ 0.10(0.25)(5e_W-2)P.
+\end{aligned}
+$$
+
+Substitute (e_S=0.22), (e_M=0.35), (e_W=0.55):
+
+$$
+5e_S-2 = 5(0.22)-2=1.10-2=-0.90,
+$$ $$
+5e_M-2 = 5(0.35)-2=1.75-2=-0.25,
+$$ $$
+5e_W-2 = 5(0.55)-2=2.75-2=0.75.
+$$
+
+Thus,
+
+$$
+\begin{aligned}
+\mathbb{E}[X\mid \text{shove}]
+&=
+0.465P
++ 0.285(-0.90P)
++ 0.225(-0.25P)
++ 0.025(0.75P) \\
+&=
+0.465P - 0.2565P - 0.05625P + 0.01875P \\
+&=
+0.171P.
+\end{aligned}
+$$
+
+In this stylized model, shoving has positive expected value of about
+(0.171P).
+
+The point is not the numerical value; it is the structure: we computed
+expected value by averaging over an **unobserved hand-strength class**,
+using conditional expectation.
+
+------------------------------------------------------------------------
+
+### Conditioning on the River Changes the Relevant Distribution
+
+If Hero calls the turn bet, then the river card is revealed.
+Conditioning on (R) refines value.
+
+For instance, on a flush river, many Villain hands that were strong on
+the turn become weaker in relative terms. In a more refined model, this
+would appear as a change in the conditional distribution
+
+$$
+\mathbb{P}(H_R = h \mid \mathcal{F}_\text{river})
+$$
+
+and therefore a different conditional expectation for the river all-in
+decision.
+
+This is the mathematical content of a familiar poker idea: the river
+card changes not only Hero’s hand, but the *relative* configuration of
+possible Villain hands.
+
+## The Same Tree, Seen from Villain’s Side
+
+Up to now, our model has been written from Hero’s perspective: Villain’s
+hand strength is hidden, and Villain’s actions are treated as
+probabilistic once we condition on coarse hand-strength classes. We now
+“turn the camera around” and view the *same physical hand* from
+Villain’s side.
+
+The mathematics will look familiar, but the σ-algebras change, because
+Villain conditions on different information.
+
+A useful way to say this is:
+
+> The probability space is the same, the payoff random variables are
+> negatives of each other, but the conditioning σ-algebras depend on
+> which player is reasoning.
+
+------------------------------------------------------------------------
+
+### Payoffs: From Hero to Villain
+
+Let (X_H) denote Hero’s terminal payoff (relative to the start of the
+turn). Define Villain’s payoff by
+
+$$
+X_V = -X_H.
+$$
+
+This is a zero-sum abstraction: whatever Hero gains, Villain loses. (The
+model ignores rake and side pots.)
+
+Thus any expected value statement for Hero translates immediately to
+Villain by negation:
+
+$$
+\mathbb{E}[X_V \mid \mathcal{G}] = -\mathbb{E}[X_H \mid \mathcal{G}]
+$$
+
+for any σ-algebra (\mathcal{G}) on the same probability space.
+
+What changes between the players is not the payoff identity, but what
+each player can condition on.
+
+------------------------------------------------------------------------
+
+### Villain’s Strength Classes Become Known Information
+
+Recall that from Hero’s perspective, Villain’s turn strength class (H_T
+\in {S,M,W}) is hidden.
+
+From Villain’s perspective, (H_T) is *determined by Villain’s hole
+cards*, and therefore is **known** on the turn. (In a more detailed
+model, Villain knows the hole cards themselves; (H_T) is a measurable
+function of them.)
+
+This changes the structure of the analysis: Villain does not average
+over (H_T). Villain averages only over the river outcome (R) and over
+Hero’s action (if modeled probabilistically).
+
+------------------------------------------------------------------------
+
+### Villain’s Filtration of Information
+
+We define a filtration for Villain that parallels the one used for Hero,
+but reflects Villain’s private knowledge.
+
+Let:
+
+-   ( \mathcal{G}\_\text{turn} ) be Villain’s information at the start
+    of the turn. It includes:
+    -   Villain’s hole cards (hence the realized class (H_T)),
+    -   the public board cards (flop and turn),
+    -   the betting history through Villain’s pot-sized bet,
+    -   pot size and stack sizes.
+-   ( \mathcal{G}\_\text{act} ) be Villain’s information after Hero acts
+    on the turn:
+    -   everything in ( \mathcal{G}\_\text{turn} ),
+    -   plus Hero’s action (A \in
+        {\\text{fold},\\text{call},\\text{shove}}).
+-   ( \mathcal{G}\_\text{river} ) be Villain’s information after the
+    river is revealed (if the hand continues):
+    -   everything in ( \mathcal{G}\_\text{act} ),
+    -   plus the river category (R).
+-   ( \mathcal{G}\_\text{show} ) be full information at showdown:
+    -   everything in ( \mathcal{G}\_\text{river} ),
+    -   plus Hero’s revealed hole cards.
+
+These satisfy
+
+$$
+\mathcal{G}_\text{turn} \subseteq \mathcal{G}_\text{act} \subseteq \mathcal{G}_\text{river} \subseteq \mathcal{G}_\text{show}.
+$$
+
+Compare with Hero’s filtration: the key asymmetry is that (H_T) is
+measurable with respect to ( \mathcal{G}\text{turn}) but not with
+respect to ( \mathcal{F}\text{turn}).
+
+------------------------------------------------------------------------
+
+### Villain’s Conditional Expectations
+
+Villain’s continuation value on the turn is
+
+$$
+V^\text{(V)}_\text{turn} = \mathbb{E}[X_V \mid \mathcal{G}_\text{turn}].
+$$
+
+Because (H_T) is known to Villain, this can be decomposed by class:
+
+$$
+\mathbb{E}[X_V \mid \mathcal{G}_\text{turn}]
+=
+\mathbb{E}[X_V \mid \mathcal{G}_\text{turn}, H_T=S]\mathbf{1}_{\{H_T=S\}}
++
+\mathbb{E}[X_V \mid \mathcal{G}_\text{turn}, H_T=M]\mathbf{1}_{\{H_T=M\}}
++
+\mathbb{E}[X_V \mid \mathcal{G}_\text{turn}, H_T=W]\mathbf{1}_{\{H_T=W\}}.
+$$
+
+In other words, Villain evaluates the hand in different ways depending
+on which strength class Villain actually holds.
+
+------------------------------------------------------------------------
+
+## Two Explicit Computations from Villain’s Perspective
+
+We now compute two quantities explicitly to illustrate how the same tree
+looks different once (H_T) is known.
+
+Throughout, we use the same river partition:
+
+$$
+\mathbb{P}(R=\text{flush})=\frac{9}{44},\quad
+\mathbb{P}(R=\text{two pair or trips})=\frac{3}{44},\quad
+\mathbb{P}(R=\text{blank})=\frac{32}{44}.
+$$
+
+We also keep the same stack geometry: - turn pot (P), - Villain bets
+(P), - Hero has (2P) behind.
+
+------------------------------------------------------------------------
+
+### Computation 1: Villain’s Expected Value When Facing a Shove, Conditional on (H_T)
+
+Suppose Hero shoves for (2P). Villain must decide whether to call.
+
+From Villain’s perspective, this is a decision node. Villain’s expected
+value depends on Villain’s known strength class (H_T=h).
+
+If Villain folds, Villain’s payoff is $$
+X_V = -P,
+$$ since Hero wins the pot (P).
+
+If Villain calls, the pot becomes (5P). Villain’s net payoff is: - (+2P)
+if Villain wins (Villain gains (5P) having invested (P) on the turn and
+(P) more to call, total (2P), but since we are measuring relative to the
+start of the turn after betting (P), it is cleaner to use the zero-sum
+relation), - equivalently, using (X_V=-X_H) and Hero’s payoff outcomes
+when called: - Hero wins (\Rightarrow X_H=+3P\Rightarrow X_V=-3P), -
+Hero loses (\Rightarrow X_H=-2P\Rightarrow X_V=+2P).
+
+Let (e_h) be Hero’s equity when called against class (h). Then Villain
+wins with probability (1-e_h). Therefore
+
+$$
+\mathbb{E}[X_V \mid \text{call}, H_T=h]
+=
+(1-e_h)(2P) + e_h(-3P)
+=
+(2-5e_h)P.
+$$
+
+Villain should call whenever calling is better than folding:
+
+$$
+(2-5e_h)P \ge -P
+\quad\Longleftrightarrow\quad
+2-5e_h \ge -1
+\quad\Longleftrightarrow\quad
+e_h \le \frac{3}{5}.
+$$
+
+In our model, $$
+e_S=0.22,\quad e_M=0.35,\quad e_W=0.55,
+$$ so (e_h \le 3/5) holds in all three classes. Thus a Villain who
+reasons purely by this coarse model would call in every class.
+
+This conclusion highlights a modeling lesson: if we want Villain to fold
+weak hands sometimes, we need to include additional structure (for
+example, that some (W) hands have very poor equity and should fold, or
+that Villain’s calling decision depends on (R) in the call-line). The
+mathematics makes the required refinement explicit.
+
+------------------------------------------------------------------------
+
+### Computation 2: Villain’s Expected Value on the Turn, Conditional on (H_T=h), if Hero Calls
+
+Now consider the branch where Hero **calls** the turn bet. The river
+arrives and (by our simplified model) Hero continues all-in on the river
+only with flushes or with two pair/trips, and gives up on blanks.
+
+From Villain’s perspective, once Hero calls the turn, the river category
+(R) is still unknown. Villain’s expected value must average over (R).
+
+We compute a stylized version that depends on (H_T=h).
+
+-   If (R=) blank, Hero gives up and Villain wins the pot (3P) without
+    further investment. Relative to the start of the turn, Villain has
+    already bet (P) and gets back (3P), so Villain’s net payoff is
+    (+2P). (Equivalently, Hero loses (P) and Villain gains it plus the
+    earlier pot; in this stylized accounting we treat the net from the
+    turn start as (+2P).)
+
+-   If (R=) flush, Hero shoves river all-in for (P). Villain’s response
+    depends on how (H_T) transforms to river strength (H_R=g(h,R)). To
+    keep the computation explicit, suppose Villain calls against a flush
+    river only when (h=S), and folds otherwise. Then:
+
+-   if Villain folds, Villain loses the (P) invested on the turn bet and
+    also the (P) invested on the call? (No: Villain does not invest
+    more; Villain simply forfeits the pot.) Under our payoffs relative
+    to the start of the turn, folding the river yields (X_V=-2P) because
+    Hero wins (X_H=+2P) in the call line when Hero wins the (3P) pot
+    after investing (2P).
+
+-   if Villain calls, Villain’s expectation depends on whether Villain
+    can beat an Ace-high flush; under this simplified model assume
+    Villain loses, so (X_V=-3P).
+
+-   If (R=) two pair/trips, Hero shoves river all-in. Suppose Villain
+    calls when (h\in{S,M}) and folds when (h=W). If called, Hero wins
+    with probability (q=0.85) (as earlier), so Villain wins with
+    probability (0.15). Under a call: $$
+    \mathbb{E}[X_V \mid \text{river call in 2pair/trips branch}]
+    =
+    0.15(2P) + 0.85(-3P)
+    =
+    (0.30-2.55)P
+    =
+    -2.25P.
+    $$
+
+This illustrates the key shift in viewpoint: Villain’s conditional
+expectations depend on a (known) class (h), and Villain’s policy can
+differ across classes.
+
+We now combine only the cleanest branch explicitly: the blank-river
+branch, where our model is unambiguous. Conditioning on Hero calling the
+turn:
+
+$$
+\mathbb{E}[X_V \mid \mathcal{G}_\text{act}, A=\text{call}]
+\ge
+\mathbb{P}(R=\text{blank})\cdot (2P)
+=
+\frac{32}{44}\cdot 2P,
+$$
+
+with the remaining river branches contributing additional terms
+depending on Villain’s river-call policy.
+
+The inequality emphasizes a modeling point: once we introduce hidden
+strength classes and action policies, conditional expectation becomes a
+sum of interpretable pieces, each attached to a branch of the tree.
+
+------------------------------------------------------------------------
+
+### What This Perspective Adds
+
+From Villain’s viewpoint:
+
+-   (H_T) is not hidden; it is part of Villain’s information.
+-   The uncertainty is instead about Hero’s hand and Hero’s future
+    actions.
+-   Villain’s optimal strategy can be expressed as a policy that depends
+    on (H_T) and on public information.
+
+In the next section (backward induction), we will formalize this as
+optimal decision-making on the tree. But the essential shift has already
+happened: conditional expectation is player-dependent because
+information is player-dependent.
+
+In the next refinements of the model, we can specify the transition
+probabilities $$
+\mathbb{P}(H_R=h' \mid H_T=h, R=r)
+$$ explicitly and compute river continuation values by backward
+induction.
+
+## The Tower Property and Multi-Stage Reasoning
+
+The coherence of multi-stage decision making rests on a single
+probabilistic identity: the **tower property** of conditional
+expectation.\
+This identity is what allows us to reason locally — street by street —
+without losing global consistency.
+
+In poker terms, it explains why we can evaluate a turn decision by
+thinking carefully about river outcomes, *without double-counting or
+contradicting ourselves*.
+
+------------------------------------------------------------------------
+
+### Statement of the Tower Property
+
+Let $$
+\mathcal{F}_0 \subseteq \mathcal{F}_1
+$$ be σ-algebras on a probability space
+((\Omega,\mathcal{F},\mathbb{P})), representing two stages of
+information, and let $$
+X:\Omega \to \mathbb{R}
+$$ be an integrable random variable (the terminal payoff).
+
+The **tower property** states that $$
+\mathbb{E}\big[\, \mathbb{E}[X \mid \mathcal{F}_1] \mid \mathcal{F}_0 \big]
+=
+\mathbb{E}[X \mid \mathcal{F}_0].
+$$
+
+More generally, for any chain $$
+\mathcal{F}_0 \subseteq \mathcal{F}_1 \subseteq \cdots \subseteq \mathcal{F}_T,
+$$ we have $$
+\mathbb{E}\big[\, \mathbb{E}[X \mid \mathcal{F}_t] \mid \mathcal{F}_s \big]
+=
+\mathbb{E}[X \mid \mathcal{F}_s]
+\quad \text{for all } s<t.
+$$
+
+------------------------------------------------------------------------
+
+### What the Identity Actually Says
+
+The tower property does **not** say that information is irrelevant.\
+Instead, it says something more precise:
+
+> Learning new information redistributes value across possible futures,
+> but it does not change the expected value *before* that information is
+> revealed.
+
+In other words: - conditioning refines, - averaging coarsens, - and
+doing both in either order gives the same result.
+
+This is the mathematical statement that *expectation is dynamically
+consistent*.
+
+------------------------------------------------------------------------
+
+### Interpretation via Decision Trees
+
+Think of a decision tree with two layers: 1. a turn decision, 2. a river
+outcome.
+
+Let: - ( \mathcal{F}\_0 ) represent information on the turn, - (
+\mathcal{F}\_1 ) represent information after the river card is
+revealed, - ( X ) be the terminal payoff at the end of the hand.
+
+Then: - ( \mathbb{E}\[X \mid \mathcal{F}\_1\] ) assigns a value to
+**each river branch**, - ( \mathbb{E}\[\mathbb{E}\[X
+\mid \mathcal{F}\_1\] \mid \mathcal{F}\_0\] ) averages those branch
+values using their probabilities.
+
+The tower property guarantees that this equals the value computed
+directly from the turn, before the river is known.
+
+Thus, when we say \> “What is the value of calling the turn bet?”
+
+we are implicitly asking for $$
+\mathbb{E}[X \mid \mathcal{F}_\text{turn}],
+$$ which can be computed by first analyzing river outcomes and then
+averaging.
+
+------------------------------------------------------------------------
+
+### Poker Interpretation: Cards Reveal, They Do Not Create
+
+In poker language, the tower property justifies a familiar but subtle
+claim:
+
+> The turn card does not *create* value; it reveals which branch of the
+> game tree you are on.
+
+For example: - hitting a flush on the river feels like “winning
+money,” - missing the flush feels like “losing money.”
+
+But before the river is dealt, both outcomes are already encoded in the
+expectation.\
+The distribution of future values changes once the card is revealed, but
+their average does not.
+
+Mathematically: - before the river, the value is ( \mathbb{E}\[X
+\mid \mathcal{F}\_\text{turn}\] ), - after the river, the value becomes
+( \mathbb{E}\[X \mid \mathcal{F}\_\text{river}\] ), - averaging the
+latter over all possible rivers recovers the former.
+
+------------------------------------------------------------------------
+
+### Continuation Values as a Value Process
+
+Define the **value process** $$
+V_t := \mathbb{E}[X \mid \mathcal{F}_t].
+$$
+
+The tower property implies $$
+\mathbb{E}[V_{t+1} \mid \mathcal{F}_t] = V_t.
+$$
+
+This equation says: - values fluctuate as information arrives, - but
+they do not drift in expectation.
+
+In probabilistic language, ((V_t)) is a **martingale** with respect to
+the filtration ((\mathcal{F}\_t)).
+
+In poker language: - your equity and expected value may swing wildly
+after a card is dealt, - but *before* the card, the expected value is
+stable.
+
+### Why the Tower Property Matters for Strategy
+
+Without the tower property: - evaluating decisions street by street
+would be incoherent, - future optimization could contradict earlier
+reasoning, - backward induction would fail.
+
+With it: - we can safely replace future play by its expected value, - we
+can reason locally while remaining globally optimal, - and we can
+analyze complex multi-stage games one layer at a time.
+
+This identity is the mathematical backbone of everything that follows:
+conditional expectation, continuation value, backward induction, and
+equilibrium reasoning all rest on it. \## Backward Induction on a
+Decision Tree
+
+We now formalize the method that ties together everything developed so
+far: **backward induction**.\
+This is the mathematical procedure that turns a fully specified decision
+tree into a sequence of locally optimal decisions that are globally
+consistent.
+
+At a conceptual level, backward induction answers the question:
+
+> *If all future decisions will be made optimally, what should I do
+> right now?*
+
+In poker language: *What is the best action on the turn, assuming both
+players will play optimally on the river?*
+
+------------------------------------------------------------------------
+
+### The Mathematical Setup
+
+Let ( \Omega ) be the set of terminal paths in the decision tree, and
+let
+
+$$
+X : \Omega \to \mathbb{R}
+$$
+
+be Hero’s terminal payoff random variable.
+
+A **decision tree** consists of: - chance nodes (river card, Villain
+hand class), - decision nodes (Hero and Villain actions), - terminal
+nodes (showdown or fold outcomes).
+
+Each nonterminal node (v) corresponds to an information set represented
+by a σ-algebra (\mathcal{F}\_v).\
+At that node, the **continuation value** is
+
+$$
+V(v) := \mathbb{E}[X \mid \mathcal{F}_v].
+$$
+
+Backward induction computes (V(v)) recursively, starting from terminal
+nodes and moving backward toward the root.
+
+------------------------------------------------------------------------
+
+### Terminal Nodes: Base Case
+
+At a terminal node (v), the payoff is known. Thus
+
+$$
+V(v) = X(\omega)
+$$
+
+for the unique terminal path (\omega) consistent with (v).
+
+For example, in our running hand: - if Hero shoves and Villain folds on
+the turn, (V(v)=+P), - if Hero is called and loses at showdown,
+(V(v)=-2P), - if Hero calls the turn, bricks the river, and folds,
+(V(v)=-P).
+
+These values anchor the recursion.
+
+------------------------------------------------------------------------
+
+### Chance Nodes: Taking Expectations
+
+At a **chance node** (v), Nature selects among child nodes
+(v_1,\dots,v_k) with known probabilities (p_1,\dots,p_k).
+
+The continuation value is the weighted average:
+
+$$
+V(v) = \sum_{i=1}^k p_i V(v_i).
+$$
+
+In the running example, once Hero calls the turn bet, the river card is
+a chance node with outcomes:
+
+$$
+R \in \{\text{flush},\ \text{two pair or trips},\ \text{blank}\},
+$$
+
+with probabilities
+
+$$
+\frac{9}{44},\quad \frac{3}{44},\quad \frac{32}{44}.
+$$
+
+Thus the continuation value at the river-deal node is
+
+$$
+V_{\text{river-deal}}
+=
+\frac{9}{44}V_{\text{flush}}
++
+\frac{3}{44}V_{\text{2pair/trips}}
++
+\frac{32}{44}V_{\text{blank}}.
+$$
+
+This step is purely probabilistic and corresponds exactly to conditional
+expectation.
+
+------------------------------------------------------------------------
+
+### Decision Nodes: Optimization
+
+At a **decision node**, the player chooses among actions. Backward
+induction assumes rational play: the player selects the action with
+maximal expected value (for Hero) or minimal expected value (for
+Villain, in a zero-sum model).
+
+For Hero, at a decision node (v) with available actions (a
+\in \mathcal{A}(v)),
+
+$$
+V(v) = \max_{a \in \mathcal{A}(v)} V(v,a),
+$$
+
+where (V(v,a)) is the continuation value of the child node reached by
+action (a).
+
+For Villain,
+
+$$
+V(v) = \min_{a \in \mathcal{A}(v)} V(v,a).
+$$
+
+This min–max structure is the mathematical expression of strategic
+conflict.
+
+------------------------------------------------------------------------
+
+### Applying Backward Induction to the Running Example
+
+We now sketch how the method applies to our turn decision.
+
+#### Step 1: River Decisions (Hero and Villain)
+
+At the river, decisions are simple:
+
+-   On a **blank**, Hero gives up and Villain wins.
+-   On a **flush**, Hero shoves; Villain calls or folds depending on
+    (H_R).
+-   On **two pair or trips**, Hero shoves; Villain responds based on
+    (H_R).
+
+At each of these river decision nodes, we compute (V(v)) by: 1.
+evaluating terminal payoffs, 2. optimizing over the acting player’s
+available actions.
+
+These values were computed explicitly in the previous section.
+
+------------------------------------------------------------------------
+
+#### Step 2: River Chance Node (after a Turn Call)
+
+Once river strategies are fixed, the river card itself is a chance node.
+The continuation value of **calling the turn bet** is therefore
+
+$$
+V_{\text{call}}
+=
+\frac{9}{44}V_{\text{flush}}
++
+\frac{3}{44}V_{\text{2pair/trips}}
++
+\frac{32}{44}V_{\text{blank}},
+$$
+
+where each (V\_{\cdot}) already incorporates optimal river play.
+
+This is the key structural point:\
+**the river card is evaluated assuming optimal future decisions.**
+
+------------------------------------------------------------------------
+
+#### Step 3: Turn Decision (Hero)
+
+At the turn, Hero compares three actions:
+
+-   **Fold**: (V\_{\text{fold}} = 0),
+-   **Call**: (V\_{\text{call}}) as above,
+-   **Shove**: (V\_{\text{shove}} \approx 0.171P) (from earlier
+    computation).
+
+Backward induction instructs Hero to choose
+
+$$
+V_{\text{turn}} = \max\{V_{\text{fold}},\, V_{\text{call}},\, V_{\text{shove}}\}.
+$$
+
+In our stylized model, shoving dominates folding and calling, so the
+optimal turn action is to shove.
+
+------------------------------------------------------------------------
+
+### Consistency with the Tower Property
+
+Backward induction is not a new principle; it is a structured
+application of the tower property.
+
+Each step replaces a future random payoff with its conditional
+expectation given current information. The maximization step selects
+among these expectations.
+
+Formally, backward induction constructs a value process
+
+$$
+V_t = \sup_{\text{admissible strategies from } t} \mathbb{E}[X \mid \mathcal{F}_t],
+$$
+
+and ensures that
+
+$$
+V_t = \mathbb{E}[V_{t+1} \mid \mathcal{F}_t]
+$$
+
+*along the optimal strategy*.
+
+This is why decisions made locally — at the turn, at the river — remain
+globally optimal.
+
+------------------------------------------------------------------------
+
+### Conceptual Takeaway
+
+Backward induction explains a core poker idea with mathematical
+precision:
+
+> You do not decide based on what *might* happen later, but on the value
+> of what will happen *if you play optimally from that point onward*.
+
+In the next section, this framework will allow us to: - formalize
+optimal strategies as functions on information sets, - connect poker
+decision trees to dynamic programming, - and prepare the ground for
+equilibrium concepts in multi-player games.
+
+## Bayesian Updating Along the Decision Tree
+
+Up to this point, we have treated Villain’s hand-strength class (H_T \in
+{S,M,W}) as a fixed but unknown random variable with a prior
+distribution. We now make explicit an idea that poker players use
+constantly but informally:
+
+> As actions are observed, beliefs about hidden variables should change.
+
+Mathematically, this is **Bayesian updating**. In a multi-stage game,
+updating occurs *along the branches of the decision tree*.
+
+------------------------------------------------------------------------
+
+### Prior Beliefs at the Start of the Turn
+
+Recall our prior distribution over Villain’s turn hand strength:
+
+$$
+\mathbb{P}(H_T=S)=0.30,\quad
+\mathbb{P}(H_T=M)=0.45,\quad
+\mathbb{P}(H_T=W)=0.25.
+$$
+
+This distribution is conditioned on everything known at the start of the
+turn: the board, stack sizes, and the fact that Villain has chosen a
+pot-sized bet.
+
+Formally, this is shorthand for
+
+$$
+\mathbb{P}(H_T=h)
+=
+\mathbb{P}(H_T=h \mid \mathcal{F}_\text{turn}),
+$$
+
+where ( \mathcal{F}\_\text{turn} ) encodes all public information
+available at that point.
+
+------------------------------------------------------------------------
+
+### Actions as Information
+
+Suppose Hero shoves all-in on the turn, and Villain responds.
+
+From Hero’s perspective, Villain’s *response* is informative about
+(H_T). Let (C) be the event that Villain **calls** the shove.
+
+We already specified the likelihoods:
+
+$$
+\mathbb{P}(C \mid H_T=S)=0.95,\quad
+\mathbb{P}(C \mid H_T=M)=0.50,\quad
+\mathbb{P}(C \mid H_T=W)=0.10.
+$$
+
+These numbers encode a behavioral model: strong hands call almost
+always, weak hands rarely do.
+
+------------------------------------------------------------------------
+
+### Posterior Beliefs After a Call
+
+Once Villain calls, Hero should update beliefs about (H_T).
+
+By Bayes’ theorem,
+
+$$
+\mathbb{P}(H_T=h \mid C)
+=
+\frac{\mathbb{P}(C \mid H_T=h)\mathbb{P}(H_T=h)}
+{\mathbb{P}(C)}.
+$$
+
+We already computed
+
+$$
+\mathbb{P}(C)=0.535.
+$$
+
+Therefore,
+
+$$
+\mathbb{P}(H_T=S \mid C)
+=
+\frac{0.95 \cdot 0.30}{0.535}
+\approx 0.533,
+$$
+
+$$
+\mathbb{P}(H_T=M \mid C)
+=
+\frac{0.50 \cdot 0.45}{0.535}
+\approx 0.421,
+$$
+
+$$
+\mathbb{P}(H_T=W \mid C)
+=
+\frac{0.10 \cdot 0.25}{0.535}
+\approx 0.047.
+$$
+
+**Interpretation.**\
+After Villain calls the shove: - weak hands are almost eliminated, -
+strong hands become the most likely class, - medium hands remain
+significant.
+
+This is precisely the poker intuition that “a call narrows Villain’s
+range.”
+
+------------------------------------------------------------------------
+
+### Posterior Beliefs After a Fold
+
+If Villain folds to the shove, the update goes in the opposite
+direction. Let (F) be the event that Villain **folds**.
+
+Then
+
+$$
+\mathbb{P}(H_T=h \mid F)
+=
+\frac{\mathbb{P}(F \mid H_T=h)\mathbb{P}(H_T=h)}
+{\mathbb{P}(F)},
+$$
+
+where $$
+\mathbb{P}(F \mid H_T=h)=1-\mathbb{P}(C \mid H_T=h).
+$$
+
+A fold therefore dramatically increases the posterior weight on (H_T=W).
+
+------------------------------------------------------------------------
+
+### Bayesian Updating and Conditional Expectation
+
+Once beliefs are updated, **all future expected values must be computed
+with respect to the posterior distribution**.
+
+For example, if Villain calls the turn shove and the river card is still
+unknown, Hero’s continuation value becomes
+
+$$
+\mathbb{E}[X \mid \mathcal{F}_\text{act}, C]
+=
+\sum_{h \in \{S,M,W\}}
+\mathbb{E}[X \mid \mathcal{F}_\text{act}, C, H_T=h]\,
+\mathbb{P}(H_T=h \mid C).
+$$
+
+This is not a new formula — it is the same conditional expectation
+machinery as before — but now the conditioning σ-algebra includes
+*observed actions*.
+
+------------------------------------------------------------------------
+
+### Updating Again on the River
+
+The river card provides another Bayesian update.
+
+Recall that Villain’s river strength class satisfies
+
+$$
+H_R = g(H_T, R).
+$$
+
+Once the river card category (R) is revealed, Hero updates beliefs to
+
+$$
+\mathbb{P}(H_R = h' \mid \mathcal{F}_\text{river})
+=
+\sum_{h : g(h,R)=h'}
+\mathbb{P}(H_T=h \mid \mathcal{F}_\text{act}).
+$$
+
+Thus: - calling the turn, - seeing the river, - and observing Villain’s
+response
+
+each induce successive Bayesian updates.
+
+The decision tree is therefore also a **belief tree**.
+
+### Conceptual Takeaway
+
+Bayesian updating is not an extra ingredient added to expected value
+calculations. It is already built into conditional expectation.
+
+In poker terms: - ranges are probability distributions, - bets are noisy
+signals, - and rational play consists of updating beliefs as the hand
+unfolds.
+
+In mathematical terms: - σ-algebras encode information, - Bayes’ theorem
+refines conditional distributions, - and the tower property guarantees
+that updating and averaging remain consistent across stages.
+
+This perspective will become essential when we later discuss equilibrium
+strategies, where *beliefs about beliefs* play a central role.
+
+## Equity, Expected Value, and Equity Realization
+
+We now distinguish three related but fundamentally different concepts.
+
+### Equity
+
+**Equity** is the probability of winning at showdown, given current
+information:
+
+$$
+\text{Equity}_t
+=
+\mathbb{P}(\text{win} \mid \mathcal{F}_t)
+=
+\mathbb{E}[\mathbf{1}_{\{\text{win}\}} \mid \mathcal{F}_t].
+$$
+
+Equity is a conditional expectation of a binary random variable. It
+depends only on chance and information.
+
+------------------------------------------------------------------------
+
+### Expected Value
+
+**Expected value** refers to the conditional expectation of the payoff:
+
+$$
+V_t = \mathbb{E}[X \mid \mathcal{F}_t].
+$$
+
+Expected value incorporates: - equity, - pot size, - bet sizes, - and
+the structure of future decisions.
+
+Expected value, not equity, is the correct object for evaluating
+actions.
+
+------------------------------------------------------------------------
+
+### Equity Realization
+
+Poker players speak of **equity realization**: the extent to which a
+hand’s theoretical equity is converted into actual payoff.
+
+Mathematically, equity realization reflects the difference between: -
+the payoff suggested by equity alone, and - the true expected value
+given future decision constraints.
+
+A hand may have high equity but poor equity realization if: - future
+bets force folds, - stack sizes prevent reaching showdown, - or
+positional constraints limit available actions.
+
+Equity answers *how often* you win.\
+Equity realization answers *how much of that winning probability you
+actually capture*.
+
+------------------------------------------------------------------------
+
+## Applying the Framework to the Running Example
+
+In the turn example:
+
+-   Folding realizes **none** of Hero’s equity.
+-   Calling allows some equity to be realized, but exposes Hero to an
+    all-in on the river.
+-   Shoving all-in may force folds, converting equity into immediate
+    value.
+
+Each option corresponds to a different subtree of the decision tree,
+with a different continuation value
+
+$$
+V_{\text{fold}}, \quad V_{\text{call}}, \quad V_{\text{shove}}.
+$$
+
+The rational decision is the one maximizing conditional expected value.
+
+------------------------------------------------------------------------
+
+## Backward Induction
+
+Backward induction evaluates the tree from the end backward.
+
+-   Terminal payoffs are known.
+-   Chance nodes are evaluated by averaging.
+-   Decision nodes are evaluated by maximizing.
 
 Formally, the continuation value satisfies
 
@@ -410,71 +1576,690 @@ $$
 V_t = \max_{a \in A_t} \mathbb{E}[V_{t+1} \mid \mathcal{F}_t, a].
 $$
 
-This principle gives precise mathematical meaning to the idea of “playing optimally.”
+This identity is not a heuristic. It is a consequence of conditional
+expectation and the tower property.
 
----
+------------------------------------------------------------------------
 
-### Running Example B Revisited
+## Closing Perspective
 
-In Running Example B, backward induction proceeds as follows:
+This chapter has shown how:
 
-1. Assign payoffs at showdown.
-2. Compute expected value conditional on a call.
-3. Combine with fold probability to evaluate betting.
-4. Compare the result to checking.
+-   poker intuition becomes a decision tree,
+-   decision trees define random variables,
+-   conditional expectation assigns value under information,
+-   the tower property ensures consistency,
+-   and equity realization explains why probability alone is not enough.
 
-Each step replaces intuition with calculation, without abandoning the original poker reasoning.
+Poker provides a vivid setting, but the mathematics applies wherever
+decisions unfold under uncertainty. The central lesson is not how to
+predict outcomes, but how to evaluate decisions **before outcomes are
+known**.
 
----
+## Beyond Poker: Machine Learning and Sequential Decision Making
 
-## A Closing Perspective on Modeling
+The mathematical framework developed in this chapter — conditional
+expectation, decision trees, and backward induction — appears far beyond
+games of chance. One of its most important modern applications is
+**machine learning with sequential decisions**, often called
+*reinforcement learning*.
 
-This chapter has emphasized that:
+At its core, reinforcement learning studies how an agent should act over
+time when: - outcomes are uncertain, - actions affect future
+possibilities, - and rewards are delayed.
 
-- the decision tree is a model, not reality,
-- equity lives on chance structure,
-- expected value lives on decisions,
-- conditional expectation connects the two.
+This is exactly the structure we have been analyzing.
 
-Poker provides a vivid setting in which these distinctions matter, but the mathematics applies to any sequential decision under uncertainty.
+------------------------------------------------------------------------
 
-The goal is not to predict outcomes, but to evaluate decisions **before** uncertainty resolves.
+### States, Actions, and Rewards
 
+A sequential decision problem in machine learning is built from three
+components:
 
+1.  **State**\
+    The current description of the system.\
+    Examples include:
 
-## Beyond Poker
+    -   the position of a robot,
+    -   the configuration of a game board,
+    -   or the current medical condition of a patient.
 
-These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+2.  **Action**\
+    A choice made by the agent that affects what happens next.
 
-Possible directions:
+3.  **Reward**\
+    A numerical payoff received after an action, representing success,
+    cost, or utility.
 
-- business strategy (sequential investments)
-- environmental policy (choices with future uncertainty)
-- AI (planning under uncertainty)
+At each time step (t), the system is in a state (S_t).\
+The agent chooses an action (A_t), and then: - the system transitions to
+a new state (S\_{t+1}), - a reward (R\_{t+1}) is received.
+
+This process repeats over time.
+
+------------------------------------------------------------------------
+
+### Terminal Payoffs and Random Variables
+
+To connect this to our earlier framework, define a **terminal payoff
+random variable**
+
+$$
+X = \sum_{t=1}^T R_t,
+$$
+
+the total reward accumulated over a fixed horizon (T).
+
+This plays exactly the same role as Hero’s terminal payoff in poker: -
+it is unknown at intermediate stages, - it depends on chance and on
+decisions, - and it is the quantity we ultimately care about maximizing.
+
+------------------------------------------------------------------------
+
+### Value Functions as Conditional Expectations
+
+In reinforcement learning, the central mathematical object is the
+**value function**.
+
+At time (t), given the current state (S_t), the value function is
+defined as
+
+$$
+V_t(S_t)
+=
+\mathbb{E}[X \mid \mathcal{F}_t],
+$$
+
+the conditional expected total future reward given all information
+available at time (t).
+
+This is not an analogy — it is exactly the same object we called the
+**continuation value** in poker.
+
+Just as in poker: - future rewards are uncertain, - decisions influence
+which branches of the tree remain reachable, - and value must be
+evaluated *before* future information is revealed.
+
+------------------------------------------------------------------------
+
+### The Tower Property and Temporal Consistency
+
+The tower property guarantees consistency across time:
+
+$$
+\mathbb{E}\big[\, \mathbb{E}[X \mid \mathcal{F}_{t+1}] \mid \mathcal{F}_t \big]
+=
+\mathbb{E}[X \mid \mathcal{F}_t].
+$$
+
+In machine learning language, this means:
+
+> Evaluating a state by looking one step ahead — assuming optimal future
+> behavior — produces the same value as evaluating the entire future at
+> once.
+
+This identity is the mathematical reason **dynamic programming works**.
+
+It ensures that local optimization (choosing the best action now) aligns
+with global optimization (maximizing total reward).
+
+------------------------------------------------------------------------
+
+### Backward Induction and the Bellman Principle
+
+Backward induction appears in reinforcement learning as the **Bellman
+optimality principle**.
+
+At a decision point, the agent chooses the action that maximizes
+expected future value:
+
+$$
+V_t(s)
+=
+\max_{a}
+\mathbb{E}\big[ R_{t+1} + V_{t+1}(S_{t+1}) \mid S_t=s, A_t=a \big].
+$$
+
+Compare this directly with the poker turn decision:
+
+-   each action defines a subtree,
+-   chance determines which child node is reached,
+-   future values are already assumed optimal,
+-   and the current action is chosen by maximizing conditional expected
+    value.
+
+Modern algorithms such as Q-learning and policy iteration are nothing
+more than computational implementations of this recursion.
+
+------------------------------------------------------------------------
+
+### Equity, Expected Value, and Realization Revisited
+
+The distinctions from earlier in the chapter reappear naturally:
+
+-   **Equity** corresponds to the probability of reaching high-reward
+    states.
+-   **Expected value** is the conditional expectation of total future
+    reward.
+-   **Equity realization** reflects how often the agent can *actually*
+    convert favorable states into reward, given action constraints.
+
+A model may assign high equity to a state, but if available actions are
+limited or costly, the realized value may be much lower — exactly as in
+poker.
+
+------------------------------------------------------------------------
+
+### A Conceptual Bridge
+
+Seen this way, poker is not a special case — it is a transparent
+example.
+
+Poker hands are: - states, - bets are actions, - pots are rewards, - and
+the decision tree is the environment.
+
+What distinguishes machine learning is scale and automation, not
+mathematics.
+
+The same probabilistic principles govern: - how a poker player chooses a
+shove, - how a robot navigates a maze, - and how an algorithm learns to
+play a game it has never seen before.
+
+The mathematics of expectation, conditioning, and backward induction
+forms the common foundation.
 
 ## Liberal Arts Sidebar
 
-**Short-Term Pain, Long-Term Gain**
+## When Stories Overrule Decision Trees
 
-*Lens:* Moral philosophy
+Decision trees assume that choices are evaluated by comparing expected
+values across possible futures.\
+Stories assume something very different: that decisions are moments of
+identity.
 
-*Theme:* Ethical frameworks that emphasize long-run consequences—and when maximizing long-run value can conflict with other values.
+Again and again, literature, history, and everyday life show people
+abandoning the branch with the highest expected value — not because they
+miscalculated, but because the *story they believe they are in* makes
+certain branches unthinkable.
 
-> Is maximizing long-run value always ethically justified? What other values might matter?
+### The Sunk Cost That Feels Like Destiny
+
+From a decision-tree perspective, sunk costs should be ignored.\
+From a narrative perspective, sunk costs are *the plot so far*.
+
+Consider the gambler who says, “I’ve come this far — I can’t quit now.”
+
+Mathematically, this is an error.\
+Narratively, it is coherent.
+
+The money already lost is no longer just money; it is *evidence of
+commitment*. Quitting does not feel like choosing a different branch —
+it feels like invalidating the story that justified the earlier
+sacrifices.
+
+This logic appears everywhere:
+
+-soldiers continuing a doomed campaign,
+
+-   
+
+    ```         
+      entrepreneurs refusing to shut down a failing startup,
+    ```
+
+-   characters in novels pressing forward because turning back would
+    make earlier suffering “for nothing.”
+
+A decision tree sees independent choices. A story sees an arc that must
+reach a conclusion.
+
+### Honor, Pride, and Dominated Strategies
+
+In game-theoretic terms, some strategies are strictly dominated: they
+yield worse outcomes no matter what the opponent does.
+
+In stories, these strategies are often heroic.
+
+In Homer’s [*Odyssey*]{.underline}, Odysseus repeatedly takes actions
+that increase risk — revealing his name to Polyphemus, lingering instead
+of escaping quickly — because the story is not about minimizing danger.
+It is about *being remembered*.
+
+A decision tree would advise anonymity and speed.\
+The narrative demands recognition.
+
+Similarly, in poker, a player might call a bet not because the expected
+value is positive, but because folding feels like *being pushed around*.
+The story framing the hand — “I won’t be bluffed” — overrides the tree
+entirely.
+
+Once a decision is framed as a test of identity, expected value loses
+its authority.
+
+### The Vivid Villain vs. the Abstract Probability
+
+Humans are famously bad at responding to low-probability risks — unless
+those risks are wrapped in a story.
+
+A one-in-a-million chance barely registers.\
+A story about *one person* suffering that outcome is unforgettable.
+
+This is why narratives can overwhelm decision trees in public policy,
+law, and medicine:
+
+-   
+
+-   A single dramatic crime reshapes sentencing laws.
+
+-   
+
+-   A vivid airplane crash feels more frightening than a statistically
+    larger risk like driving.
+
+-   
+
+-   A personal anecdote about a medical side effect outweighs
+    population-level data.
+
+-   
+
+In decision-tree terms, probabilities are weights.\
+In narrative terms, probabilities are *irrelevant* if the outcome is
+emotionally charged.
+
+The branch that “almost never happens” becomes the only branch anyone
+talks about.
+
+### The Tragic Refusal to Optimize
+
+Many of the most powerful literary moments involve characters refusing
+to take the “correct” option.
+
+In [*Crime and Punishment*]{.underline}, Raskolnikov repeatedly makes
+decisions that worsen his situation. From a payoff perspective,
+confession is irrational. From a narrative perspective, confession is
+inevitable — the story demands moral resolution, not optimization.
+
+Similarly, in tragedy, characters often *know* what the safe branch is —
+and reject it:
+
+-   
+
+-   Oedipus continues to investigate.
+
+-   
+
+-   Antigone buries her brother.
+
+-   
+
+-   Lear divides the kingdom anyway.
+
+-   
+
+Decision trees ask: *What maximizes payoff?*\
+Stories ask: *What must this character do, given who they are?*
+
+### Modern Narratives: Data vs. Storytelling
+
+Even in domains saturated with analytics, narratives retain their grip.
+
+In [*Moneyball*]{.underline}, baseball teams have access to
+decision-tree-like statistical models that outperform intuition. And yet
+scouts resist them — not because the models fail, but because the models
+tell *the wrong story* about what a great player looks like.
+
+The data says one thing.\
+The story of grit, leadership, and the “five-tool player” says another.
+
+Organizations often choose the worse branch because it aligns with an
+entrenched narrative about excellence.
+
+### Poker as a Narrative Battlefield
+
+Poker is a perfect laboratory for this tension.
+
+A solver evaluates hands as branches with probabilities and payoffs.\
+A human player remembers:
+
+-   
+
+-   the last bluff,
+
+-   
+
+-   the time they were embarrassed,
+
+-   
+
+-   the story of how this opponent “always has it.”
+
+-   
+
+Once a hand is framed as revenge, dominance, or redemption, the decision
+tree becomes background noise.
+
+Players don’t say, “This branch has negative expected value.”\
+They say, “I can’t fold here.”
+
+### What Decision Trees Can — and Cannot — Do
+
+Decision trees are unmatched at enforcing logical consistency across
+time.\
+They prevent us from believing incompatible things about the future.
+
+But they are silent about meaning.
+
+Stories provide meaning — and in doing so, they:
+
+-   
+
+-   motivate action,
+
+-   
+
+-   justify risk,
+
+-   
+
+-   and override optimization.
+
+-   
+
+The goal of studying decision trees is not to eliminate narrative
+thinking, but to *recognize when it has taken control*.
+
+When a decision “feels inevitable,” that is often the story speaking —
+not the math.
 
 ## Homework Problems
 
-Use these as problem prompts to develop a full set:
+## Problems
 
-1. Compute with definitions and formulas
-2. Explain a concept in words
-3. Short proof or justification (when appropriate)
+### 1. Equity as a Conditional Expectation
 
-1. *[Problem to be written.]*
-2. *[Problem to be written.]*
-3. *[Problem to be written.]*
+Let (W) be the event that Hero wins at showdown, and let
+(\mathcal{F}\_t) denote the information available at time (t).
+
+(a) Show that $$
+    \mathbb{P}(W \mid \mathcal{F}_t) = \mathbb{E}[\mathbf{1}_{W} \mid \mathcal{F}_t].
+    $$
+
+(b) Explain why equity depends only on chance events and information,
+    and not on bet sizes or future actions.
+
+(c) Give an example of two game situations with identical equity but
+    different expected values.
+
+------------------------------------------------------------------------
+
+### 2. Expected Value vs. Equity
+
+Suppose that when called, Hero wins the pot with probability (p), and
+loses otherwise. The pot is size (P), and Hero must invest (C) to
+continue.
+
+(a) Write the expected value of calling in terms of (p), (P), and (C).
+
+(b) Show that a hand with higher equity may have lower expected value
+    than a hand with lower equity.
+
+(c) Interpret this result in poker terms.
+
+------------------------------------------------------------------------
+
+### 3. Folding and Equity Realization
+
+Let (X) be Hero’s payoff random variable from the start of the turn.
+
+(a) Compute (\mathbb{E}\[X \mid \mathcal{F}\_t\]) if Hero folds
+    immediately.
+
+(b) Explain why folding corresponds to realizing zero equity, even if
+    Hero’s equity is positive.
+
+(c) Give an example of a hand with high equity but poor equity
+    realization.
+
+------------------------------------------------------------------------
+
+### 4. A Simple Decision Tree
+
+Consider the following turn decision:
+
+-   Pot size is (P).
+-   Hero may **fold**, **call**, or **shove**.
+-   If Hero shoves, Villain folds with probability (f), otherwise calls.
+-   If called, Hero wins with probability (p).
+
+(a) Compute the expected value of each action.
+
+(b) For which values of (f) and (p) is shoving optimal?
+
+(c) Explain why equity alone is insufficient to answer this question.
+
+------------------------------------------------------------------------
+
+### 5. Hidden Hand Strength Classes
+
+Suppose Villain’s hand strength (H) takes values in ({S,M,W}) with
+probabilities $$
+\mathbb{P}(S)=0.3,\quad \mathbb{P}(M)=0.4,\quad \mathbb{P}(W)=0.3.
+$$
+
+Hero’s equity when called is (e_S, e_M, e_W).
+
+(a) Express Hero’s equity conditional on being called.
+
+(b) Express Hero’s expected value of shoving in terms of these
+    quantities.
+
+(c) Explain why Villain’s hidden information must be averaged over.
+
+------------------------------------------------------------------------
+
+### 6. Bayesian Updating from Actions
+
+Suppose Villain calls Hero’s shove.
+
+(a) Using Bayes’ theorem, compute $$
+    \mathbb{P}(H=h \mid \text{call})
+    $$ in terms of (\mathbb{P}(H=h)) and (\mathbb{P}(\text{call} \mid
+    H=h)).
+
+(b) Explain how Villain’s action changes Hero’s beliefs.
+
+(c) Why does this update matter for future decisions?
+
+------------------------------------------------------------------------
+
+### 7. The Tower Property
+
+Let ( \mathcal{F}\_0 \subseteq \mathcal{F}\_1 ) be σ-algebras and (X) an
+integrable random variable.
+
+(a) Prove the tower property: $$
+    \mathbb{E}[\mathbb{E}[X \mid \mathcal{F}_1] \mid \mathcal{F}_0]
+    =
+    \mathbb{E}[X \mid \mathcal{F}_0].
+    $$
+
+(b) Explain why this property is essential for multi-stage decision
+    making.
+
+(c) Interpret the tower property using a poker decision tree.
+
+------------------------------------------------------------------------
+
+### 8. Conditional Expectation on a Tree
+
+Consider a decision tree with terminal payoffs (X_1, X_2, X_3), reached
+with probabilities (p_1, p_2, p_3).
+
+(a) Compute the continuation value at the parent node.
+
+(b) Show that conditioning first on a later node and then earlier yields
+    the same result.
+
+(c) Identify this computation as an application of the tower property.
+
+------------------------------------------------------------------------
+
+### 9. Backward Induction (Proof-Based)
+
+Consider a finite decision tree with perfect information and terminal
+payoff (X).
+
+(a) Define the continuation value at a node.
+
+(b) Prove that backward induction produces an optimal strategy.
+
+(c) Explain why this argument relies on conditional expectation.
+
+------------------------------------------------------------------------
+
+### 10. Dominated Actions
+
+An action (a_1) is said to be dominated by action (a_2) if $$
+V(a_1) \le V(a_2)
+$$ for all possible future strategies of the opponent.
+
+(a) Give a formal definition of dominance in a decision tree.
+
+(b) Prove that a dominated action is never optimal under backward
+    induction.
+
+(c) Give a poker example of a dominated action.
+
+------------------------------------------------------------------------
+
+### 11. River Card as a Chance Node
+
+After Hero calls the turn bet, the river is: - a flush with probability
+(9/44), - two pair or trips with probability (3/44), - a blank
+otherwise.
+
+(a) Write the expected value of calling the turn as a weighted sum of
+    continuation values.
+
+(b) Explain why these values must assume optimal river play.
+
+(c) Identify where the tower property appears in this computation.
+
+------------------------------------------------------------------------
+
+### 12. Equity vs. Expected Value (Conceptual)
+
+Explain, in precise mathematical language, the difference between: -
+equity, - expected value, - equity realization.
+
+Your answer should reference conditional expectations and decision
+trees.
+
+------------------------------------------------------------------------
+
+### 13. Villain’s Perspective
+
+Let (X_H) be Hero’s payoff and (X_V=-X_H).
+
+(a) Show that $$
+    \mathbb{E}[X_V \mid \mathcal{G}] = -\mathbb{E}[X_H \mid \mathcal{G}].
+    $$
+
+(b) Explain why Villain conditions on different σ-algebras than Hero.
+
+(c) Give an example where this asymmetry changes optimal play.
+
+------------------------------------------------------------------------
+
+### 14. Sequential Updating
+
+Suppose Hero updates beliefs about Villain’s hand after: - a turn bet, -
+a call, - and a river shove.
+
+(a) Describe the filtration governing Hero’s information.
+
+(b) Explain how beliefs change at each stage.
+
+(c) Why is Bayesian updating essential for correct expected-value
+    calculations?
+
+------------------------------------------------------------------------
+
+### 15. Synthesis Problem
+
+Construct a complete decision tree for a turn decision with: - at least
+two chance nodes, - at least two decision nodes, - and nontrivial
+Bayesian updating.
+
+(a) Define the payoff random variable.
+
+(b) Compute expected values at each node.
+
+(c) Use backward induction to identify the optimal strategy.
+
+(d) Explain how equity, expected value, and equity realization each
+    appear in your example.
+
+------------------------------------------------------------------------
+
+### 16. Proof of Optimal Stopping Interpretation
+
+Explain why folding at a given node can be interpreted as an optimal
+stopping time.
+
+(a) Define a stopping time in this context.
+
+(b) Show how folding corresponds to stopping the process.
+
+(c) Explain the connection to expected value maximization.
+
+------------------------------------------------------------------------
+
+### 17. Narrative vs. Optimization (Critical Thinking)
+
+Give a poker or non-poker example where a decision-maker knowingly
+chooses an action with lower expected value.
+
+(a) Describe the decision tree.
+
+(b) Identify the optimal action mathematically.
+
+(c) Explain why narrative or psychological factors override
+    optimization.
+
+------------------------------------------------------------------------
+
+### 18. Extension: Beyond Poker
+
+Give a non-poker example of a sequential decision problem (medicine,
+law, finance, or AI).
+
+(a) Identify the chance and decision nodes.
+
+(b) Define the payoff random variable.
+
+(c) Explain how backward induction applies.
+
+(d) Discuss the role of Bayesian updating.
+
+------------------------------------------------------------------------
+
+### 19. Short Proof
+
+Show that if two strategies have identical continuation values at every
+information set, then they are equivalent.
+
+------------------------------------------------------------------------
+
+### 20. Reflection
+
+Which concept from this chapter most changed how you think about
+decisions made over time?\
+Justify your answer using mathematical language.
 
 ## Extension Activity
 
-Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
-
+Extend the chapter’s main tool using a small simulation or a short
+written reflection connecting poker to another domain.

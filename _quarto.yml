@@ -26,6 +26,7 @@ book:
   - chapters/20-detecting-cheating-and-collusion.qmd
 format:
   html:
+    mermaid: {}
     toc: true
     number-sections: true
     html-math-method: katex
