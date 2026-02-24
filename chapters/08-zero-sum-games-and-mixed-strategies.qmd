@@ -1,4 +1,4 @@
----
+
 title: "Zero-Sum Games and Mixed Strategies"
 chapter-id: "ch08"
 part: "Part III: Game Theory (Intro / Toy Models)"
@@ -13,7 +13,7 @@ sidebar:
   lens: "History / ethics"
   title: "War, Games, and Human Cost"
   theme: "Game theory’s military origins and critiques of zero-sum framing that can dehumanize opponents or obscure moral stakes."
----
+
 ::: {.callout-note}
 **Chapter at a glance**
 
@@ -221,7 +221,7 @@ In a single betting round of poker, one player acts first and the other responds
 
 The timing structure determines whether strategies are single actions or complete contingent plans.
 
----
+
 
 Together, the players, strategy sets, payoff functions, information structure, and timing structure fully specify a game.
 
@@ -467,7 +467,7 @@ The termination of a poker hand provides a natural example. A hand may end after
 
 Random horizons introduce additional strategic considerations. Players must account not only for immediate payoffs but also for the probability that future decision points will occur.
 
----
+
 
 The horizon of a game influences both strategic incentives and the mathematical tools required for analysis. In this chapter, we focus on one-shot games with a fixed horizon of a single stage, allowing us to isolate the structure of simultaneous strategic interaction.
 
@@ -525,7 +525,6 @@ In poker, a player’s private cards function as a type. The payoff from a betti
 
 Incomplete information transforms strategic reasoning. Players optimize not only over strategies, but over beliefs about unobserved characteristics.
 
----
 
 In this chapter, we restrict attention to complete-information games. The introduction of incomplete information will require additional probabilistic structure and will build directly on the tools developed here.
 
@@ -865,7 +864,7 @@ In such cases:
 
 This failure motivates enlarging the strategy space.
 
----
+
 
 ### Application to the Three-Card Poker Game
 
@@ -1166,7 +1165,7 @@ Continuity, convexity, and bilinearity together create the mathematical environm
 
 They ensure that optimization over mixed strategies is well-behaved.
 
----
+
 
 The enlargement from discrete strategies to convex sets, combined with bilinear payoffs, transforms a potentially unstable strategic problem into one with a guaranteed equilibrium.
 
@@ -1244,7 +1243,7 @@ Thus, under optimal play, the expected payoff is exactly $v$.
 
 The pair $(x^*, y^*)$ is called an **optimal strategy pair** or a **mixed strategy equilibrium**.
 
----
+
 
 #### Application to the Three-Card Poker Game (solving for optimal mixing)
 
@@ -1523,7 +1522,6 @@ The tools developed in this chapter — mixed strategies, convexity, and indiffe
 
 In the next chapter, we begin that transition.
 
-## Beyond Poker
 ## Beyond Poker: Mixed Strategies in Sports Analytics
 
 Mixed strategies are not confined to gambling games. They arise naturally in competitive environments where opponents actively adapt.
@@ -1666,7 +1664,7 @@ The same logic governs:
 
 Whenever opponents adapt strategically, equilibrium requires carefully calibrated randomness.
 
-## Liberal Arts Sidebar
+
 ## Liberal Arts Sidebar  
 ### War, Games, and Human Cost  
 
@@ -1783,7 +1781,7 @@ The power of mathematical modeling lies not only in what it reveals, but in what
 
    When does equality hold?
 
----
+
 
 ### Computational Problems (Matrix Games)
 
@@ -1834,7 +1832,7 @@ The power of mathematical modeling lies not only in what it reveals, but in what
 
    (c) Reduce the matrix if possible and solve for equilibrium.
 
----
+
 
 ### Poker-Theoretic Applications
 
@@ -1878,7 +1876,7 @@ The power of mathematical modeling lies not only in what it reveals, but in what
 
    (Hint: argue by contradiction.)
 
----
+
 
 ### Structural and Proof-Based Problems
 
@@ -1900,7 +1898,7 @@ The power of mathematical modeling lies not only in what it reveals, but in what
 
    Explain why this does not contradict the minimax theorem.
 
----
+
 
 ### Extended Poker Modeling
 
@@ -1931,7 +1929,7 @@ The power of mathematical modeling lies not only in what it reveals, but in what
 
    (b) Show that $\epsilon(x) = 0$ if and only if $x$ is optimal.
 
----
+
 
 ### Conceptual Reflection
 
@@ -1953,7 +1951,7 @@ The power of mathematical modeling lies not only in what it reveals, but in what
 
    Illustrate your answer using a poker-inspired matrix.
 
----
+
 
 These problems are designed to develop:
 
