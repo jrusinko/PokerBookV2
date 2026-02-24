@@ -32,10 +32,9 @@ If you always bluff, you get snapped; if you never bluff, you get overfolded aga
 - Situation: If you always bluff, you get snapped; if you never bluff, you get overfolded against. Randomizing feels irrational—but can be optimal.
 - Why it matters: this introduces 11 Zero-Sum Interaction, 12 Mixed Strategies.
 
-## Mathematical Framework and Poker Theory
-# Games, Strategy, and the Minimax Principle
 
-## I. What Is a Game?
+## Games, Strategy, and the Minimax Principle  I. What Is a Game?
+
 
 ### Strategic Interaction
 

@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>5&nbsp; Random Variables, Expectation, and Variance – Mathematics of Poker</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../chapters/05-conditional-probability-and-bayes-rule.html" rel="next">
+<link href="../chapters/03-poker-as-a-probability-space.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d9ea66fcd6c317012447f26e9c021348.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/04-random-variables-expectation-and-variance.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Random Variables, Expectation, and Variance</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Mathematics of Poker</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Mathematics of Poker</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/01-poker-games-structure-and-language.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Poker Games, Structure, and Language</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/02-counting-hands-and-boards.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Counting Hands and Boards</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/03-poker-as-a-probability-space.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Poker as a Probability Space</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/04-random-variables-expectation-and-variance.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Random Variables, Expectation, and Variance</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/05-conditional-probability-and-bayes-rule.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Conditional Probability and Bayes’ Rule</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/06-expected-value-in-multi-stage-decisions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Expected Value in Multi-Stage Decisions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/07-inference-with-discrete-distributions-ranges-and-blockers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Inference with Discrete Distributions: Ranges and Blockers</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/08-zero-sum-games-and-mixed-strategies.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Motivating Example</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/09-nash-equilibrium-and-indifference-conditions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Nash Equilibrium and Indifference Conditions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/10-exploitative-play-vs-equilibrium-thinking.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Exploitative Play vs Equilibrium Thinking</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/11-betting-as-optimization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Betting as Optimization</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/12-the-value-of-information.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">The Value of Information</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/13-tournament-poker-and-icm-optimization-with-nonlinear-utility.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Tournament Poker and ICM: Optimization with Nonlinear Utility</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/14-game-trees-and-abstraction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Test</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/15-learning-equilibria-regret-minimization-and-solvers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Learning Equilibria: Regret Minimization and Solvers</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/16-alternative-solver-perspectives-lp-qre-and-regularization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Alternative Solver Perspectives: LP, QRE, and Regularization</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/17-variance-bankroll-and-risk-of-ruin.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Variance, Bankroll, and Risk of Ruin</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/18-randomness-shuffling-rngs-and-verification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Randomness, Shuffling, RNGs, and Verification</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/19-learning-from-data-hand-histories-and-statistical-inference.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Learning from Data: Hand Histories and Statistical Inference</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../chapters/20-detecting-cheating-and-collusion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Detecting Cheating and Collusion</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#motivating-example" id="toc-motivating-example" class="nav-link active" data-scroll-target="#motivating-example"><span class="header-section-number">5.1</span> Motivating Example</a>
+  <ul class="collapse">
+  <li><a href="#random-variables-as-models-of-decisions" id="toc-random-variables-as-models-of-decisions" class="nav-link" data-scroll-target="#random-variables-as-models-of-decisions"><span class="header-section-number">5.1.1</span> Random Variables as Models of Decisions</a></li>
+  <li><a href="#a-concrete-river-decision-numbers-first" id="toc-a-concrete-river-decision-numbers-first" class="nav-link" data-scroll-target="#a-concrete-river-decision-numbers-first"><span class="header-section-number">5.1.2</span> A Concrete River Decision (Numbers First)</a></li>
+  <li><a href="#defining-the-random-variable-for-the-call" id="toc-defining-the-random-variable-for-the-call" class="nav-link" data-scroll-target="#defining-the-random-variable-for-the-call"><span class="header-section-number">5.1.3</span> Defining the Random Variable for the Call</a></li>
+  <li><a href="#expected-value" id="toc-expected-value" class="nav-link" data-scroll-target="#expected-value"><span class="header-section-number">5.1.4</span> Expected Value</a></li>
+  <li><a href="#worked-example-expected-value-of-the-call" id="toc-worked-example-expected-value-of-the-call" class="nav-link" data-scroll-target="#worked-example-expected-value-of-the-call"><span class="header-section-number">5.1.5</span> Worked Example: Expected Value of the Call</a></li>
+  <li><a href="#variance" id="toc-variance" class="nav-link" data-scroll-target="#variance"><span class="header-section-number">5.1.6</span> Variance</a></li>
+  <li><a href="#worked-example-variance-of-the-call" id="toc-worked-example-variance-of-the-call" class="nav-link" data-scroll-target="#worked-example-variance-of-the-call"><span class="header-section-number">5.1.7</span> Worked Example: Variance of the Call</a></li>
+  <li><a href="#standard-deviation" id="toc-standard-deviation" class="nav-link" data-scroll-target="#standard-deviation"><span class="header-section-number">5.1.8</span> Standard Deviation</a></li>
+  <li><a href="#worked-example-standard-deviation-of-the-call" id="toc-worked-example-standard-deviation-of-the-call" class="nav-link" data-scroll-target="#worked-example-standard-deviation-of-the-call"><span class="header-section-number">5.1.9</span> Worked Example: Standard Deviation of the Call</a></li>
+  <li><a href="#general-form-pot-p-bet-b" id="toc-general-form-pot-p-bet-b" class="nav-link" data-scroll-target="#general-form-pot-p-bet-b"><span class="header-section-number">5.1.10</span> General Form: Pot <span class="math inline">P</span>, Bet <span class="math inline">B</span></a></li>
+  <li><a href="#comparing-decisions-before-outcomes" id="toc-comparing-decisions-before-outcomes" class="nav-link" data-scroll-target="#comparing-decisions-before-outcomes"><span class="header-section-number">5.1.11</span> Comparing Decisions Before Outcomes</a></li>
+  <li><a href="#continuous-random-variables" id="toc-continuous-random-variables" class="nav-link" data-scroll-target="#continuous-random-variables"><span class="header-section-number">5.1.12</span> Continuous Random Variables</a></li>
+  <li><a href="#a-poker-example-a-random-raise-size" id="toc-a-poker-example-a-random-raise-size" class="nav-link" data-scroll-target="#a-poker-example-a-random-raise-size"><span class="header-section-number">5.1.13</span> A Poker Example: A Random Raise Size</a></li>
+  <li><a href="#expected-value-of-a-continuous-random-variable" id="toc-expected-value-of-a-continuous-random-variable" class="nav-link" data-scroll-target="#expected-value-of-a-continuous-random-variable"><span class="header-section-number">5.1.14</span> Expected Value of a Continuous Random Variable</a></li>
+  <li><a href="#worked-example-expected-raise-size" id="toc-worked-example-expected-raise-size" class="nav-link" data-scroll-target="#worked-example-expected-raise-size"><span class="header-section-number">5.1.15</span> Worked Example: Expected Raise Size</a></li>
+  <li><a href="#variance-of-a-continuous-random-variable" id="toc-variance-of-a-continuous-random-variable" class="nav-link" data-scroll-target="#variance-of-a-continuous-random-variable"><span class="header-section-number">5.1.16</span> Variance of a Continuous Random Variable</a></li>
+  <li><a href="#worked-example-variance-of-the-raise-size" id="toc-worked-example-variance-of-the-raise-size" class="nav-link" data-scroll-target="#worked-example-variance-of-the-raise-size"><span class="header-section-number">5.1.17</span> Worked Example: Variance of the Raise Size</a></li>
+  <li><a href="#continuous-random-variables-as-decision-models" id="toc-continuous-random-variables-as-decision-models" class="nav-link" data-scroll-target="#continuous-random-variables-as-decision-models"><span class="header-section-number">5.1.18</span> Continuous Random Variables as Decision Models</a></li>
+  <li><a href="#expected-value-and-basic-poker-quantities" id="toc-expected-value-and-basic-poker-quantities" class="nav-link" data-scroll-target="#expected-value-and-basic-poker-quantities"><span class="header-section-number">5.1.19</span> Expected Value and Basic Poker Quantities</a></li>
+  <li><a href="#pot-odds" id="toc-pot-odds" class="nav-link" data-scroll-target="#pot-odds"><span class="header-section-number">5.1.20</span> Pot Odds</a></li>
+  <li><a href="#minimum-defense-frequency" id="toc-minimum-defense-frequency" class="nav-link" data-scroll-target="#minimum-defense-frequency"><span class="header-section-number">5.1.21</span> Minimum Defense Frequency</a></li>
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation"><span class="header-section-number">5.1.22</span> Interpretation</a></li>
+  </ul></li>
+  <li><a href="#beyond-poker" id="toc-beyond-poker" class="nav-link" data-scroll-target="#beyond-poker"><span class="header-section-number">5.2</span> Beyond Poker</a></li>
+  <li><a href="#liberal-arts-sidebar" id="toc-liberal-arts-sidebar" class="nav-link" data-scroll-target="#liberal-arts-sidebar"><span class="header-section-number">5.3</span> Liberal Arts Sidebar</a>
+  <ul class="collapse">
+  <li><a href="#why-humans-fear-variance-more-than-loss" id="toc-why-humans-fear-variance-more-than-loss" class="nav-link" data-scroll-target="#why-humans-fear-variance-more-than-loss"><span class="header-section-number">5.3.1</span> Why Humans Fear Variance More Than Loss</a></li>
+  <li><a href="#variance-as-psychological-stress" id="toc-variance-as-psychological-stress" class="nav-link" data-scroll-target="#variance-as-psychological-stress"><span class="header-section-number">5.3.2</span> Variance as Psychological Stress</a></li>
+  <li><a href="#loss-aversion-is-often-variance-aversion" id="toc-loss-aversion-is-often-variance-aversion" class="nav-link" data-scroll-target="#loss-aversion-is-often-variance-aversion"><span class="header-section-number">5.3.3</span> Loss Aversion Is Often Variance Aversion</a></li>
+  <li><a href="#risk-avoidance-as-a-rational-response-to-limited-repetition" id="toc-risk-avoidance-as-a-rational-response-to-limited-repetition" class="nav-link" data-scroll-target="#risk-avoidance-as-a-rational-response-to-limited-repetition"><span class="header-section-number">5.3.4</span> Risk Avoidance as a Rational Response to Limited Repetition</a></li>
+  <li><a href="#narrative-hindsight-and-misjudged-decisions" id="toc-narrative-hindsight-and-misjudged-decisions" class="nav-link" data-scroll-target="#narrative-hindsight-and-misjudged-decisions"><span class="header-section-number">5.3.5</span> Narrative, Hindsight, and Misjudged Decisions</a></li>
+  <li><a href="#a-unifying-perspective" id="toc-a-unifying-perspective" class="nav-link" data-scroll-target="#a-unifying-perspective"><span class="header-section-number">5.3.6</span> A Unifying Perspective</a></li>
+  </ul></li>
+  <li><a href="#homework-problems" id="toc-homework-problems" class="nav-link" data-scroll-target="#homework-problems"><span class="header-section-number">5.4</span> Homework Problems</a></li>
+  <li><a href="#extension-activity" id="toc-extension-activity" class="nav-link" data-scroll-target="#extension-activity"><span class="header-section-number">5.5</span> Extension Activity</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Random Variables, Expectation, and Variance</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Chapter at a glance</strong></p>
+<ul>
+<li><strong>Part:</strong> Part II: Probability, Expectation, and Belief Updating</li>
+<li><strong>Poker topics:</strong> 1 Expected Value (EV), 2 Variance and Volatility, 3 Risk vs Reward Tradeoffs</li>
+<li><strong>Beyond poker:</strong> finance (returns and volatility), operations research (expected cost vs variability), psychology (behavioral variability)</li>
+</ul>
+</div>
+</div>
+<section id="motivating-example" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="motivating-example"><span class="header-section-number">5.1</span> Motivating Example</h2>
+<p>In 2003, amateur accountant <u><strong>Chris Moneymaker</strong></u> and grizzled professional gambler <u><strong>Sam Farha</strong></u> were the final two players in the World Series of Poker Main Event. Moneymaker was catapulted into poker fame in part because of a dramatic river decision in this hand:<br>
+<a href="https://www.youtube.com/shorts/pwmog3zZbCU" class="uri">https://www.youtube.com/shorts/pwmog3zZbCU</a>.</p>
+<p>As viewers, it is easy to see—<em>after the fact</em>—that calling was the winning decision for Farha. But imagine yourself in Farha’s position, at the moment the bet is made, before the cards are revealed. What information would you have been weighing when deciding whether to call or fold? On what grounds could that decision be evaluated as good or bad, independent of its outcome?</p>
+<hr>
+<section id="random-variables-as-models-of-decisions" class="level3" data-number="5.1.1">
+<h3 data-number="5.1.1" class="anchored" data-anchor-id="random-variables-as-models-of-decisions"><span class="header-section-number">5.1.1</span> Random Variables as Models of Decisions</h3>
+<section id="definition-random-variable" class="level4" data-number="5.1.1.1">
+<h4 data-number="5.1.1.1" class="anchored" data-anchor-id="definition-random-variable"><span class="header-section-number">5.1.1.1</span> Definition (Random Variable)</h4>
+<p>Let <span class="math inline">(\Omega, \mathcal{F}, \mathbb{P})</span> represent the unresolved uncertainty at a decision point.<br>
+A <strong>random variable</strong> is a function <span class="math display">
+X : \Omega \to \mathbb{R}.
+</span> In a decision context, <span class="math inline">X(\omega)</span> is the payoff that would result if the future unfolds according to outcome <span class="math inline">\omega \in \Omega</span>.</p>
+<hr>
+</section>
+</section>
+<section id="a-concrete-river-decision-numbers-first" class="level3" data-number="5.1.2">
+<h3 data-number="5.1.2" class="anchored" data-anchor-id="a-concrete-river-decision-numbers-first"><span class="header-section-number">5.1.2</span> A Concrete River Decision (Numbers First)</h3>
+<p>Consider a river situation with concrete amounts:</p>
+<ul>
+<li>The pot before the bet is <strong>$200</strong>.</li>
+<li>Your opponent bets <strong>$100</strong>.</li>
+<li>You are deciding whether to <strong>call $100</strong>.</li>
+<li>If you call and win at showdown, you receive the final pot: $400.</li>
+<li>If you call and lose, you lose your call amount: $100.</li>
+</ul>
+<p>Earlier contributions to the pot are sunk and do not change with your current choice. We therefore measure profit <strong>from the moment you face the bet</strong>.</p>
+<p>Let <span class="math inline">p</span> be your probability of winning at showdown conditional on calling.</p>
+<hr>
+</section>
+<section id="defining-the-random-variable-for-the-call" class="level3" data-number="5.1.3">
+<h3 data-number="5.1.3" class="anchored" data-anchor-id="defining-the-random-variable-for-the-call"><span class="header-section-number">5.1.3</span> Defining the Random Variable for the Call</h3>
+<p>Define <span class="math inline">X_{\text{call}}</span> to be the net payoff (from now onward) if you call:</p>
+<p><span class="math display">
+X_{\text{call}} =
+\begin{cases}
+300, &amp; \text{with probability } p, \\
+-100, &amp; \text{with probability } 1-p.
+\end{cases}
+</span></p>
+<p>If you win, you take the final pot of $400 but had to contribute $100 to call, resulting in a net profit of $300.<br>
+If you lose, your net payoff is (-$100).</p>
+<p>This random variable captures the decision <em>before</em> the showdown occurs.</p>
+<hr>
+</section>
+<section id="expected-value" class="level3" data-number="5.1.4">
+<h3 data-number="5.1.4" class="anchored" data-anchor-id="expected-value"><span class="header-section-number">5.1.4</span> Expected Value</h3>
+<section id="definition-expected-value" class="level4" data-number="5.1.4.1">
+<h4 data-number="5.1.4.1" class="anchored" data-anchor-id="definition-expected-value"><span class="header-section-number">5.1.4.1</span> Definition (Expected Value)</h4>
+<p>For a discrete random variable taking values <span class="math inline">x_i</span> with probabilities <span class="math inline">p_i</span>, <span class="math display">
+\mathbb{E}[X] = \sum_i x_i p_i.
+</span></p>
+<hr>
+</section>
+</section>
+<section id="worked-example-expected-value-of-the-call" class="level3" data-number="5.1.5">
+<h3 data-number="5.1.5" class="anchored" data-anchor-id="worked-example-expected-value-of-the-call"><span class="header-section-number">5.1.5</span> Worked Example: Expected Value of the Call</h3>
+<p>For the river call, <span class="math display">
+\mathbb{E}[X_{\text{call}}]
+= 300p + (-100)(1-p)
+= 400p - 100.
+</span></p>
+<p>Calling is breakeven when <span class="math display">
+400p - 100 \ge 0
+\quad \Longleftrightarrow \quad
+p \ge 0.25.
+</span></p>
+<p>If you estimate <span class="math inline">p = 0.30</span>, then <span class="math display">
+\mathbb{E}[X_{\text{call}}]
+= 400(0.30) - 100
+= 20.
+</span></p>
+<p><strong>Decision interpretation:</strong> calling commits you to a random variable with expected value $20. The outcome of the next hand does not alter this evaluation.</p>
+<hr>
+</section>
+<section id="variance" class="level3" data-number="5.1.6">
+<h3 data-number="5.1.6" class="anchored" data-anchor-id="variance"><span class="header-section-number">5.1.6</span> Variance</h3>
+<p>Expected value summarizes the center of the payoff distribution, but not its spread. Variance measures dispersion around the mean.</p>
+<section id="definition-variance" class="level4" data-number="5.1.6.1">
+<h4 data-number="5.1.6.1" class="anchored" data-anchor-id="definition-variance"><span class="header-section-number">5.1.6.1</span> Definition (Variance)</h4>
+<p>Let <span class="math inline">X</span> be a random variable with mean <span class="math inline">\mu = \mathbb{E}[X]</span>.<br>
+The <strong>variance</strong> of <span class="math inline">X</span> is <span class="math display">
+\mathrm{Var}(X) = \mathbb{E}\big[(X - \mu)^2\big].
+</span></p>
+<p>For a two-point distribution, <span class="math display">
+\mathrm{Var}(X)
+= p(x_1 - \mu)^2 + (1-p)(x_2 - \mu)^2.
+</span></p>
+<hr>
+</section>
+</section>
+<section id="worked-example-variance-of-the-call" class="level3" data-number="5.1.7">
+<h3 data-number="5.1.7" class="anchored" data-anchor-id="worked-example-variance-of-the-call"><span class="header-section-number">5.1.7</span> Worked Example: Variance of the Call</h3>
+<p>Using <span class="math inline">p = 0.30</span>, we have <span class="math display">
+\mu = \mathbb{E}[X_{\text{call}}] = 20.
+</span></p>
+<p>The deviations from the mean are <span class="math display">
+300 - 20 = 280,
+\qquad
+-100 - 20 = -120.
+</span></p>
+<p>Thus, <span class="math display">
+\mathrm{Var}(X_{\text{call}})
+= 0.30(280)^2 + 0.70(120)^2
+= 33600.
+</span></p>
+<p>Variance is measured in squared dollars, which limits its direct interpretability.</p>
+<hr>
+</section>
+<section id="standard-deviation" class="level3" data-number="5.1.8">
+<h3 data-number="5.1.8" class="anchored" data-anchor-id="standard-deviation"><span class="header-section-number">5.1.8</span> Standard Deviation</h3>
+<section id="definition-standard-deviation" class="level4" data-number="5.1.8.1">
+<h4 data-number="5.1.8.1" class="anchored" data-anchor-id="definition-standard-deviation"><span class="header-section-number">5.1.8.1</span> Definition (Standard Deviation)</h4>
+<p>The <strong>standard deviation</strong> of a random variable <span class="math inline">X</span> is <span class="math display">
+\sigma_X = \sqrt{\mathrm{Var}(X)}.
+</span></p>
+<hr>
+</section>
+</section>
+<section id="worked-example-standard-deviation-of-the-call" class="level3" data-number="5.1.9">
+<h3 data-number="5.1.9" class="anchored" data-anchor-id="worked-example-standard-deviation-of-the-call"><span class="header-section-number">5.1.9</span> Worked Example: Standard Deviation of the Call</h3>
+<p><span class="math display">
+\sigma_{X_{\text{call}}}
+= \sqrt{33600}
+\approx 183.
+</span></p>
+<p><strong>Decision interpretation:</strong> even though the expected profit is only $20, typical outcomes differ from this expectation by nearly $200. This volatility is a feature of the decision, not a flaw in the analysis.</p>
+<hr>
+</section>
+<section id="general-form-pot-p-bet-b" class="level3" data-number="5.1.10">
+<h3 data-number="5.1.10" class="anchored" data-anchor-id="general-form-pot-p-bet-b"><span class="header-section-number">5.1.10</span> General Form: Pot <span class="math inline">P</span>, Bet <span class="math inline">B</span></h3>
+<p>The same reasoning applies in general.</p>
+<ul>
+<li>Pot before the bet: <span class="math inline">P</span></li>
+<li>Opponent bets: <span class="math inline">B</span></li>
+<li>You consider calling <span class="math inline">B</span></li>
+<li>You win with probability <span class="math inline">p</span></li>
+</ul>
+<p>From the decision point onward, <span class="math display">
+X_{\text{call}} =
+\begin{cases}
+P + B, &amp; \text{with probability } p, \\
+- B, &amp; \text{with probability } 1-p.
+\end{cases}
+</span></p>
+<p>The expected value is <span class="math display">
+\mathbb{E}[X_{\text{call}}]
+= p(P+B) + (1-p)(-B)
+= p(P+2B) - B.
+</span></p>
+<p>Calling is breakeven when <span class="math display">
+p \ge \frac{B}{P + 2B}.
+</span></p>
+<p>Variance and standard deviation follow from the same two-point formulas: <span class="math display">
+\mu = \mathbb{E}[X_{\text{call}}],
+</span> <span class="math display">
+\mathrm{Var}(X_{\text{call}})
+= p\big((P+B)-\mu\big)^2
++ (1-p)\big((-B)-\mu\big)^2,
+</span> <span class="math display">
+\sigma_{X_{\text{call}}}
+= \sqrt{\mathrm{Var}(X_{\text{call}})}.
+</span></p>
+<hr>
+</section>
+<section id="comparing-decisions-before-outcomes" class="level3" data-number="5.1.11">
+<h3 data-number="5.1.11" class="anchored" data-anchor-id="comparing-decisions-before-outcomes"><span class="header-section-number">5.1.11</span> Comparing Decisions Before Outcomes</h3>
+<p>At a decision point, different actions correspond to different random variables: <span class="math display">
+X_{\text{fold}}, \quad X_{\text{call}}, \quad X_{\text{raise}}.
+</span></p>
+<p>Evaluating a decision means defining these variables and comparing their expected values and variances. The realized outcome is a single draw from the chosen random variable. The evaluation itself occurs entirely <strong>before</strong> the cards are revealed.</p>
+</section>
+<section id="continuous-random-variables" class="level3" data-number="5.1.12">
+<h3 data-number="5.1.12" class="anchored" data-anchor-id="continuous-random-variables"><span class="header-section-number">5.1.12</span> Continuous Random Variables</h3>
+<p>Not all poker decisions lead to a finite set of possible outcomes. In many situations—especially those involving bet sizing—the uncertainty is naturally modeled as <em>continuous</em> rather than discrete.</p>
+<hr>
+<section id="definition-continuous-random-variable" class="level4" data-number="5.1.12.1">
+<h4 data-number="5.1.12.1" class="anchored" data-anchor-id="definition-continuous-random-variable"><span class="header-section-number">5.1.12.1</span> Definition (Continuous Random Variable)</h4>
+<p>A <strong>continuous random variable</strong> is a random variable <span class="math inline">X</span> whose possible values lie in an interval of real numbers and whose probabilities are described by a <strong>probability density function</strong> (pdf) <span class="math inline">f_X(x)</span> satisfying:</p>
+<ol type="1">
+<li><span class="math inline">f_X(x) \ge 0</span> for all <span class="math inline">x</span>,</li>
+<li><span class="math display">\int_{-\infty}^{\infty} f_X(x)\,dx = 1.</span></li>
+</ol>
+<p>For any interval <span class="math inline">[a,b]</span>, the probability that <span class="math inline">X</span> lies in that interval is <span class="math display">
+\mathbb{P}(a \le X \le b)
+= \int_a^b f_X(x)\,dx.
+</span></p>
+<hr>
+</section>
+</section>
+<section id="a-poker-example-a-random-raise-size" class="level3" data-number="5.1.13">
+<h3 data-number="5.1.13" class="anchored" data-anchor-id="a-poker-example-a-random-raise-size"><span class="header-section-number">5.1.13</span> A Poker Example: A Random Raise Size</h3>
+<p>Consider a situation on the river where a player always raises when they choose to raise, but the <em>size</em> of the raise is not fixed. Instead, the player selects a raise size uniformly at random between $100 and $300.</p>
+<p>Let <span class="math inline">X</span> be the random variable representing the <strong>size of the raise</strong>, measured in dollars.</p>
+<p>Then <span class="math inline">X</span> is a continuous random variable with probability density function <span class="math display">
+f_X(x) =
+\begin{cases}
+\frac{1}{200}, &amp; 100 \le x \le 300, \\
+0, &amp; \text{otherwise}.
+\end{cases}
+</span></p>
+<p>This model reflects a situation where all raise sizes in the interval are equally likely.</p>
+<hr>
+</section>
+<section id="expected-value-of-a-continuous-random-variable" class="level3" data-number="5.1.14">
+<h3 data-number="5.1.14" class="anchored" data-anchor-id="expected-value-of-a-continuous-random-variable"><span class="header-section-number">5.1.14</span> Expected Value of a Continuous Random Variable</h3>
+<section id="definition-expected-value-1" class="level4" data-number="5.1.14.1">
+<h4 data-number="5.1.14.1" class="anchored" data-anchor-id="definition-expected-value-1"><span class="header-section-number">5.1.14.1</span> Definition (Expected Value)</h4>
+<p>If <span class="math inline">X</span> is a continuous random variable with density function <span class="math inline">f_X(x)</span>, its <strong>expected value</strong> is <span class="math display">
+\mathbb{E}[X] = \int_{-\infty}^{\infty} x f_X(x)\,dx,
+</span> provided the integral exists.</p>
+<hr>
+</section>
+</section>
+<section id="worked-example-expected-raise-size" class="level3" data-number="5.1.15">
+<h3 data-number="5.1.15" class="anchored" data-anchor-id="worked-example-expected-raise-size"><span class="header-section-number">5.1.15</span> Worked Example: Expected Raise Size</h3>
+<p>For the uniform raise-size model, <span class="math display">
+\mathbb{E}[X]
+= \int_{100}^{300} x \cdot \frac{1}{200}\,dx
+= \frac{1}{200}\int_{100}^{300} x\,dx.
+</span></p>
+<p>Evaluating the integral, <span class="math display">
+\mathbb{E}[X]
+= \frac{1}{200}\left[\frac{x^2}{2}\right]_{100}^{300}
+= \frac{1}{200}\cdot \frac{300^2 - 100^2}{2}
+= 200.
+</span></p>
+<p><strong>Decision interpretation:</strong><br>
+Before the action occurs, the <em>average</em> raise size generated by this decision rule is $200, even though no single hand may use that exact amount.</p>
+<hr>
+</section>
+<section id="variance-of-a-continuous-random-variable" class="level3" data-number="5.1.16">
+<h3 data-number="5.1.16" class="anchored" data-anchor-id="variance-of-a-continuous-random-variable"><span class="header-section-number">5.1.16</span> Variance of a Continuous Random Variable</h3>
+<section id="definition-variance-1" class="level4" data-number="5.1.16.1">
+<h4 data-number="5.1.16.1" class="anchored" data-anchor-id="definition-variance-1"><span class="header-section-number">5.1.16.1</span> Definition (Variance)</h4>
+<p>Let <span class="math inline">X</span> be a continuous random variable with mean <span class="math inline">\mu = \mathbb{E}[X]</span>. The <strong>variance</strong> of <span class="math inline">X</span> is <span class="math display">
+\mathrm{Var}(X)
+= \int_{-\infty}^{\infty} (x - \mu)^2 f_X(x)\,dx.
+</span></p>
+<hr>
+</section>
+</section>
+<section id="worked-example-variance-of-the-raise-size" class="level3" data-number="5.1.17">
+<h3 data-number="5.1.17" class="anchored" data-anchor-id="worked-example-variance-of-the-raise-size"><span class="header-section-number">5.1.17</span> Worked Example: Variance of the Raise Size</h3>
+<p>Using <span class="math inline">\mu = 200</span>, <span class="math display">
+\mathrm{Var}(X)
+= \int_{100}^{300} (x - 200)^2 \cdot \frac{1}{200}\,dx.
+</span></p>
+<p>Evaluating the integral, <span class="math display">
+\mathrm{Var}(X)
+= \frac{1}{200}\int_{-100}^{100} u^2\,du
+= \frac{1}{200}\left[\frac{u^3}{3}\right]_{-100}^{100}
+= \frac{1}{200}\cdot \frac{2(100)^3}{3}
+= \frac{1000000}{300}
+\approx 3333.33.
+</span></p>
+<p>The standard deviation is therefore <span class="math display">
+\sigma_X \approx 57.7.
+</span></p>
+<hr>
+</section>
+<section id="continuous-random-variables-as-decision-models" class="level3" data-number="5.1.18">
+<h3 data-number="5.1.18" class="anchored" data-anchor-id="continuous-random-variables-as-decision-models"><span class="header-section-number">5.1.18</span> Continuous Random Variables as Decision Models</h3>
+<p>In this example, the randomness does not come from the cards, but from the <em>player’s own action</em>. Choosing a mixed or randomized strategy induces a continuous random variable whose distribution can be analyzed mathematically.</p>
+<p>This illustrates a broader principle:</p>
+<blockquote class="blockquote">
+<p>Random variables need not describe the uncertainty of nature alone.<br>
+They can also describe uncertainty deliberately introduced by a decision-maker.</p>
+</blockquote>
+<p>Such models will reappear later when we study mixed strategies, equilibrium concepts, and optimization under uncertainty.</p>
+</section>
+<section id="expected-value-and-basic-poker-quantities" class="level3" data-number="5.1.19">
+<h3 data-number="5.1.19" class="anchored" data-anchor-id="expected-value-and-basic-poker-quantities"><span class="header-section-number">5.1.19</span> Expected Value and Basic Poker Quantities</h3>
+<p>Several commonly used poker terms arise directly from expected value calculations. Although they are often presented as strategic heuristics, they are more accurately understood as mathematical consequences of the payoff structure of betting.</p>
+<hr>
+</section>
+<section id="pot-odds" class="level3" data-number="5.1.20">
+<h3 data-number="5.1.20" class="anchored" data-anchor-id="pot-odds"><span class="header-section-number">5.1.20</span> Pot Odds</h3>
+<p>At a decision point on the river, suppose:</p>
+<ul>
+<li>The pot before the bet is <span class="math inline">P</span>.</li>
+<li>An opponent bets <span class="math inline">B</span>.</li>
+<li>You are considering whether to call <span class="math inline">B</span>.</li>
+</ul>
+<p>As shown earlier, calling induces the random variable <span class="math display">
+X_{\text{call}} =
+\begin{cases}
+P + B, &amp; \text{with probability } p, \\
+- B, &amp; \text{with probability } 1-p,
+\end{cases}
+</span> where <span class="math inline">p</span> is the probability that you win at showdown.</p>
+<p>The expected value of the call is <span class="math display">
+\mathbb{E}[X_{\text{call}}] = p(P+2B) - B.
+</span></p>
+<p>Calling is breakeven when <span class="math inline">\mathbb{E}[X_{\text{call}}] = 0</span>, which occurs exactly when <span class="math display">
+p = \frac{B}{P + 2B}.
+</span></p>
+<p>The quantity <span class="math inline">\frac{B}{P + 2B}</span> is called the <strong>pot odds threshold</strong>. It represents the minimum probability of winning required for a call to be nonnegative in expectation.</p>
+<p>Pot odds are therefore not a rule of thumb, but a direct translation of expected value into a probability comparison.</p>
+<hr>
+</section>
+<section id="minimum-defense-frequency" class="level3" data-number="5.1.21">
+<h3 data-number="5.1.21" class="anchored" data-anchor-id="minimum-defense-frequency"><span class="header-section-number">5.1.21</span> Minimum Defense Frequency</h3>
+<p>Expected value also constrains how often a player must defend against bets in order to prevent an opponent from profiting automatically.</p>
+<p>Suppose a bettor wagers <span class="math inline">B</span> into a pot of size <span class="math inline">P</span> on the river. Consider the bettor’s expected value if the defender folds with probability <span class="math inline">f</span> and calls with probability <span class="math inline">1-f</span>.</p>
+<ul>
+<li>If the defender folds, the bettor wins the pot <span class="math inline">P</span>.</li>
+<li>If the defender calls, the bettor loses <span class="math inline">B</span> when bluffing.</li>
+</ul>
+<p>Ignoring value hands and focusing only on bluffs, the bettor’s expected value from bluffing is <span class="math display">
+\mathbb{E}[\text{bluff}]
+= fP - (1-f)B.
+</span></p>
+<p>For the bluff to be breakeven, <span class="math display">
+fP - (1-f)B = 0.
+</span></p>
+<p>Solving for <span class="math inline">f</span> gives <span class="math display">
+f = \frac{B}{P + B}.
+</span></p>
+<p>Thus, if the defender folds more than <span class="math inline">\frac{B}{P+B}</span> of the time, the bettor’s bluffs are profitable regardless of hand strength.</p>
+<p>The complementary quantity, <span class="math display">
+1 - f = \frac{P}{P + B},
+</span> is known as the <strong>minimum defense frequency</strong>. It is the fraction of the defender’s range that must continue (by calling or raising) to ensure that the opponent cannot profit by bluffing automatically.</p>
+<hr>
+</section>
+<section id="interpretation" class="level3" data-number="5.1.22">
+<h3 data-number="5.1.22" class="anchored" data-anchor-id="interpretation"><span class="header-section-number">5.1.22</span> Interpretation</h3>
+<p>Pot odds and minimum defense frequency are not strategic prescriptions. They are constraints imposed by expected value.</p>
+<ul>
+<li>Pot odds describe when a <em>call</em> is justified given a fixed bet.</li>
+<li>Minimum defense frequency describes how often a <em>defense</em> must occur to prevent exploitation.</li>
+</ul>
+<p>Both arise from the same underlying principle: a decision is evaluated by the random variable it induces, not by the outcome that happens to occur.</p>
+<p>These quantities will reappear later in the text when we study equilibrium behavior and mixed strategies, where expected value is balanced across multiple actions.</p>
+</section>
+</section>
+<section id="beyond-poker" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="beyond-poker"><span class="header-section-number">5.2</span> Beyond Poker</h2>
+<p>Election Forecasting as Random Variables: A Model-Based View</p>
+<p>Modern election forecasting, most prominently associated with Nate Silver, treats elections not as events to be predicted with certainty, but as systems governed by uncertainty. The central object of study is not the final outcome itself, but the range of outcomes that remain plausible once all available information has been incorporated.</p>
+<p>In this framework, an election result is modeled as a random variable. Polls, demographic data, and historical patterns do not determine the outcome; they shape the distribution of possibilities.</p>
+<p>Polls as Measurements with Error</p>
+<p>Each opinion poll can be viewed as a numerical measurement of voter sentiment, subject to error. Some of this error is random, arising from finite sample sizes. Some reflects systematic features of survey design, such as likely-voter screens or consistent partisan bias.</p>
+<p>Rather than assuming polls are exact, forecasting models treat each poll as a noisy signal. Polls that are larger, more recent, or historically reliable are given more influence than others. When many such signals are combined, the result is not a single number, but a range of plausible vote shares, centered around a most likely value.</p>
+<p>This step mirrors a familiar move in poker: combining partial, imperfect information to form an overall assessment of the situation, while recognizing that uncertainty remains.</p>
+<p>From Estimates to Outcomes</p>
+<p>Winning an election is a threshold event: a candidate either wins or loses. Translating uncertainty about vote share into uncertainty about outcomes requires an additional step.</p>
+<p>Forecasting models address this by simulating the election many times. In each simulation, vote shares are drawn in a way that reflects the estimated uncertainty, and the resulting outcomes are recorded. After many such runs, the proportion of simulations in which a candidate wins is reported as their chance of victory.</p>
+<p>If a candidate wins in 65% of simulated elections, the forecast reports a 65% chance of winning—not as a guarantee, but as a summary of how often that outcome appears across the range of modeled possibilities.</p>
+<p>Variance, Correlation, and Surprise</p>
+<p>A crucial insight in these models is that errors are often correlated. When polls are systematically off in one direction, they tend to be off together. This increases the likelihood of large, coordinated surprises, even when individual estimates appear precise.</p>
+<p>Accounting for this correlation increases variance at the system level. It explains why elections with seemingly stable polling leads can still produce unexpected results.</p>
+<p>This phenomenon has a direct analogue in poker: multiple hands that look independent may in fact be driven by the same underlying uncertainty, producing streaks and swings that surprise players who focus only on averages.</p>
+<p>What It Means for a Forecast to Be “Right”</p>
+<p>Forecasts are often judged by whether the most likely outcome occurs. From a mathematical perspective, this is a misunderstanding of what the model is designed to do.</p>
+<p>A model that assigns a 30% chance to an outcome is not refuted when that outcome occurs. It is behaving exactly as described. Over many elections, such outcomes should happen about 30% of the time.</p>
+<p>The same logic governs poker decisions. A play that wins 70% of the time still loses 30% of the time. When it does, the decision has not failed; the random variable has simply realized a less likely value.</p>
+<p>Decision Quality Over Outcome</p>
+<p>Silver’s background as a poker player shaped this way of thinking. In both poker and election forecasting, the goal is not certainty, but coherence: assigning reasonable weights to possibilities and understanding the risks involved.</p>
+<p>Expected value captures what tends to happen on average. Variance captures how widely reality may deviate from that average. Together, they provide a disciplined way to reason about uncertain systems—whether the stakes are chips on a table or votes in a democracy.</p>
+</section>
+<section id="liberal-arts-sidebar" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="liberal-arts-sidebar"><span class="header-section-number">5.3</span> Liberal Arts Sidebar</h2>
+<p><strong>Why Humans Hate Variance</strong></p>
+<section id="why-humans-fear-variance-more-than-loss" class="level3" data-number="5.3.1">
+<h3 data-number="5.3.1" class="anchored" data-anchor-id="why-humans-fear-variance-more-than-loss"><span class="header-section-number">5.3.1</span> Why Humans Fear Variance More Than Loss</h3>
+<p>Human discomfort with risk is often described as an aversion to loss. Psychological research suggests something subtler and more revealing: people are frequently reacting not to expected loss, but to <strong>variance</strong>.</p>
+<p>One of the foundational results in behavioral economics, associated with the work of <strong>:contentReference<span data-index="0">oaicite:0</span></strong> and <strong>:contentReference<span data-index="1">oaicite:1</span></strong>, is that individuals do not evaluate outcomes solely by their average payoff. Instead, they respond strongly to the <em>spread</em> of possible outcomes and to the emotional experience of surprise.</p>
+<hr>
+</section>
+<section id="variance-as-psychological-stress" class="level3" data-number="5.3.2">
+<h3 data-number="5.3.2" class="anchored" data-anchor-id="variance-as-psychological-stress"><span class="header-section-number">5.3.2</span> Variance as Psychological Stress</h3>
+<p>From a mathematical perspective, variance measures how far outcomes typically lie from the mean. From a psychological perspective, variance measures something closer to <strong>emotional instability</strong>.</p>
+<p>High-variance situations produce: - sharp reversals, - outcomes that feel inconsistent, - and narratives that are difficult to reconcile with expectations.</p>
+<p>Even when two options have identical expected value, people reliably prefer the option with lower variance. This preference appears across domains: - finance (preference for bonds over stocks), - medicine (preference for treatments with predictable outcomes), - and everyday decision-making (steady income over uncertain windfalls).</p>
+<p>In poker, this manifests as a preference for “safe” lines—checking rather than betting, folding rather than calling—even when those lines are inferior in expectation.</p>
+<hr>
+</section>
+<section id="loss-aversion-is-often-variance-aversion" class="level3" data-number="5.3.3">
+<h3 data-number="5.3.3" class="anchored" data-anchor-id="loss-aversion-is-often-variance-aversion"><span class="header-section-number">5.3.3</span> Loss Aversion Is Often Variance Aversion</h3>
+<p>Loss aversion is commonly described as the idea that losses hurt more than gains of the same size feel good. But many experimental results attributed to loss aversion can be reinterpreted as <strong>variance aversion</strong>.</p>
+<p>A decision with high variance produces: - vivid negative outcomes, - memorable failures, - and post hoc regret.</p>
+<p>By contrast, low-variance decisions produce outcomes that feel “reasonable,” even when they are mathematically inferior. This helps explain why people often reject favorable gambles with small probabilities of loss, even when the expected value is strongly positive.</p>
+<p>Mathematically, expected value is a long-run quantity. Psychologically, humans experience outcomes one realization at a time.</p>
+<hr>
+</section>
+<section id="risk-avoidance-as-a-rational-response-to-limited-repetition" class="level3" data-number="5.3.4">
+<h3 data-number="5.3.4" class="anchored" data-anchor-id="risk-avoidance-as-a-rational-response-to-limited-repetition"><span class="header-section-number">5.3.4</span> Risk Avoidance as a Rational Response to Limited Repetition</h3>
+<p>Variance aversion is not always irrational. Expected value arguments rely implicitly on repetition: the idea that a decision will be made many times, allowing outcomes to average out.</p>
+<p>In real life, many decisions are <strong>one-shot</strong>: - a single medical procedure, - a single election, - a single career move.</p>
+<p>In such cases, high variance represents genuine danger. The mathematics does not disappear, but the context changes. Variance becomes a proxy for fragility: the risk that a single unfavorable realization cannot be recovered from.</p>
+<p>This distinction helps explain why professional poker players tolerate variance that casual players avoid. Professionals operate in a regime of repetition; casual players experience poker as a sequence of emotionally salient events.</p>
+<hr>
+</section>
+<section id="narrative-hindsight-and-misjudged-decisions" class="level3" data-number="5.3.5">
+<h3 data-number="5.3.5" class="anchored" data-anchor-id="narrative-hindsight-and-misjudged-decisions"><span class="header-section-number">5.3.5</span> Narrative, Hindsight, and Misjudged Decisions</h3>
+<p>High-variance outcomes also distort judgment after the fact. A low-probability loss invites moralizing explanations: the decision was reckless, the forecaster incompetent, the call “obviously bad.”</p>
+<p>This hindsight bias erases the probabilistic structure that existed before the outcome occurred. Variance ensures that unlikely events happen occasionally. Narrative ensures that, when they do, they feel meaningful.</p>
+<p>The mathematical framework in this chapter offers a corrective: decisions should be evaluated by the random variables they induce, not by the particular realization that happened to occur.</p>
+<hr>
+</section>
+<section id="a-unifying-perspective" class="level3" data-number="5.3.6">
+<h3 data-number="5.3.6" class="anchored" data-anchor-id="a-unifying-perspective"><span class="header-section-number">5.3.6</span> A Unifying Perspective</h3>
+<p>Expected value tells us what happens on average.<br>
+Variance tells us how violent the path to that average can be.</p>
+<p>Human psychology is exquisitely sensitive to the second quantity. Understanding that sensitivity does not eliminate it—but it does allow us to see where emotion ends and mathematics begins.</p>
+<p>In poker, in forecasting, and in everyday life, much of what we call “risk” is simply variance wearing a human face.</p>
+</section>
+</section>
+<section id="homework-problems" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="homework-problems"><span class="header-section-number">5.4</span> Homework Problems</h2>
+<ol type="1">
+<li><p>Rewatch the final river decision in the 2003 World Series of Poker Main Event between Farha and Moneymaker . Let the pot size before the river bet be <span class="math inline">P</span> and the bet size be <span class="math inline">B</span>. Express the breakeven probability of winning required for Farha to call in terms of <span class="math inline">P</span> and <span class="math inline">B</span>.</p></li>
+<li><p>Using publicly available estimates of the pot and bet sizes in the hand, compute a numerical value for Farha’s breakeven probability. Interpret this number in words: what fraction of the time must Moneymaker be bluffing for the call to be nonnegative in expectation?</p></li>
+<li><p>Suppose Farha estimates that Moneymaker is bluffing with probability <span class="math inline">p</span>. Write down the random variable representing Farha’s payoff if he calls. Compute the expected value of the call as a function of <span class="math inline">p</span>, and determine for which values of <span class="math inline">p</span> the call is profitable.</p></li>
+<li><p>Using the same random variable, compute the variance of Farha’s payoff conditional on calling. Then compute the standard deviation. Write a sentence explaining which player benefits from an increase in variance and why.</p></li>
+<li><p>In a heads-up river situation, the pot is $300 and the bettor wagers $150. The defender estimates that the bettor is bluffing with probability <span class="math inline">0.30</span>. Compute the expected value of calling and determine whether the call is profitable.</p></li>
+<li><p>Repeat the previous problem, but now assume the bettor wagers $300 into the same pot. How does the breakeven bluffing frequency change? Explain the result in terms of incentives created by bet sizing.</p></li>
+<li><p>A player bets the river with a polarized range: value hands that always win when called, and bluffs that always lose when called. Let the bettor’s range contain <span class="math inline">V</span> value hands and <span class="math inline">L</span> bluffs. Express the defender’s breakeven calling frequency in terms of <span class="math inline">V</span> and <span class="math inline">L</span>.</p></li>
+<li><p>Using the setup of the previous problem, suppose the defender calls with probability <span class="math inline">q</span>. Compute the bettor’s expected value as a function of <span class="math inline">q</span>. Determine the value of <span class="math inline">q</span> that makes the bettor indifferent between bluffing and not bluffing.</p></li>
+<li><p>Explain how the result of the previous problem leads naturally to the concept of <em>minimum defense frequency</em>. Your explanation should be mathematical rather than strategic.</p></li>
+<li><p>Consider a turn situation in which one card remains to come. A player is deciding whether to call a bet of $50 into a pot of $150 with a flush draw. Using counting arguments, compute the probability of completing the flush. Then compute the expected value of the call.</p></li>
+<li><p>Modify the previous problem by assuming that if the flush completes, the opponent will sometimes fold to a river bet, generating additional profit. Introduce a reasonable random variable modeling this possibility and compute its expected value.</p></li>
+<li><p>A casino offers a game in which a fair six-sided die is rolled. If the die shows 1 or 2, you lose $10. If it shows 3, 4, or 5, you win $8. If it shows 6, you win $30. Define an appropriate random variable and compute the expected value of the game.</p></li>
+<li><p>An insurance policy costs $400 per year and pays $50,000 if a certain rare event occurs. Suppose the probability of the event in a given year is <span class="math inline">0.005</span>. Compute the expected value of purchasing the policy and interpret the result.</p></li>
+<li><p>A company must decide whether to invest in a project that has a 40% chance of yielding a profit of $1 million and a 60% chance of yielding a loss of $200,000. Define the relevant random variable and compute its expected value. Discuss how variance might influence the company’s decision even if the expected value is positive.</p></li>
+<li><p>Let <span class="math inline">X</span> be a discrete random variable with values <span class="math inline">x_1,\dots,x_n</span> and probabilities <span class="math inline">p_1,\dots,p_n</span>. Prove that <span class="math display">
+\mathbb{E}[X - c] = \mathbb{E}[X] - c
+</span> for any constant <span class="math inline">c</span>.</p></li>
+<li><p>Let <span class="math inline">X</span> be a random variable and let <span class="math inline">a</span> and <span class="math inline">b</span> be real constants. Prove that <span class="math display">
+\mathrm{Var}(aX + b) = a^2 \mathrm{Var}(X).
+</span></p></li>
+<li><p>Let <span class="math inline">X</span> be a random variable taking exactly two values <span class="math inline">x_1</span> and <span class="math inline">x_2</span> with probabilities <span class="math inline">p</span> and <span class="math inline">1-p</span>. Prove that the variance of <span class="math inline">X</span> is maximized when <span class="math inline">p = \tfrac12</span>, and interpret this result in the context of poker decisions.</p></li>
+<li><p>A player randomizes their river bet size uniformly between $100 and $300. Let <span class="math inline">X</span> denote the bet size.<br>
+</p></li>
+</ol>
+<!-- -->
+<ol type="a">
+<li>Write down the probability density function of <span class="math inline">X</span>.<br>
+</li>
+<li>Compute <span class="math inline">\mathbb{E}[X]</span>.<br>
+</li>
+<li>Compute <span class="math inline">\mathrm{Var}(X)</span> and the standard deviation.<br>
+</li>
+<li>Interpret the standard deviation in the context of betting behavior.</li>
+</ol>
+<!-- -->
+<ol start="19" type="1">
+<li>Suppose a player’s net profit <span class="math inline">Y</span> from a hand depends linearly on their raise size <span class="math inline">X</span> according to the formula <span class="math display">
+Y = 0.4X - 50,
+</span> where <span class="math inline">X</span> is uniformly distributed between $100 and $300.<br>
+</li>
+</ol>
+<!-- -->
+<ol type="a">
+<li>Compute <span class="math inline">\mathbb{E}[Y]</span>.<br>
+</li>
+<li>Compute <span class="math inline">\mathrm{Var}(Y)</span>.<br>
+</li>
+<li>Determine whether the betting strategy is profitable in expectation.</li>
+</ol>
+<!-- -->
+<ol start="20" type="1">
+<li>A player chooses between folding, calling, and raising as follows:</li>
+</ol>
+<ul>
+<li>With probability <span class="math inline">0.4</span>, they fold and earn $0.</li>
+<li>With probability <span class="math inline">0.3</span>, they call and earn a fixed payoff of $40.</li>
+<li>With probability <span class="math inline">0.3</span>, they raise, choosing a raise size uniformly between $100 and $200, and their net payoff equals half the raise size minus $30.</li>
+</ul>
+<p>Define an appropriate random variable for the player’s payoff and compute its expected value.</p>
+<ol start="21" type="1">
+<li>Let <span class="math inline">X</span> be a continuous random variable representing the amount a player invests in a speculative financial asset, with probability density function <span class="math display">
+f_X(x) =
+\begin{cases}
+\frac{1}{1000}, &amp; 0 \le x \le 1000, \\
+0, &amp; \text{otherwise}.
+\end{cases}
+</span> Suppose the net return is given by <span class="math display">
+Y = 1.2X - X.
+</span></li>
+</ol>
+<!-- -->
+<ol type="a">
+<li>Compute <span class="math inline">\mathbb{E}[Y]</span>.<br>
+</li>
+<li>Compute <span class="math inline">\mathrm{Var}(Y)</span>.<br>
+</li>
+<li>Explain how this model parallels the evaluation of a poker bet with uncertain payoff.</li>
+</ol>
+<!-- -->
+<ol start="22" type="1">
+<li>Let <span class="math inline">X</span> be a continuous random variable with probability density function <span class="math inline">f_X(x)</span> and finite expected value.<br>
+</li>
+</ol>
+<!-- -->
+<ol type="a">
+<li>Prove that for any constant <span class="math inline">c</span>, <span class="math display">
+\mathbb{E}[X + c] = \mathbb{E}[X] + c.
+</span></li>
+<li>Prove that for any constant <span class="math inline">a</span>, <span class="math display">
+\mathrm{Var}(aX) = a^2 \mathrm{Var}(X).
+</span></li>
+<li>Explain why these identities are essential for analyzing continuous betting strategies in poker.</li>
+</ol>
+</section>
+<section id="extension-activity" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="extension-activity"><span class="header-section-number">5.5</span> Extension Activity</h2>
+<p>Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../chapters/03-poker-as-a-probability-space.html" class="pagination-link" aria-label="Poker as a Probability Space">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Poker as a Probability Space</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../chapters/05-conditional-probability-and-bayes-rule.html" class="pagination-link" aria-label="Conditional Probability and Bayes’ Rule">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Conditional Probability and Bayes’ Rule</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
