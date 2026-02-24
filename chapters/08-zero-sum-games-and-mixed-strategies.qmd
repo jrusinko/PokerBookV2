@@ -33,7 +33,7 @@ If you always bluff, you get snapped; if you never bluff, you get overfolded aga
 - Why it matters: this introduces 11 Zero-Sum Interaction, 12 Mixed Strategies.
 
 
-## Games, Strategy, and the Minimax Principle  I. What Is a Game?
+## Games, Strategy, and the Minimax Principle  What Is a Game?
 
 
 ### Strategic Interaction
@@ -527,7 +527,6 @@ Incomplete information transforms strategic reasoning. Players optimize not only
 
 In this chapter, we restrict attention to complete-information games. The introduction of incomplete information will require additional probabilistic structure and will build directly on the tools developed here.
 
-## III. Finite Two–Player Simultaneous Zero–Sum Games
 ## III. Finite Two–Player Simultaneous Zero–Sum Games
 
 We now restrict attention to a specific class of games whose structure allows a complete mathematical theory: finite, two-player, simultaneous-move, zero–sum games.
