@@ -26,7 +26,7 @@ sidebar:
 :::
 
 
-# 1. Motivating Example
+## 1. Motivating Example
 
 In a televised high-stakes cash game, two experienced professionals find themselves heads-up on the river. One player, after a long pause, says quietly:
 
