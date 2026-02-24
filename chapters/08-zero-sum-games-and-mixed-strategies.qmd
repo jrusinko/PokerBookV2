@@ -1,4 +1,4 @@
-
+---
 title: "Zero-Sum Games and Mixed Strategies"
 chapter-id: "ch08"
 part: "Part III: Game Theory (Intro / Toy Models)"
@@ -13,7 +13,7 @@ sidebar:
   lens: "History / ethics"
   title: "War, Games, and Human Cost"
   theme: "Game theory’s military origins and critiques of zero-sum framing that can dehumanize opponents or obscure moral stakes."
-
+---
 ::: {.callout-note}
 **Chapter at a glance**
 
