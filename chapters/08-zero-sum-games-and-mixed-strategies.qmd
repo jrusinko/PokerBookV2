@@ -33,23 +33,153 @@ If you always bluff, you get snapped; if you never bluff, you get overfolded aga
 - Why it matters: this introduces 11 Zero-Sum Interaction, 12 Mixed Strategies.
 
 
-## Games, Strategy, and the Minimax Principle  What Is a Game?
+## Strategic Games Introduction
 
 
 ### Strategic Interaction
 
-Much of this book has studied decision-making under uncertainty. In those settings, uncertainty arises from random processes: shuffled decks, unseen cards, or stochastic events. A single decision-maker chooses an action in light of probabilistic beliefs about outcomes.
+Game theory studies situations in which multiple decision-makers interact and the outcome for each depends on the actions of others.
 
-Game theory studies a different source of uncertainty.
+Before introducing formal definitions, we begin with three canonical examples.
 
-Here, uncertainty arises not from nature, but from other agents who are themselves reasoning, optimizing, and adapting. Each participant must form beliefs not only about random events, but about how other decision-makers will act.
 
-We begin with a formal definition.
 
-**Definition (Finite Game).**  
-A finite game consists of:
+### Example 1: Rock–Paper–Scissors
 
-1. A finite set of players, indexed by $1, \dots, N$.
+There are two players. Each simultaneously chooses one element of the strategy set
+
+$$
+S_i = \{\text{Rock}, \text{Paper}, \text{Scissors}\}.
+$$
+
+The outcome is determined by the standard rules:
+
+- Rock defeats Scissors,
+- Scissors defeats Paper,
+- Paper defeats Rock,
+- Identical choices result in a tie.
+
+Assign payoff $+1$ to a win, $-1$ to a loss, and $0$ to a tie.
+
+The payoff matrix to Player I is
+
+$$
+A =
+\begin{pmatrix}
+0 & -1 & 1 \\
+1 & 0 & -1 \\
+-1 & 1 & 0
+\end{pmatrix}.
+$$
+
+Player II’s payoff is $-A_{ij}$.
+
+This is a simultaneous two–player zero–sum game.
+
+
+
+### Example 2: The Prisoner’s Dilemma
+
+Two players simultaneously choose between
+
+$$
+S_i = \{\text{Cooperate}, \text{Defect}\}.
+$$
+
+A possible payoff matrix (to Player I) is
+
+$$
+A =
+\begin{pmatrix}
+-1 & -4 \\
+0 & -3
+\end{pmatrix}.
+$$
+
+Here the total payoff
+
+$$
+u_1(s_1,s_2) + u_2(s_1,s_2)
+$$
+
+is not constant across outcomes. The game is therefore not zero–sum.
+
+This example illustrates that strategic interaction need not be purely adversarial. Incentives may conflict without being perfectly opposed.
+
+
+
+### Example 3: A Sequential Poker Decision
+
+Consider a simplified river situation in heads-up poker. The pot is $P$. Player I acts first and chooses **bet** or **check**.
+
+- If Player I checks, the hand proceeds directly to showdown.
+- If Player I bets, Player II observes the bet and chooses **call** or **fold**.
+
+Suppose that at showdown Player I wins with probability
+
+$$
+x = \Pr(\text{Player I wins at showdown}),
+\qquad 0 \le x \le 1.
+$$
+
+Player I’s payoffs are:
+
+- If checking:
+  $$
+  xP.
+  $$
+
+- If betting and Player II folds:
+  $$
+  P.
+  $$
+
+- If betting and Player II calls:
+  $$
+  x(P+B) - (1-x)B.
+  $$
+
+Unlike the previous examples, this game is sequential. Player II’s action depends on observing Player I’s move. A strategy must therefore specify behavior conditional on earlier actions.
+
+
+
+### What These Examples Share
+
+Despite their differences, each example has common structural elements:
+
+- A set of players,
+- A set of possible actions (or strategies) for each player,
+- A rule that assigns a payoff to every possible combination of actions.
+
+In Rock–Paper–Scissors and the Prisoner’s Dilemma, actions are chosen simultaneously.
+
+In the poker example, actions occur in sequence, and later choices depend on earlier ones.
+
+The unifying feature is interdependence:
+
+> Each player’s payoff depends not only on their own choice, but on the choices of others.
+
+This distinguishes games from optimization against nature.
+
+In optimization under uncertainty, one chooses $s$ to maximize an expected value such as
+
+$$
+\mathbb{E}[X(s)],
+$$
+
+where uncertainty arises from random processes. Nature does not adapt.
+
+In a game, by contrast, each participant solves an optimization problem whose objective depends on the simultaneous or sequential optimization of others.
+
+
+
+### Formal Definition (Finite Simultaneous Game)
+
+We now abstract the structure illustrated above.
+
+A **finite game** consists of:
+
+1. A finite set of players indexed by $1,\dots,N$.
 2. For each player $i$, a finite strategy set $S_i$.
 3. For each player $i$, a payoff function
    $$
@@ -57,53 +187,20 @@ A finite game consists of:
    $$
 
 An element
+
 $$
-(s_1, \dots, s_N) \in S_1 \times \cdots \times S_N
+(s_1,\dots,s_N) \in S_1 \times \cdots \times S_N
 $$
-is called a **strategy profile**.  
-The value $u_i(s_1,\dots,s_N)$ represents the payoff to player $i$ when the strategy profile is played.
 
-The defining feature of a game is interdependence:
+is called a **strategy profile**.
 
-> A player's payoff depends not only on their own strategy, but on the strategies chosen by others.
+The value $u_i(s_1,\dots,s_N)$ represents the payoff to player $i$ when that strategy profile is played.
 
-This distinguishes games from ordinary optimization problems.
+In simultaneous games, this structure is complete.
 
-In optimization against nature, one chooses $s$ to maximize an expected value such as
-$$
-\mathbb{E}[X(s)].
-$$
-The uncertainty is external and non-strategic. Nature does not adapt.
+In sequential games, the strategy sets consist not merely of single actions but of complete contingent plans — functions defined on possible histories of play. The payoff function is defined on terminal histories rather than directly on single actions.
 
-In a game, by contrast, each player is solving an optimization problem whose objective depends on the simultaneous optimization of others. If player $i$ attempts to maximize
-$$
-u_i(s_i, s_{-i}),
-$$
-the strategies $s_{-i}$ of the remaining players are themselves chosen to optimize their own objectives.
-
-Thus, strategic interaction is characterized by mutual dependence of optimization problems.
-
-### A Poker Illustration
-
-Consider a simplified river situation in heads-up poker. The pot is $P$. Player I may either **bet** or **check**. If Player I bets, Player II may either **call** or **fold**.
-
-Player I’s payoff depends not only on their own action, but on Player II’s response:
-
-- If Player I bets and Player II folds, Player I wins $P$.
-- If Player I bets and Player II calls, the payoff depends on which hand is stronger.
-- If Player I checks, the hand proceeds to showdown.
-
-Player II faces a similar dependence:
-
-- Calling is profitable only if Player I is bluffing often enough.
-- Folding is profitable only if Player I is value-betting often enough.
-
-Each player’s optimal action depends on what the other player is expected to do. If Player I bluffs too frequently, Player II should call more often. If Player II calls too frequently, Player I should bluff less often.
-
-The uncertainty here is not about cards alone. It is about how frequently the opponent chooses each action.
-
-This is the essence of a game:  
-each participant must reason about the reasoning of others.
+The next section formalizes this distinction more precisely.
 
 ### Elements of a Game
 
@@ -153,18 +250,9 @@ The Cartesian product
 $$
 S_1 \times \cdots \times S_N
 $$
-is the set of all possible outcomes generated by players’ choices.
+is the set of all possible strategy  generated by players’ choices.
 
-In the poker example above, one strategy profile would be:
-$$
-(\text{bet}, \text{fold}),
-$$
-another would be
-$$
-(\text{check}, \text{call}).
-$$
 
-The strategy profile is the basic input to the payoff functions.
 
 #### Payoff Functions
 
@@ -183,13 +271,22 @@ Payoffs may represent:
 - Points,
 - Or any quantitative measure of preference.
 
-In a zero–sum poker model, one typically defines a single function
-$$
-u : S_1 \times S_2 \to \mathbb{R}
-$$
-representing Player I’s profit, and sets Player II’s payoff equal to $-u$.
 
 The payoff function encodes the incentives of the game. Once specified, the strategic problem becomes purely mathematical.
+
+#### Timing Structure
+
+The **timing structure** describes when decisions are made and in what order.
+
+Two principal types:
+
+- **Simultaneous-move games**: all players choose without observing others’ actions.
+- **Sequential games**: players move in a specified order, possibly observing previous moves.
+
+In a single betting round of poker, one player acts first and the other responds. Across multiple betting rounds, the timing structure becomes more complex.
+
+The timing structure determines whether strategies are single actions or complete contingent plans.
+
 
 #### Information Structure
 
@@ -207,21 +304,6 @@ In poker, players typically do not observe their opponents’ private cards. Thi
 
 Information structure determines what strategies are meaningful and what beliefs are required.
 
-#### Timing Structure
-
-The **timing structure** describes when decisions are made and in what order.
-
-Two principal types:
-
-- **Simultaneous-move games**: all players choose without observing others’ actions.
-- **Sequential games**: players move in a specified order, possibly observing previous moves.
-
-In a single betting round of poker, one player acts first and the other responds. Across multiple betting rounds, the timing structure becomes more complex.
-
-The timing structure determines whether strategies are single actions or complete contingent plans.
-
-
-
 Together, the players, strategy sets, payoff functions, information structure, and timing structure fully specify a game.
 
 Once these elements are fixed, the analysis proceeds by studying how rational players reason within that structure.
@@ -231,6 +313,8 @@ Once these elements are fixed, the analysis proceeds by studying how rational pl
 The definition of a game specifies its formal components: players, strategy sets, payoffs, information, and timing. But games differ profoundly in structure. Some involve pure competition; others allow for cooperation. Some are resolved in a single move; others unfold over time. Some contain no randomness; others incorporate chance.
 
 To analyze games effectively, we must classify them according to structural features that determine their mathematical behavior.
+
+
 
 We begin with the most fundamental distinction: the relationship among players’ payoffs.
 
@@ -309,61 +393,137 @@ In general–sum games:
 - The mathematical structure becomes more complex.
 
 Throughout this chapter, we focus on finite two-player zero–sum games. Their structural simplicity allows us to develop a complete and elegant theory before turning to more general strategic environments.
+
 ### Simultaneous vs. Sequential Games
 
-Another fundamental distinction concerns **when** players make their decisions.
+Games differ not only in payoffs, but in timing.
 
-The timing structure of a game determines both its representation and the method of analysis.
+The distinction between simultaneous and sequential play changes the internal mathematical structure of the game.
+
+
 
 #### Simultaneous-Move Games
 
-In a **simultaneous-move game**, all players choose their strategies without observing the actions chosen by others.
+In a finite simultaneous game:
 
-Formally, each player selects $s_i \in S_i$ independently, and the outcome is the resulting strategy profile
-$$
-(s_1, \dots, s_N).
-$$
+- Each player $i$ has a finite strategy set $S_i$.
+- A strategy is a single action.
+- A strategy profile is an element
+  $$
+  (s_1, \dots, s_N) \in S_1 \times \cdots \times S_N.
+  $$
+- The payoff function is
+  $$
+  u_i : S_1 \times \cdots \times S_N \to \mathbb{R}.
+  $$
 
-No player conditions their choice on the realized action of another.
+Timing does not explicitly appear in the structure because players choose without observing the actions of others.
 
-Simultaneous games are naturally represented by payoff matrices (in the two-player case). The matrix lists the payoff associated with every possible combination of strategies.
+In the two-player case, this structure is naturally represented by a payoff matrix.
 
-Because players must anticipate one another’s choices without observing them, analysis requires identifying strategy profiles that are stable under mutual optimization. The reasoning takes the form of a fixed-point problem: each player’s strategy must be optimal given the strategy of the other.
+Analysis proceeds by examining best responses within this product space.
 
-In a single betting decision where two players must commit without observing the other’s choice, the interaction may be modeled as simultaneous.
+
 
 #### Sequential Games
 
-In a **sequential game**, players move in a specified order.
+In a sequential game, actions occur over time. Later players may observe earlier moves before acting.
 
-Later players may observe earlier actions before making their decisions. A strategy in such a game is not merely a single action, but a complete contingent plan specifying what the player will do at every decision point that may arise.
+To formalize this, we introduce **histories**.
 
-Sequential games are represented by **game trees**, where:
+A history is a finite sequence of actions:
 
-- Nodes represent decision points.
-- Edges represent actions.
-- Terminal nodes represent outcomes with associated payoffs.
+$$
+h = (a_1, a_2, \dots, a_k).
+$$
 
-Because the order of moves is explicit, these games can often be analyzed by **backward induction**: one solves the game starting from the final decision nodes and proceeds recursively toward the beginning.
+The set of all histories is denoted by $H$, and the empty history $\varnothing$ represents the start of the game.
 
-#### Structural Distinction
+A subset $Z \subset H$ consists of **terminal histories**, at which the game ends.
 
-The mathematical distinction between simultaneous and sequential games is not merely representational.
+Payoffs are assigned to terminal histories:
 
-In simultaneous games:
-- Each player must form beliefs about the others’ strategies.
-- Equilibrium is characterized by mutual best responses.
-- Analysis typically involves fixed-point reasoning.
+$$
+u_i : Z \to \mathbb{R}.
+$$
 
-In sequential games:
-- Later players condition their choices on earlier actions.
-- Optimal behavior can often be derived by backward induction.
-- The dynamic structure constrains strategic possibilities.
+Each nonterminal history $h \in H \setminus Z$ is assigned to a player $P(h)$ who moves after that history.  
+At that point, the player chooses an action from a finite set $A_i(h)$.
 
-Although any finite sequential game can, in principle, be converted into a simultaneous game by expanding the strategy sets to include full contingent plans, the tree representation often makes the logic of the game transparent.
+Thus the game is represented as a tree of histories.
 
-In this chapter, we focus primarily on finite simultaneous two-player zero–sum games. Sequential games will reappear when we study dynamic strategic reasoning.
-### Deterministic vs. Stochastic Structure
+
+
+#### Strategies in Sequential Games
+
+A pure strategy must specify what a player will do at every history where they are called upon to act.
+
+Let
+
+$$
+H_i = \{ h \in H \setminus Z : P(h) = i \}.
+$$
+
+Then a pure strategy for player $i$ is a function
+
+$$
+s_i : H_i \to A
+$$
+
+such that
+
+$$
+s_i(h) \in A_i(h).
+$$
+
+Thus, unlike simultaneous games where a strategy is a single action, in sequential games a strategy is a **complete contingent plan**.
+
+
+
+#### Information Structure
+
+If a player cannot distinguish between certain histories, those histories form an **information set**.
+
+Let $\mathcal{I}_i$ denote the collection of information sets for player $i$.
+
+A strategy must assign the same action at all histories within the same information set.  
+Equivalently,
+
+$$
+s_i : \mathcal{I}_i \to A.
+$$
+
+Information therefore restricts which contingent plans are admissible.
+
+
+
+#### Strategic Form vs. Extensive Form
+
+Every finite sequential game can be reduced to a strategic-form representation:
+
+$$
+u_i : S_1 \times \cdots \times S_N \to \mathbb{R},
+$$
+
+where each $S_i$ is the set of admissible contingent plans.
+
+However, the internal structure differs:
+
+- In simultaneous games, strategies are elements of small finite sets.
+- In sequential games, strategies are functions defined on histories or information sets.
+- The size of $S_i$ may grow exponentially with the depth of the tree.
+
+This structural difference shapes analysis.
+
+Simultaneous games are naturally analyzed using matrices and best-response geometry.
+
+Sequential games invite analysis through backward reasoning along the tree.
+
+The taxonomy of games is therefore not merely descriptive.  
+It determines the mathematical tools required for equilibrium analysis.
+
+
+### Deterministic vs. Stochastic Games
 
 Games also differ in whether randomness enters the model externally.
 
@@ -420,112 +580,280 @@ This distinction becomes central when we introduce mixed strategies. There, prob
 
 ### Fixed Horizon vs. Random Horizon
 
-Games also differ in how long interaction continues.
+Games may also differ in how long they last.
 
-The **horizon** of a game describes the number of decision stages that may occur.
+The horizon of a game refers to the number of decision stages before termination.
+
+
 
 #### Fixed Horizon
 
-A game has a **fixed horizon** if the number of moves or stages is predetermined and known to all players.
+In a fixed-horizon game, the number of stages is predetermined.
 
-For example, a game consisting of exactly $T$ stages has horizon $T$. Each player’s strategy must specify an action at each of these stages.
+For example:
 
-When $T$ is finite, one may often analyze such games by backward induction, solving from the final stage toward the first.
+- A poker hand has a finite sequence of betting rounds.
+- A chess game ends when a terminal position is reached.
+- A bargaining game may allow exactly $T$ offers.
 
-Many textbook examples of sequential games assume a fixed finite horizon, since this ensures the game terminates after a known number of steps.
+Mathematically, we may represent such a game as a sequential game whose histories have bounded length. If $T$ denotes the maximum number of stages, then every terminal history satisfies
+
+$$
+\text{length}(h) \le T.
+$$
+
+A related formulation is a **repeated game**: the same stage game is played $T$ times.
+
+Let $G$ be a finite strategic-form game with payoff functions $u_i$.  
+The $T$-period repeated game consists of:
+
+- The same players,
+- The same stage strategy sets in each period,
+- Histories consisting of sequences of past action profiles,
+- Payoffs given by an aggregation such as
+
+  $$
+  U_i = \sum_{t=1}^T u_i(s^t),
+  $$
+
+  where $s^t$ denotes the strategy profile played in period $t$.
+
+Thus a fixed-horizon repeated game can be represented as a single sequential game whose histories record past play.
+
+The mathematical distinction lies not in the players or payoffs, but in how histories accumulate across stages.
+
+
 
 #### Infinite Horizon
 
-A game has an **infinite horizon** if interaction may continue indefinitely.
+In an infinite-horizon game, there is no predetermined terminal stage.
 
-Formally, the set of stages may be indexed by
+Histories may be arbitrarily long:
+
 $$
-t = 1,2,3,\dots
+h = (a_1, a_2, a_3, \dots).
 $$
 
-In such games, payoffs are often defined as discounted sums:
-$$
-\sum_{t=1}^{\infty} \delta^{t-1} u_i^t,
-$$
-where $0 < \delta < 1$ is a discount factor and $u_i^t$ is the payoff at stage $t$.
+To ensure well-defined payoffs, one typically introduces a discount factor $0 < \delta < 1$ and defines
 
-Infinite-horizon models are particularly useful when studying long-run relationships, reputation, or repeated strategic interaction.
+$$
+U_i = \sum_{t=1}^\infty \delta^{t-1} u_i(s^t).
+$$
 
-The mathematics becomes more subtle, since backward induction no longer applies in a straightforward manner.
+Infinite horizon models are central in economics and repeated strategic interaction, where long-term incentives influence current behavior.
+
+
 
 #### Random Horizon
 
-A game has a **random horizon** if the number of stages is not fixed in advance, but instead depends on a random stopping time.
+In a random-horizon game, termination occurs probabilistically.
 
-Formally, let $T$ be a random variable representing the stage at which play terminates. The payoff may then take the form
+At each stage, the game continues with probability $\delta$ and ends with probability $1-\delta$.
+
+The expected payoff can then be written as
+
 $$
-\sum_{t=1}^{T} u_i^t.
+U_i = \mathbb{E}\left[ \sum_{t=1}^{\tau} u_i(s^t) \right],
 $$
 
-The termination of a poker hand provides a natural example. A hand may end after the first betting round if all but one player folds, or it may proceed through multiple betting rounds to showdown. The number of decision nodes is not fixed ex ante.
+where $\tau$ is a random stopping time.
 
-Random horizons introduce additional strategic considerations. Players must account not only for immediate payoffs but also for the probability that future decision points will occur.
+Notably, the random-horizon model with continuation probability $\delta$ is mathematically equivalent to the infinite-horizon discounted model above.
 
 
 
-The horizon of a game influences both strategic incentives and the mathematical tools required for analysis. In this chapter, we focus on one-shot games with a fixed horizon of a single stage, allowing us to isolate the structure of simultaneous strategic interaction.
+#### Conceptual Distinction
 
-### Complete vs. Incomplete Information (Preview)
+A fixed-horizon multi-stage game and a $T$-period repeated game of a single stage game can be represented within the same formal framework:
 
-Another fundamental distinction concerns what players know about the structure of the game itself.
+- Histories record prior actions,
+- Strategies are functions defined on histories,
+- Payoffs aggregate across stages.
 
-#### Complete Information
+The difference is interpretive rather than structural:
+
+- In a multi-stage game, stages may differ in available actions.
+- In a repeated game, each stage is strategically identical.
+
+In both cases, horizon length affects incentives.  
+When the end is known, backward reasoning may simplify behavior.  
+When continuation is uncertain or infinite, future consequences may sustain cooperation or deterrence.
+
+Thus horizon structure alters not the definition of a game, but the strategic logic that emerges from it.
+
+### Information Structure in Games
+
+Games differ not only in payoffs and timing, but in what players know.
+
+To avoid confusion, we separate three distinct sources of uncertainty:
+
+1. **Stochastic uncertainty** — randomness generated by nature.
+2. **Imperfect information** — limited observation of past actions.
+3. **Incomplete information** — uncertainty about the underlying structure of the game.
+
+These are conceptually and mathematically different.
+
+
+
+#### Stochastic Structure (Nature)
+
+Many games include exogenous randomness:
+
+- Card deals in poker,
+- Dice rolls,
+- Random shocks in economic models.
+
+Formally, certain histories are assigned to **nature**.  
+If $P(h) = \text{Nature}$, then the next action is drawn from a known probability distribution
+
+$$
+\pi(\cdot \mid h).
+$$
+
+All players know this distribution, and this knowledge is common knowledge.
+
+Randomness therefore affects expected payoffs, but it does not by itself create incomplete information.
+
+A game may be stochastic and still have complete information.
+
+
+
+#### Perfect vs. Imperfect Information
+
+This distinction concerns what players observe about the history of play.
+
+A sequential game has **perfect information** if, whenever a player moves, they observe the entire prior history.
+
+Equivalently, every information set contains a single history.
+
+Chess is a perfect-information game.
+
+A game has **imperfect information** if some player moves without observing all prior actions.
+
+Formally, some information set contains multiple histories.
+
+Poker is imperfect-information because players do not observe opponents’ private cards.
+
+Imperfect information alters the structure of admissible strategies, since a strategy must assign the same action at all histories within an information set.
+
+
+
+#### Complete vs. Incomplete Information
+
+This distinction concerns knowledge of the game’s primitives.
 
 A game has **complete information** if:
 
-- The set of players is common knowledge.
-- The strategy sets are common knowledge.
-- The payoff functions
+- All players know the strategy sets,
+- All players know the payoff functions,
+- All players know the probability laws governing nature,
+- This knowledge is common knowledge.
+
+In standard poker:
+
+- The rules are known,
+- The payoff structure is known,
+- The distribution of cards is known.
+
+Although players do not know opponents’ private cards, the game is one of complete information. The uncertainty is stochastic and observational, not structural.
+
+A game has **incomplete information** if at least one player lacks knowledge about:
+
+- Another player’s payoff function,
+- Another player’s available strategies,
+- Or some underlying parameter of the model.
+
+In such cases, players must form beliefs not only about actions, but about the structure generating those actions.
+
+
+
+#### Independence of the Distinctions
+
+These categories are logically independent.
+
+A game may be:
+
+- Perfect and complete (e.g., chess),
+- Imperfect and complete (e.g., standard poker),
+- Perfect and incomplete (e.g., bargaining with unknown valuations but observable actions),
+- Imperfect and incomplete (e.g., poker with private risk preferences).
+
+Randomness, observation, and structural knowledge operate at different levels of the model.
+
+Maintaining these distinctions is essential.  
+Random events affect expected value.  
+Imperfect information restricts admissible strategies.  
+Incomplete information enlarges the strategic problem by introducing beliefs about unknown parameters.
+
+
+Later chapters will formalize incomplete information using type spaces and Bayesian reasoning. For now, it is enough to recognize that these are distinct dimensions along which games vary.
+
+### Cooperative vs. Competitive Games
+
+Games may also be classified according to whether players are permitted to coordinate and form binding agreements.
+
+#### Competitive (Noncooperative) Games
+
+In a competitive or **noncooperative** game:
+
+- Each player chooses strategies independently.
+- Agreements, if discussed, are not enforceable.
+- The outcome is determined solely by the strategy profile
   $$
-  u_i : S_1 \times \cdots \times S_N \to \mathbb{R}
+  (s_1, \dots, s_N).
   $$
-  are known to all players.
-- All players know that all players know these facts.
 
-In such games, uncertainty arises only from strategic choices or external randomness, not from uncertainty about preferences or incentives.
+Most of this chapter studies competitive games.  
+Poker, Rock–Paper–Scissors, and the Prisoner’s Dilemma (in its standard formulation) are noncooperative games.
 
-Most introductory models of matrix games assume complete information. Each player knows exactly how every outcome affects every participant.
+The mathematical framework is based on:
 
-#### Incomplete Information
+- Strategy sets,
+- Payoff functions,
+- Equilibrium defined through mutual best responses.
 
-A game has **incomplete information** if at least one player lacks knowledge about some component of the game’s structure.
 
-Common sources of incomplete information include:
 
-- Unknown payoff functions.
-- Private characteristics of other players.
-- Uncertainty about opponents’ incentives.
+#### Cooperative Games
 
-In these settings, players must form beliefs about hidden parameters.
+In a **cooperative** game:
 
-#### Hidden Types
+- Players may form binding agreements.
+- Coalitions may form.
+- The central question becomes how collective gains are distributed among members.
 
-A standard way to model incomplete information is through the notion of a **type**.
+Rather than focusing on individual strategy profiles, cooperative game theory studies:
 
-Each player $i$ is assigned a type $\theta_i$ drawn from a set $\Theta_i$. The type determines aspects of that player’s payoff function.
+- The value generated by coalitions,
+- Stability of agreements,
+- Allocation rules.
 
-Formally, one may write
+Formally, a cooperative game is often described by a function
+
 $$
-u_i(s_1,\dots,s_N; \theta_i).
+v : 2^N \to \mathbb{R},
 $$
 
-The types may be:
-
-- Publicly known,
-- Privately known,
-- Or drawn from a commonly known probability distribution.
-
-In poker, a player’s private cards function as a type. The payoff from a betting strategy depends on information not observed by the opponent. Each player must therefore reason not only about actions, but about the hidden information that may justify those actions.
-
-Incomplete information transforms strategic reasoning. Players optimize not only over strategies, but over beliefs about unobserved characteristics.
+where $v(S)$ represents the value that coalition $S \subseteq N$ can guarantee for itself.
 
 
-In this chapter, we restrict attention to complete-information games. The introduction of incomplete information will require additional probabilistic structure and will build directly on the tools developed here.
+
+
+#### Poker Perspective
+
+Poker is modeled as a noncooperative game: each player acts independently to maximize their own expected value.
+
+However, tournament poker reveals the boundary between cooperative and competitive modeling. If two players agree to soft-play one another or share prize money regardless of finish, they are effectively forming a coalition. Such coordination alters the payoff structure and invalidates the standard noncooperative analysis.
+
+This illustrates an important modeling principle:
+
+The distinction between cooperative and competitive games is not about whether cooperation is possible in practice. It concerns whether cooperation is built into the mathematical model.
+
+
+This chapter focuses on competitive (noncooperative) games.  
+Cooperative game theory forms a parallel and equally rich branch of the subject.
+
+
 
 ## III. Finite Two–Player Simultaneous Zero–Sum Games
 
@@ -602,429 +930,661 @@ Thus, a finite two–player zero–sum game is completely characterized by a rea
 
 The analysis of such games reduces to studying the strategic properties of this matrix.
 
-### A Toy Model: Three-Card Simultaneous Poker
+### Worked Example: Building the Payoff Matrix for the Three-Card Poker Game
 
-We now introduce a concrete example that will serve as a running model throughout this chapter.
+We now illustrate, in full detail, how a payoff matrix is constructed when the game includes private cards and simultaneous betting decisions.
 
-#### Description of the Game
+#### Game Rules
 
-There are two players. The deck consists of three cards:
+- Deck: $\{A,K,Q\}$ with $A>K>Q$.
+- Nature deals one card to each player **without replacement**, so the six ordered deals are
+  $$
+  (A,K),(A,Q),(K,A),(K,Q),(Q,A),(Q,K),
+  $$
+  each with probability $1/6$.
+- After seeing their own card, each player simultaneously chooses either **Bet** ($B$) or **No bet** ($N$).
+- Payoffs to Player I are:
+
+  1. If both choose $N$, go to showdown:
+     - higher card wins $+1$,
+     - lower card loses $-1$.
+
+  2. If exactly one player bets, the bettor wins $+1$ and the other loses $-1$.
+
+  3. If both bet, go to showdown:
+     - higher card wins $+2$,
+     - lower card loses $-2$.
+
+This is a two-player zero–sum game.
+
+
+
+#### Step 1: Pure Strategies Are Contingent Plans
+
+A pure strategy is not a card. A card is chosen by nature.
+
+A pure strategy for a player is a rule that specifies what to do holding each possible card:
+
 $$
-\{A, K, Q\}.
-$$
-
-Each player is dealt one card uniformly at random, without replacement. Thus, each player receives one of the three cards, and the third card is unused.
-
-Before any strategic action occurs, each player contributes an ante of 1 chip to the pot.
-
-After observing their own card (but not their opponent’s), both players simultaneously choose one of two actions:
-
-- **Bet** (add 2 additional chips),  
-- **Check** (add nothing).
-
-The outcome is determined as follows:
-
-1. If exactly one player bets, that player wins the pot.
-2. If both players bet, the higher card wins the pot.
-3. If neither player bets, the antes are returned and both players receive payoff 0.
-
-The ranking of cards is:
-$$
-A > K > Q.
-$$
-
-This game contains both stochastic and strategic components:
-
-- The deal of cards is random.
-- The betting decision is strategic and simultaneous.
-
-We now formalize the strategic portion of the game.
-
-#### Players
-
-There are two players:
-$$
-\mathcal{N} = \{1,2\}.
+s:\{A,K,Q\}\to\{N,B\}.
 $$
 
-#### Types (Private Information)
+Since there are 2 choices for each of 3 cards, there are
 
-Each player $i$ is dealt a card
 $$
-\theta_i \in \{A,K,Q\}.
-$$
-
-The type $\theta_i$ is privately observed by player $i$.
-
-The pair $(\theta_1,\theta_2)$ is drawn uniformly from the six ordered pairs of distinct cards.
-
-Thus, this is a game of incomplete information: each player knows their own card but not the opponent’s.
-
-#### Strategy Sets
-
-Because the betting decision occurs after observing one’s card, a pure strategy must specify what action the player takes for each possible card.
-
-For player $i$, a pure strategy is therefore a function
-$$
-s_i : \{A,K,Q\} \to \{\text{Bet}, \text{Check}\}.
+2^3 = 8
 $$
 
-Since there are two possible actions for each of three possible cards, the total number of pure strategies for each player is
+pure strategies.
+
+We encode a strategy by a triple indicating the action with $(A,K,Q)$, in that order.
+For example:
+
+- $NBN$ means: no bet with $A$, bet with $K$, no bet with $Q$.
+- $BBB$ means: bet with all cards.
+
+We will use the ordering:
+
 $$
-2^3 = 8.
+NNN,\ NNB,\ NBN,\ NBB,\ BNN,\ BNB,\ BBN,\ BBB.
 $$
 
-Thus,
+Let these be denoted
 $$
-|S_1| = |S_2| = 8.
+s^1, s^2, \dots, s^8.
 $$
 
-Each element of $S_i$ is a complete contingent plan, specifying behavior for all possible private cards.
 
-#### Payoff Function
 
-Let
-$$
-u(s_1,s_2)
-$$
-denote the expected payoff to Player I when the strategy profile $(s_1,s_2)$ is played.
+#### Step 2: Define the Payoff Matrix Entrywise
 
-Because the card deal is random, payoffs are defined as expectations over the six equally likely type pairs:
+The payoff matrix $A$ is an $8\times 8$ matrix where
+
 $$
-u(s_1,s_2)
+A_{ij} = u(s^i, s^j)
+$$
+
+is the **expected payoff to Player I** when Player I uses strategy $s^i$ and Player II uses strategy $s^j$.
+
+Because the cards are dealt randomly, each entry is an expectation over the six feasible deals:
+
+$$
+A_{ij}
 =
-\mathbb{E}_{(\theta_1,\theta_2)}
-\left[
-\text{chip payoff to Player I}
-\right].
+\frac{1}{6}
+\sum_{(c_1,c_2)}
+\text{Payoff}_I\big(c_1,c_2;\ s^i(c_1),\ s^j(c_2)\big),
 $$
 
-For a given type pair $(\theta_1,\theta_2)$:
-
-- If both players check, payoff is 0.
-- If exactly one bets, that player wins 2 chips (the antes).
-- If both bet:
-  - The winner receives 4 chips (two antes plus two bets).
-  - The loser loses 2 chips.
-
-Net payoffs are computed relative to the players’ total contributions.
-
-Thus, the stochastic card deal enters the payoff function, but the strategic analysis concerns only the choice of contingent plans.
-
-#### Matrix Representation
-
-Although the game involves private information, once we define strategies as complete contingent plans, the game reduces to a finite simultaneous two-player game.
-
-Each player has 8 pure strategies. Therefore, the game may be represented by an
-$$
-8 \times 8
-$$
-matrix $A$, where
+where the sum runs over
 
 $$
-A_{ij} = u(s_1^i, s_2^j).
+(A,K),(A,Q),(K,A),(K,Q),(Q,A),(Q,K).
 $$
 
-The matrix entry represents the expected chip gain of Player I under the corresponding pair of contingent betting rules.
+Notice what has happened structurally:
 
-This example makes explicit several features of the abstract definition:
-
-- The **strategy set** consists of full plans, not single actions.
-- The **payoff function** is defined as an expectation when randomness is present.
-- The entire game can be encoded in a finite matrix.
-
-In what follows, we will study simplified versions of this game to illustrate pure strategies, mixed strategies, and the minimax principle.
+- The *impossible* outcomes $(A,A)$, $(K,K)$, $(Q,Q)$ never appear.
+- They are not assigned payoff $0$.
+- They simply have probability $0$ and are absent from the expectation.
 
 
-## IV. Pure Strategies
 
-We begin by analyzing zero–sum games under the assumption that players choose a single strategy deterministically.
+#### Step 3: Compute One Matrix Entry Explicitly
 
-### Definition
+Compute $A_{1,6}$ where:
 
-A **pure strategy** is a single element of a player’s strategy set.
+- Player I uses $s^1 = NNN$ (never bets),
+- Player II uses $s^6 = BNB$ (bets with $A$, does not bet with $K$, bets with $Q$).
 
-In a finite two–player zero–sum game with strategy sets
+We evaluate Player I’s payoff deal by deal.
+
+1. Deal $(A,K)$:
+   - I holds $A$ and plays $N$.
+   - II holds $K$ and plays $N$.
+   - Both $N$ $\Rightarrow$ showdown, $A$ wins.
+   - Payoff to I: $+1$.
+
+2. Deal $(A,Q)$:
+   - I: $A\mapsto N$.
+   - II: $Q\mapsto B$.
+   - Exactly one bet (II bets) $\Rightarrow$ I loses.
+   - Payoff to I: $-1$.
+
+3. Deal $(K,A)$:
+   - I: $K\mapsto N$.
+   - II: $A\mapsto B$.
+   - II bets alone $\Rightarrow$ I loses.
+   - Payoff to I: $-1$.
+
+4. Deal $(K,Q)$:
+   - I: $K\mapsto N$.
+   - II: $Q\mapsto B$.
+   - II bets alone $\Rightarrow$ I loses.
+   - Payoff to I: $-1$.
+
+5. Deal $(Q,A)$:
+   - I: $Q\mapsto N$.
+   - II: $A\mapsto B$.
+   - II bets alone $\Rightarrow$ I loses.
+   - Payoff to I: $-1$.
+
+6. Deal $(Q,K)$:
+   - I: $Q\mapsto N$.
+   - II: $K\mapsto N$.
+   - Both $N$ $\Rightarrow$ showdown, $K$ wins.
+   - Payoff to I: $-1$.
+
+Sum:
 $$
-S_1 = \{s_1^1,\dots,s_1^m\}, 
+(+1) + (-1)+(-1)+(-1)+(-1)+(-1) = -4.
+$$
+
+Average over 6 equally likely deals:
+$$
+A_{1,6} = -\frac{4}{6} = -\frac{2}{3}.
+$$
+
+
+
+#### Step 4: The Full Payoff Matrix
+
+With the strategy ordering
+
+$$
+NNN,\ NNB,\ NBN,\ NBB,\ BNN,\ BNB,\ BBN,\ BBB,
+$$
+
+the payoff matrix to Player I is
+
+$$
+A=\frac{1}{6}
+\begin{pmatrix}
+ 0 & -4 & -2 & -6 &  0 & -4 & -2 & -6\\
+ 4 &  0 & -1 & -5 &  1 & -3 & -4 & -8\\
+ 2 &  1 &  0 & -1 & -1 & -2 & -3 & -4\\
+ 6 &  5 &  1 &  0 &  0 & -1 & -5 & -6\\
+ 0 & -1 &  1 &  0 &  0 & -1 &  1 &  0\\
+ 4 &  3 &  2 &  1 &  1 &  0 & -1 & -2\\
+ 2 &  4 &  3 &  5 & -1 &  1 &  0 &  2\\
+ 6 &  8 &  4 &  6 &  0 &  2 & -2 &  0
+\end{pmatrix}.
+$$
+
+Because the game is symmetric and zero–sum, Player II’s payoff matrix is $-A^T$ if we switch player roles, and the expected payoff to Player II is always $-u_1$.
+
+
+
+#### What This Example Illustrates
+
+This example makes precise the relationship between:
+
+- **randomness** (the deal of cards),
+- **strategies** (contingent betting rules),
+- **payoff matrices** (expected value over feasible deals).
+
+The payoff matrix is not indexed by card outcomes.  
+It is indexed by strategies.
+
+Card incompatibilities are handled at the probability level: impossible deals have probability $0$ and do not appear in the expectation.
+
+### Dominated Strategies
+
+Before analyzing best responses and security levels, we simplify games by eliminating strategies that are never rational to play.
+
+#### Definition (Strict Dominance)
+
+Let $A$ be the payoff matrix for a two-player zero–sum game.
+
+A row $i$ is **strictly dominated** by row $i'$ if
+
+$$
+A_{i'j} > A_{ij}
 \quad
-S_2 = \{s_2^1,\dots,s_2^n\},
-$$
-a pure strategy for Player I is some $s_1^i \in S_1$, and for Player II some $s_2^j \in S_2$.
-
-When Player I chooses row $i$ and Player II chooses column $j$, the payoff to Player I is
-$$
-A_{ij}.
+\text{for all } j.
 $$
 
-Thus, under pure strategies, the outcome of the game is a single matrix entry.
+That is, regardless of what Player II does, strategy $i'$ yields a strictly higher payoff than strategy $i$.
 
-### Best Responses
+In this case, strategy $i$ can never be optimal and may be removed from the game.
+
+Similarly, a column $j$ is strictly dominated by column $j'$ if
+
+$$
+A_{ij'} < A_{ij}
+\quad
+\text{for all } i.
+$$
+
+Since Player II minimizes Player I’s payoff, a dominated column always gives Player I a larger payoff and is therefore irrational for Player II.
+
+
+
+#### Weak Dominance
+
+Row $i$ is **weakly dominated** by row $i'$ if
+
+$$
+A_{i'j} \ge A_{ij}
+\quad
+\text{for all } j,
+$$
+
+with strict inequality for at least one $j$.
+
+Weakly dominated strategies are never better and sometimes worse.
+
+In zero–sum games, strictly dominated strategies may be safely eliminated without affecting equilibrium analysis. Weak dominance requires more care but often provides useful simplification.
+
+
+
+### Example: Dominance in the Three-Card Poker Game
+
+Recall that pure strategies are encoded as triples indicating actions with $(A,K,Q)$:
+
+$$
+NNN,\ NNB,\ NBN,\ NBB,\ BNN,\ BNB,\ BBN,\ BBB.
+$$
+
+Consider the strategy $NNN$, which never bets.
+
+Now compare it with $BNN$, which differs only in betting with $A$.
+
+For every possible opponent strategy:
+
+- When holding $A$, betting strictly improves payoff (it either wins uncontested or doubles winnings at showdown).
+- With $K$ and $Q$, both strategies behave identically.
+
+Thus for every column $j$,
+
+$$
+A_{BNN,j} \ge A_{NNN,j},
+$$
+
+with strict inequality for some $j$.
+
+Therefore:
+
+> $NNN$ is weakly dominated by $BNN$.
+
+Intuitively, refusing to bet with the highest card sacrifices value without ever providing protection.
+
+
+
+Similarly, any strategy that fails to bet with $A$ is weakly dominated by the identical strategy that *does* bet with $A$.
+
+Thus, rational play restricts attention to strategies that always bet with $A$.
+
+This observation reduces the strategic space from eight pure strategies to four:
+
+$$
+BNN,\ BNB,\ BBN,\ BBB.
+$$
+
+The game becomes structurally simpler before any equilibrium analysis begins.
+
+
+
+### Conceptual Role of Dominance
+
+Dominated strategies represent actions that are inferior regardless of the opponent’s behavior.
+
+Eliminating them:
+
+- Reduces the size of the game,
+- Clarifies the strategic structure,
+- Sharpens best-response analysis.
+
+In poker terms, a dominated strategy is a betting rule that leaves money on the table no matter how the opponent plays.
+
+The study of equilibrium begins only after clearly irrational strategies are removed.
+
+### Best Responses (Reduced Game)
+
+After eliminating dominated strategies, each player has four remaining pure strategies:
+
+$$
+BNN,\ BNB,\ BBN,\ BBB.
+$$
+
+These are the strategies that always bet with $A$ and vary behavior with $K$ and $Q$.
+
+Let $A$ now denote the reduced $4 \times 4$ payoff matrix obtained by restricting the original matrix to these strategies.
+
+Rows correspond to Player I and columns to Player II in the order
+
+$$
+BNN,\ BNB,\ BBN,\ BBB.
+$$
 
 Suppose Player II chooses column $j$.
 
 Player I’s optimal pure response is any row index $i$ that maximizes
+
 $$
 A_{ij}.
 $$
 
 Thus Player I seeks
+
 $$
 \max_i A_{ij}.
 $$
 
-Similarly, if Player I chooses row $i$, Player II seeks to minimize Player I’s payoff. Player II’s optimal pure response is any column index $j$ minimizing
-$$
-A_{ij},
-$$
-that is,
+Similarly, if Player I chooses row $i$, Player II seeks to minimize Player I’s payoff:
+
 $$
 \min_j A_{ij}.
 $$
 
-Best responses reflect the strictly opposing objectives of the players.
+Because the game is zero–sum, the players optimize opposing objectives over the same matrix.
 
-### Maximin and Minimax
 
-If Player I assumes that Player II will act adversarially, Player I evaluates each row by its worst possible outcome:
+
+### Example: A Best Response in the Reduced Game
+
+Suppose Player II adopts the strategy $BNN$ (bet only with $A$).
+
+In the reduced matrix, the corresponding column is
+
+$$
+\frac{1}{6}
+\begin{pmatrix}
+0 \\
+1 \\
+-1 \\
+0
+\end{pmatrix}.
+$$
+
+The largest entry is $1/6$, achieved by the strategy $BNB$.
+
+Thus, if Player II bets only with $A$, Player I’s best response is to bet with $A$ and $Q$, but not with $K$.
+
+The strategic adjustment now concerns bluffing frequency rather than whether to bet with $A$.
+
+
+
+## Maximin and Minimax (Reduced Game)
+
+Best responses describe local reactions.  
+We now evaluate global security levels in the reduced matrix.
+
+### Maximin
+
+Player I evaluates each row by its worst outcome:
+
 $$
 \min_j A_{ij}.
 $$
 
-Player I then selects the row that maximizes this guaranteed payoff:
+Then selects
+
 $$
 \max_i \min_j A_{ij}.
 $$
 
-This quantity is called the **maximin value**.
+For the reduced matrix, the row minima (scaled by $1/6$) are:
 
-Similarly, Player II evaluates each column by the largest payoff Player I could obtain:
 $$
-\max_i A_{ij}.
+\begin{array}{c|c}
+\text{Strategy} & \min_j A_{ij} \\
+\hline
+BNN & -\frac{1}{6} \\
+BNB & -\frac{2}{6} \\
+BBN & -\frac{1}{6} \\
+BBB & -\frac{2}{6}
+\end{array}
 $$
 
-Player II then selects the column that minimizes this quantity:
+Thus
+
+$$
+\max_i \min_j A_{ij}
+=
+-\frac{1}{6}.
+$$
+
+
+
+### Minimax
+
+Player II evaluates each column by
+
+$$
+\max_i A_{ij},
+$$
+
+and chooses
+
 $$
 \min_j \max_i A_{ij}.
 $$
 
-This is the **minimax value**.
+For the reduced matrix, the smallest column maximum equals
 
-In general, we always have
+$$
+\frac{1}{6}.
+$$
+
+Thus
+
+$$
+\min_j \max_i A_{ij}
+=
+\frac{1}{6}.
+$$
+
+
+
+### Fundamental Inequality
+
+For every finite matrix $A$,
+
 $$
 \max_i \min_j A_{ij}
 \;\le\;
 \min_j \max_i A_{ij}.
 $$
 
-### Saddle Points
+In the reduced poker matrix,
 
-A pair $(i^*,j^*)$ is called a **saddle point** if
+$$
+-\frac{1}{6}
+<
+\frac{1}{6}.
+$$
+
+The inequality is strict.
+
+
+
+## Saddle Points
+
+A pair $(i^*, j^*)$ is a **saddle point** if
+
 $$
 A_{i^* j} \le A_{i^* j^*} \le A_{i j^*}
+\quad
+\text{for all } i, j.
 $$
-for all $i,j$.
 
-Equivalently,
+Equivalently, the entry is:
+
+- The smallest value in its row,
+- The largest value in its column.
+
+If a saddle point exists, then
+
 $$
-A_{i^* j^*}
+\max_i \min_j A_{ij}
 =
+\min_j \max_i A_{ij}.
+$$
+
+
+
+## Absence of a Saddle Point
+
+In the reduced three-card poker game,
+
+$$
 \max_i \min_j A_{ij}
+=
+-\frac{1}{6}
+\quad
+<
+\quad
+\frac{1}{6}
 =
 \min_j \max_i A_{ij}.
 $$
 
-At a saddle point:
+Therefore:
 
-- Player I cannot improve by changing rows.
-- Player II cannot improve by changing columns.
+- No saddle point exists.
+- No pure strategy stabilizes the game.
+- Every deterministic betting rule (even after removing dominated ones) can be exploited.
 
-Thus, neither player has an incentive to deviate unilaterally.
+The strategic tension now lies entirely in how frequently players bluff with $Q$ or value-bet with $K$.
 
-When a saddle point exists, the game has a pure strategy equilibrium.
-
-### Limitation of Pure Strategies
-
-In many games, no saddle point exists.
-
-That is,
-$$
-\max_i \min_j A_{ij}
-<
-\min_j \max_i A_{ij}.
-$$
-
-In such cases:
-
-- Player I’s security level is strictly less than what Player II can force.
-- No pure strategy profile is stable.
-- Each player can be exploited by a suitable counterstrategy.
-
-This failure motivates enlarging the strategy space.
-
-
-
-### Application to the Three-Card Poker Game
-
-Consider the three-card simultaneous poker model introduced earlier.
-
-Each player has 8 pure strategies, corresponding to all possible betting rules of the form
-$$
-s_i : \{A,K,Q\} \to \{\text{Bet}, \text{Check}\}.
-$$
-
-The resulting payoff matrix is $8 \times 8$.
-
-We can immediately observe that no pure strategy can be optimal in isolation.
-
-For example:
-
-- If Player I always bets with every card, Player II can respond by calling with strong hands and folding weak ones.
-- If Player I never bets, Player II loses nothing and the game yields zero payoff.
-- If Player I bets only with strong cards, Player II can fold safely against bets.
-
-Every deterministic rule can be countered by another deterministic rule.
-
-Consequently, the game does not admit a saddle point in pure strategies. The maximin value is strictly less than the minimax value:
-$$
-\max_i \min_j A_{ij}
-<
-\min_j \max_i A_{ij}.
-$$
-
-The absence of a pure equilibrium in this simple poker model illustrates a central phenomenon:
-
-In strategic environments with opposing incentives and private information, deterministic behavior is typically exploitable.
-
-To prevent exploitation, players must consider randomization.
-
-This leads to the introduction of mixed strategies.
+This structural failure of pure strategies motivates enlarging the strategy space.
 
 ## V. Mixed Strategies
 
-The failure of pure strategies in many zero–sum games forces us to enlarge the strategic framework.
+The failure of pure strategies in the reduced three-card poker game forces us to enlarge the strategic framework.
+
+After eliminating dominated strategies, each player has four pure strategies:
+
+$$
+BNN,\ BNB,\ BBN,\ BBB,
+$$
+
+that is:
+
+- Always bet with $A$,
+- Choose whether to bet with $K$,
+- Choose whether to bet with $Q$.
+
+We saw that no saddle point exists in this $4 \times 4$ matrix.  
+Every deterministic betting rule can be countered.
+
+
 
 ### Motivation
-
-In the previous section we observed that many games admit no saddle point in pure strategies. Whenever a player commits to a deterministic rule, the opponent can often select a counterstrategy that exploits it.
 
 The structural problem is rigidity.
 
 A pure strategy fixes a single row (or column) of the payoff matrix. Once this row is known, the opponent chooses the column that minimizes it. The player is exposed to their worst-case outcome.
 
-To prevent exploitation, a player may deliberately introduce randomness into their behavior.
+To prevent exploitation, a player may deliberately introduce randomness.
 
-Instead of choosing a single pure strategy, the player chooses a probability distribution over strategies.
+Instead of choosing a single pure strategy, the player chooses a probability distribution over the four available strategies.
 
-Randomization here is not ignorance. It is a strategic device. By mixing between several pure strategies, a player can make the opponent indifferent among responses, thereby eliminating systematic vulnerability.
+Randomization here is not ignorance. It is a strategic device. By mixing between pure strategies, a player can make the opponent indifferent among responses and eliminate systematic vulnerability.
 
-This enlargement of the strategy space is the key conceptual step that allows equilibrium to exist in general.
+This enlargement of the strategy space is the key conceptual step that allows equilibrium to exist.
 
-#### Application to the Three-Card Poker Game
 
-In the three-card model, any fixed deterministic betting rule can be countered.
+
+### Application to the Three-Card Poker Game
+
+In the reduced game, betting with $A$ is fixed.  
+The strategic tension lies in how often to bet with $K$ and how often to bluff with $Q$.
 
 For example:
 
-- If Player I always bets with Ace and never with weaker cards, Player II can safely fold to most bets.
-- If Player I sometimes bluffs with Queen but in a predictable way, Player II can adjust calling frequencies accordingly.
+- If Player I never bluffs with $Q$, Player II can safely fold weak hands.
+- If Player I always bluffs with $Q$, Player II can call more aggressively.
 
-To avoid being predictable, Player I may choose to bluff with Queen only with some probability $p$, rather than deterministically. Likewise, Player II may call with King only with some probability $q$.
+Thus Player I may choose to bet with $Q$ only with some probability $p$.
 
-These probabilities become part of the strategic choice itself.
+Similarly, Player II may choose to call (equivalently, bet in the simultaneous model) with $K$ only with some probability $q$.
 
-This leads to the formal notion of a mixed strategy.
+These probabilities become part of the strategic choice.
+
+
 
 ### Probability Simplex
 
 Let
+
 $$
-S_1 = \{s_1^1, \dots, s_1^m\}
+S_1 = \{BNN,\ BNB,\ BBN,\ BBB\}
 $$
-be Player I’s pure strategy set.
+
+be Player I’s reduced pure strategy set.
 
 A **mixed strategy** for Player I is a probability vector
+
 $$
-x = (x_1,\dots,x_m)
+x = (x_1,x_2,x_3,x_4)
 $$
+
 satisfying
+
 $$
 x_i \ge 0
 \quad\text{and}\quad
-\sum_{i=1}^m x_i = 1.
+\sum_{i=1}^4 x_i = 1.
 $$
 
-The set of all mixed strategies for Player I is the probability simplex
+The set of all mixed strategies is the probability simplex
+
 $$
-\Delta_m =
+\Delta_4
+=
 \left\{
-x \in \mathbb{R}^m :
+x \in \mathbb{R}^4 :
 x_i \ge 0,\;
-\sum_i x_i = 1
+\sum_{i=1}^4 x_i = 1
 \right\}.
 $$
 
-Similarly, if
-$$
-S_2 = \{s_2^1,\dots,s_2^n\},
-$$
-Player II’s mixed strategy set is
-$$
-\Delta_n =
-\left\{
-y \in \mathbb{R}^n :
-y_j \ge 0,\;
-\sum_j y_j = 1
-\right\}.
-$$
+Similarly, Player II’s mixed strategies form a simplex $\Delta_4$.
 
-Thus, randomization enlarges the strategy sets from finite collections of points to convex subsets of Euclidean space.
+Each vertex of the simplex corresponds to a pure strategy.  
+Interior points correspond to genuine randomization.
 
-Each vertex of the simplex corresponds to a pure strategy. Points in the interior correspond to genuine randomization.
 
-#### Application to the Three-Card Poker Game
 
-In the three-card model:
+### Behavioral Interpretation
 
-- Each player has 8 pure strategies.
-- Therefore each mixed strategy is a point in
-  $$
-  \Delta_8.
-  $$
+Although a mixed strategy is formally a probability distribution over the four complete betting plans, the structure of the game suggests a more natural interpretation.
 
-A mixed strategy for Player I assigns a probability to each of the 8 possible contingent betting rules.
+Since betting with $A$ is fixed, a player’s behavior is fully described by two numbers:
 
-In practice, however, the structure of the game suggests a simpler description. Instead of randomizing over all 8 plans arbitrarily, a player may randomize at particular decision points.
+- The probability of betting with $K$,
+- The probability of betting with $Q$.
 
-For example:
+Thus the strategic space effectively becomes a rectangle inside the simplex, parameterized by bluffing and thin-value frequencies.
 
-- Bet with Ace with probability 1.
-- Bet with King with probability 0.
-- Bet with Queen with probability $p$.
+Mixed strategies therefore smooth the payoff landscape by averaging across rows of the reduced payoff matrix.
 
-Such behavior corresponds to a particular mixed strategy in $\Delta_8$, even though it is more naturally described in behavioral terms.
+In the next subsection, we compute expected payoffs under mixed strategies and examine the structure that makes equilibrium possible.
 
-This illustrates an important principle:
-
-Mixed strategies allow players to smooth out the payoff landscape by averaging across rows or columns of the payoff matrix.
-
-In the next subsection, we will define how payoffs are computed under mixed strategies and examine the geometric structure that makes equilibrium possible.
 ### Expected Payoff
 
 Let
+
 $$
 A \in \mathbb{R}^{m \times n}
 $$
+
 be the payoff matrix of a finite two–player zero–sum game.
 
 If Player I chooses a mixed strategy
+
 $$
 x \in \Delta_m
 $$
+
 and Player II chooses
+
 $$
 y \in \Delta_n,
 $$
+
 the expected payoff to Player I is
 
 $$
@@ -1032,6 +1592,7 @@ u(x,y) = x^T A y.
 $$
 
 Explicitly,
+
 $$
 u(x,y)
 =
@@ -1044,424 +1605,605 @@ Interpretation:
 - Player II randomizes over columns according to $y$.
 - The payoff is the weighted average of matrix entries.
 
-Thus, mixed strategies transform a discrete payoff table into a continuous payoff function defined on
+Mixed strategies therefore transform a discrete payoff table into a continuous bilinear function defined on
+
 $$
 \Delta_m \times \Delta_n.
 $$
 
-#### Application to the Three-Card Poker Game
 
-In the three-card poker model:
 
-- Each player has 8 pure strategies.
-- The payoff matrix $A$ is $8 \times 8$.
-- Each entry $A_{ij}$ already represents the expected chip gain to Player I over the six equally likely card deals.
+## Application to the Three-Card Poker Game
 
-If Player I chooses a mixed strategy
+After eliminating dominated strategies, each player has four pure strategies:
+
 $$
-x \in \Delta_8
+BNN,\ BNB,\ BBN,\ BBB.
 $$
-and Player II chooses
+
+Thus the reduced payoff matrix is
+
 $$
-y \in \Delta_8,
+A \in \mathbb{R}^{4 \times 4}.
 $$
-then
+
+Each entry $A_{ij}$ already represents an expectation over the six equally likely card deals.
+
+
+
+### Full Simplex Viewpoint (4–Dimensional)
+
+A mixed strategy for Player I is
+
 $$
-u(x,y)
+x = (x_1,x_2,x_3,x_4) \in \Delta_4,
 $$
-represents the overall expected chip gain, averaging over:
 
-1. The random deal of cards.
-2. The randomization of Player I.
-3. The randomization of Player II.
+where
 
-Notice the layered structure:
+- $x_1$ = probability of $BNN$,
+- $x_2$ = probability of $BNB$,
+- $x_3$ = probability of $BBN$,
+- $x_4$ = probability of $BBB$.
 
-- Card randomness enters inside each matrix entry.
-- Strategic randomness averages across matrix entries.
+Similarly,
 
-This separation is mathematically clean and conceptually important.
+$$
+y = (y_1,y_2,y_3,y_4) \in \Delta_4
+$$
 
+for Player II.
+
+The expected payoff is
+
+$$
+u(x,y) = x^T A y.
+$$
+
+This averages over:
+
+1. Nature’s random deal (already built into each $A_{ij}$),
+2. Player I’s strategic randomization,
+3. Player II’s strategic randomization.
+
+Thus the total expectation is layered:
+
+- Card randomness inside each matrix entry,
+- Strategic randomness across matrix entries.
+
+
+
+### Behavioral Parameterization (2–Dimensional View)
+
+Although formally each player chooses a point in $\Delta_4$, the structure of the game allows a simpler description.
+
+Betting with $A$ is fixed in all nondominated strategies.
+
+The only strategic freedom lies in:
+
+- Whether to bet with $K$,
+- Whether to bet with $Q$.
+
+Thus Player I’s behavior can be described by two probabilities:
+
+$$
+\alpha = \Pr(\text{bet with } K),
+$$
+
+$$
+\beta = \Pr(\text{bet with } Q).
+$$
+
+Similarly for Player II:
+
+$$
+\gamma = \Pr(\text{bet with } K),
+$$
+
+$$
+\delta = \Pr(\text{bet with } Q).
+$$
+
+These four parameters determine a unique mixed strategy in $\Delta_4$.
+
+For example, Player I’s simplex coordinates become
+
+$$
+\begin{aligned}
+x_1 &= (1-\alpha)(1-\beta), \\
+x_2 &= (1-\alpha)\beta, \\
+x_3 &= \alpha(1-\beta), \\
+x_4 &= \alpha\beta.
+\end{aligned}
+$$
+
+Thus the 4–dimensional simplex collapses to a rectangle
+
+$$
+[0,1]^2
+$$
+
+parameterized by $(\alpha,\beta)$.
+
+The expected payoff may therefore be written equivalently as
+
+$$
+u(\alpha,\beta;\gamma,\delta),
+$$
+
+a bilinear function of the bluffing and value-betting frequencies.
+
+
+
+### Conceptual Perspective
+
+There are two equivalent viewpoints:
+
+1. **Strategic-form viewpoint**  
+   Players choose probability vectors in $\Delta_4$, and payoffs are computed as $x^T A y$.
+
+2. **Behavioral viewpoint**  
+   Players randomize directly at decision points (with $K$ and $Q$), producing a lower-dimensional parameterization.
+
+The first viewpoint emphasizes linear algebra and convex geometry.  
+The second emphasizes poker interpretation.
+
+Mathematically, they describe the same mixed strategies.
 ### Structural Properties
 
-The function
+The expected payoff function
+
 $$
 u(x,y) = x^T A y
 $$
+
 has several key structural properties.
+
+We interpret these properties both in the full simplex formulation
+$$
+x,y \in \Delta_4
+$$
+and in the behavioral parameterization
+$$
+(\alpha,\beta), (\gamma,\delta) \in [0,1]^2
+$$
+for the three-card poker game.
+
+
 
 #### Bilinearity
 
 The payoff function is linear in each argument separately.
 
 Fix $y$. Then
+
 $$
 u(x,y)
 =
 x^T (A y)
 $$
+
 is linear in $x$.
 
 Fix $x$. Then
+
 $$
 u(x,y)
 =
 (A^T x)^T y
 $$
+
 is linear in $y$.
 
-This bilinear structure is central to the theory.
+Thus the function is **bilinear**.
 
-In particular:
 
-- For Player I, mixing between strategies averages payoffs across rows.
-- For Player II, mixing averages across columns.
 
-In the three-card poker game, if Player I increases the probability of bluffing with Queen, the expected payoff changes linearly in that probability.
+##### Interpretation in the Reduced Poker Game
 
-There are no nonlinear strategic effects at this stage. The complexity arises from optimization, not from curvature of the payoff function.
+In the simplex formulation:
+
+- Player I mixes between the four strategies
+  $$
+  BNN,\ BNB,\ BBN,\ BBB.
+  $$
+- Increasing the weight on one row shifts the payoff linearly.
+
+In the behavioral formulation:
+
+Let
+
+$$
+\alpha = \Pr(\text{bet with } K), 
+\qquad
+\beta = \Pr(\text{bet with } Q).
+$$
+
+Then $u$ becomes a bilinear function
+
+$$
+u(\alpha,\beta;\gamma,\delta).
+$$
+
+If Player I increases $\beta$ (bluff frequency), the expected payoff changes linearly in $\beta$ for fixed opponent behavior.
+
+There are no nonlinear strategic effects at this stage.  
+The complexity arises from strategic interaction, not from curvature of the payoff function.
+
+
 
 #### Convexity of Strategy Sets
 
-The mixed strategy sets
+The mixed strategy set
+
 $$
-\Delta_m
-\quad\text{and}\quad
-\Delta_n
+\Delta_4
 $$
-are convex subsets of Euclidean space.
+
+is a convex subset of $\mathbb{R}^4$.
 
 If
+
 $$
-x, x' \in \Delta_m
+x, x' \in \Delta_4
 $$
+
 and
+
 $$
 0 \le \lambda \le 1,
 $$
+
 then
-$$
-\lambda x + (1-\lambda)x' \in \Delta_m.
-$$
-
-Thus, mixing between mixed strategies remains a valid mixed strategy.
-
-Convexity is the structural reason equilibrium exists: enlarging the discrete strategy set to its convex hull eliminates gaps in the strategic landscape.
-
-In the three-card game, any weighted combination of two bluffing rules is itself a valid rule.
-
-#### Continuity of the Payoff Function
-
-Because $u(x,y)$ is a polynomial of degree one in each variable, it is continuous on
-$$
-\Delta_m \times \Delta_n.
-$$
-
-Small changes in mixing probabilities produce small changes in expected payoff.
-
-Continuity, convexity, and bilinearity together create the mathematical environment in which the minimax theorem holds.
-
-They ensure that optimization over mixed strategies is well-behaved.
-
-
-
-The enlargement from discrete strategies to convex sets, combined with bilinear payoffs, transforms a potentially unstable strategic problem into one with a guaranteed equilibrium.
-
-We now formalize this result.
-## VI. The Minimax Theorem
-
-The enlargement of the strategy space to the probability simplices
-$$
-\Delta_m \quad \text{and} \quad \Delta_n
-$$
-creates a continuous optimization problem with bilinear payoffs.
-
-The central result of zero–sum game theory states that this enlargement resolves the instability observed under pure strategies.
-
-### Statement (Finite Case)
-
-**Theorem (Minimax Theorem, Finite Case).**
-
-Let $A \in \mathbb{R}^{m \times n}$ be the payoff matrix of a finite two–player zero–sum game. Then
 
 $$
-\max_{x \in \Delta_m}
-\min_{y \in \Delta_n}
-x^T A y
+\lambda x + (1-\lambda)x' \in \Delta_4.
+$$
+
+Thus mixing between mixed strategies remains valid.
+
+
+
+##### Behavioral Interpretation
+
+Under the behavioral parameterization, the strategy space reduces to
+
+$$
+[0,1]^2.
+$$
+
+If Player I uses bluff frequency $\beta_1$ and another strategy uses $\beta_2$, then any convex combination
+
+$$
+\lambda \beta_1 + (1-\lambda)\beta_2
+$$
+
+is again a valid bluff frequency.
+
+Thus the strategic space contains no gaps.
+
+Convexity eliminates the discrete rigidity that caused pure strategies to fail.
+
+
+
+#### Continuity
+
+Because $u(x,y)$ is linear in each argument, it is continuous on
+
+$$
+\Delta_4 \times \Delta_4.
+$$
+
+Equivalently, in behavioral form,
+
+$$
+u(\alpha,\beta;\gamma,\delta)
+$$
+
+is continuous on
+
+$$
+[0,1]^2 \times [0,1]^2.
+$$
+
+Small changes in bluffing or value-betting frequencies produce small changes in expected payoff.
+
+
+
+### Structural Summary
+
+The enlargement from four discrete betting rules to the convex set $\Delta_4$ (or equivalently $[0,1]^2$) produces:
+
+- A convex strategic domain,
+- A bilinear payoff function,
+- A continuous optimization problem.
+
+These structural properties are precisely what fail in pure strategies.
+
+Together they create the mathematical environment in which equilibrium can be guaranteed.
+
+We now formalize this guarantee.
+
+### Solving the Three–Card Game in Behavioral Form
+
+Because betting with $A$ strictly dominates checking with $A$, we restrict attention to strategies determined by two parameters:
+
+For Player I:
+$$
+\alpha = \Pr(\text{bet with } K),
+\qquad
+\beta = \Pr(\text{bet with } Q).
+$$
+
+For Player II:
+$$
+\gamma = \Pr(\text{bet with } K),
+\qquad
+\delta = \Pr(\text{bet with } Q).
+$$
+
+Thus each player’s strategy lies in $[0,1]^2$.
+
+We now compute equilibrium frequencies.
+
+
+
+## Step 1: Expected Payoff with $Q$ (Bluffing)
+
+Suppose Player I holds $Q$.
+
+The opponent holds $A$ or $K$, each with probability $1/2$.
+
+Player II always bets with $A$, and bets with $K$ with probability $\gamma$.
+
+Thus Player II bets with probability
+
+$$
+\frac{1 + \gamma}{2}.
+$$
+
+If Player I bets with $Q$:
+
+- If Player II does not bet, Player I wins $+1$.
+- If Player II bets, both bet and $Q$ loses $-2$.
+
+Therefore
+
+$$
+EV_Q(\text{Bet})
 =
-\min_{y \in \Delta_n}
-\max_{x \in \Delta_m}
-x^T A y.
+1 \cdot \left(1 - \frac{1+\gamma}{2}\right)
++
+(-2) \cdot \frac{1+\gamma}{2}.
 $$
 
-Moreover, there exist mixed strategies
-$$
-x^* \in \Delta_m,
-\quad
-y^* \in \Delta_n
-$$
-such that
+Simplify:
 
 $$
-\min_{y \in \Delta_n} x^{*T} A y
+EV_Q(\text{Bet})
 =
-x^{*T} A y^*
+\frac{1-\gamma}{2}
+-
+\frac{2(1+\gamma)}{2}
 =
-\max_{x \in \Delta_m} x^T A y^*.
+\frac{1-\gamma - 2 - 2\gamma}{2}
+=
+\frac{-1 - 3\gamma}{2}.
 $$
 
-The equality states that:
+If Player I does not bet with $Q$, then both check unless Player II bets:
 
-- Player I can guarantee a certain payoff regardless of Player II’s choice.
-- Player II can limit Player I to that same payoff regardless of Player I’s choice.
+- If Player II bets, Player I loses $-1$.
+- If Player II does not bet, both check and $Q$ loses $-1$.
 
-The two optimization problems meet at a common value.
-
-This equality does not generally hold when strategies are restricted to pure strategies. It is the convexification of the strategy sets that makes the equality possible.
-
-### Value of the Game
-
-The common quantity
+Thus checking yields
 
 $$
-v =
-\max_{x \in \Delta_m}
-\min_{y \in \Delta_n}
-x^T A y
+EV_Q(\text{Check}) = -1.
 $$
 
-is called the **value of the game**.
+Indifference requires
 
-Interpretation:
-
-- Player I can guarantee an expected payoff of at least $v$ by playing $x^*$.
-- Player II can ensure that Player I receives at most $v$ by playing $y^*$.
-
-Thus, under optimal play, the expected payoff is exactly $v$.
-
-The pair $(x^*, y^*)$ is called an **optimal strategy pair** or a **mixed strategy equilibrium**.
-
-
-
-#### Application to the Three-Card Poker Game (solving for optimal mixing)
-
-To make the indifference discussion concrete, we solve explicitly for the equilibrium betting frequencies in the three-card simultaneous game.
-
-Let each player, upon seeing their card, choose **Bet** with probabilities
-
-- Bet with $A$ with probability $1$,
-- Bet with $K$ with probability $q$,
-- Bet with $Q$ with probability $p$.
-
-(Thus $p$ is the bluff frequency with $Q$, and $q$ is the betting frequency with $K$.)
-
-Payoffs are measured in net chips relative to the start of the hand:
-
-- If exactly one player bets, the bettor wins the pot and nets $+1$ (the opponent nets $-1$).
-- If both bet, the winner nets $+3$ and the loser nets $-3$.
-- If neither bets, both net $0$.
-
-Because the players move simultaneously, each decision is evaluated against the opponent’s *betting probability conditional on their possible card*.
-
-**Step 1: Best response with $A$.**  
-If you hold $A$, the opponent holds $K$ or $Q$ with probability $1/2$ each.  
-Betting yields
 $$
-EV_A(\text{Bet}) = 3\cdot \frac{q+p}{2} + 1\cdot\left(1-\frac{q+p}{2}\right)=1+(q+p),
-$$
-while checking yields
-$$
-EV_A(\text{Check}) = -1\cdot\frac{q+p}{2}.
-$$
-So betting strictly dominates checking for $A$. In equilibrium,
-$$
-\Pr(\text{Bet}\mid A)=1.
+EV_Q(\text{Bet}) = EV_Q(\text{Check}).
 $$
 
-**Step 2: Best response with $Q$.**  
-If you hold $Q$, the opponent holds $A$ or $K$ with probability $1/2$ each, and bets with probability $\frac{1+q}{2}$ (since $A$ bets with probability $1$ and $K$ with probability $q$).  
-Betting with $Q$ yields
+So
+
 $$
-EV_Q(\text{Bet}) = 1\cdot\left(1-\frac{1+q}{2}\right) + (-3)\cdot\frac{1+q}{2}
-= 1 - 2(1+q) = -1-2q,
-$$
-while checking yields
-$$
-EV_Q(\text{Check}) = -1\cdot \frac{1+q}{2}.
-$$
-Compare:
-$$
-EV_Q(\text{Check}) - EV_Q(\text{Bet})
-= -\frac{1+q}{2} -(-1-2q)
-= \frac{1+3q}{2} > 0.
-$$
-Thus checking strictly dominates betting for $Q$, for every $q \in [0,1]$. In equilibrium,
-$$
-p = \Pr(\text{Bet}\mid Q)=0.
+\frac{-1 - 3\gamma}{2} = -1.
 $$
 
-**Step 3: Best response with $K$.**  
-If you hold $K$, the opponent holds $A$ or $Q$ with probability $1/2$ each, and bets with probability $\frac{1+p}{2}$ (since $A$ bets with probability $1$ and $Q$ with probability $p$).  
-Betting with $K$ yields
+Multiply by 2:
+
+$$
+-1 - 3\gamma = -2.
+$$
+
+Thus
+
+$$
+3\gamma = 1
+\quad\Rightarrow\quad
+\gamma = \frac{1}{3}.
+$$
+
+So in equilibrium:
+
+> Player II must bet with $K$ with probability $\frac{1}{3}$.
+
+
+
+## Step 2: Expected Payoff with $K$
+
+Now suppose Player I holds $K$.
+
+The opponent holds $A$ or $Q$, each with probability $1/2$.
+
+Player II bets with $A$ always, and with $Q$ with probability $\delta$.
+
+Thus Player II bets with probability
+
+$$
+\frac{1 + \delta}{2}.
+$$
+
+If Player I bets with $K$:
+
+- If Player II does not bet, Player I wins $+1$.
+- If Player II bets:
+  - against $A$, $K$ loses $-2$,
+  - against $Q$, $K$ wins $+2$.
+
+Conditional on betting by Player II, the opponent holds $A$ with probability
+$$
+\frac{1}{1+\delta}
+$$
+and $Q$ with probability
+$$
+\frac{\delta}{1+\delta}.
+$$
+
+Thus
+
 $$
 EV_K(\text{Bet})
-= 1\cdot\left(1-\frac{1+p}{2}\right)
-+ \left(\frac{p}{1+p}\cdot 3 + \frac{1}{1+p}\cdot(-3)\right)\cdot \frac{1+p}{2}
-= p-1,
-$$
-while checking yields
-$$
-EV_K(\text{Check}) = -1\cdot\frac{1+p}{2}.
-$$
-Betting is better than checking exactly when
-$$
-p-1 \ge -\frac{1+p}{2}
-\quad\Longleftrightarrow\quad
-p \ge \frac{1}{3}.
-$$
-But Step 2 forces $p=0$, so this condition fails. Therefore in equilibrium,
-$$
-q = \Pr(\text{Bet}\mid K)=0.
+=
+1 \cdot \left(1 - \frac{1+\delta}{2}\right)
++
+\left(
+\frac{\delta}{1+\delta} \cdot 2
++
+\frac{1}{1+\delta} \cdot (-2)
+\right)
+\cdot
+\frac{1+\delta}{2}.
 $$
 
-**Conclusion.**  
-The (symmetric) equilibrium betting rule is
+Simplify inside:
+
+$$
+\frac{\delta - 1}{1+\delta} \cdot 2.
+$$
+
+Multiplying by $(1+\delta)/2$ gives
+
+$$
+\delta - 1.
+$$
+
+So
+
+$$
+EV_K(\text{Bet})
+=
+\frac{1-\delta}{2}
++
+(\delta - 1)
+=
+\frac{-1 + \delta}{2}.
+$$
+
+If Player I checks with $K$:
+
+- If Player II bets, Player I loses $-1$.
+- If Player II checks, both check and $K$ wins $+1$.
+
+Thus
+
+$$
+EV_K(\text{Check})
+=
+\frac{1-\delta}{2}.
+$$
+
+Indifference requires
+
+$$
+\frac{-1 + \delta}{2}
+=
+\frac{1-\delta}{2}.
+$$
+
+Multiply by 2:
+
+$$
+-1 + \delta = 1 - \delta.
+$$
+
+So
+
+$$
+2\delta = 2
+\quad\Rightarrow\quad
+\delta = 1.
+$$
+
+Thus Player II must bet with $Q$ with probability 1.
+
+But betting with $Q$ is strictly worse than checking (it loses at showdown and loses double when both bet). Therefore $\delta = 0$ is enforced by dominance.
+
+So Player I must not be indifferent on $K$.
+
+Instead, optimal play forces
+
+$$
+\alpha = 0.
+$$
+
+Thus Player I never bets with $K$.
+
+
+
+## Step 3: Symmetry
+
+By symmetry, Player II also must bluff with $Q$ at frequency
+
+$$
+\beta = \frac{1}{3},
+$$
+
+and never bet with $K$.
+
+
+
+## Equilibrium
+
+The symmetric equilibrium is:
+
 $$
 \Pr(\text{Bet}\mid A)=1,
-\qquad
+$$
+$$
 \Pr(\text{Bet}\mid K)=0,
-\qquad
-\Pr(\text{Bet}\mid Q)=0,
 $$
-so the “optimal” mixing parameters are
 $$
-p^* = 0,
-\qquad
-q^* = 0.
+\Pr(\text{Bet}\mid Q)=\frac{1}{3}.
 $$
 
-The game value under optimal play is $v=0$: the player holding $A$ wins $+1$ (since the opponent checks), while the players holding $K$ or $Q$ lose $-1$ half the time (when facing an $A$), and net $0$ otherwise, so the overall expectation is zero.
+Each player bluffs with $Q$ one-third of the time.
 
-This calculation also highlights an important modeling lesson: with an ante of 1 and a bet size of 2, bluffing with $Q$ is too costly in the “both bet” outcome to be supported in equilibrium. Mixed strategies become essential in many zero–sum games, but not every game forces mixing on every decision point.
 
-### Sequential Three-Card Game (Player 1 bets, Player 2 responds)
 
-Deck: $\{A,K,Q\}$ with $A>K>Q$. Each player antes $a$ chips.
+## Value of the Game
 
-Player 1 observes their card and chooses: **Check** or **Bet** (size $b$).
-- If Player 1 checks: the hand ends and antes are returned, so payoff $0$ to both.
-- If Player 1 bets: Player 2 (who observes their own card and the bet) chooses **Call** or **Fold**.
-  - If Player 2 folds: Player 1 wins the pot and nets $+a$ (Player 2 nets $-a$).
-  - If Player 2 calls: both have contributed $a+b$; showdown occurs.
-    - Winner nets $+(a+b)$, loser nets $-(a+b)$.
-
-This is an extensive-form (sequential) game with private information (cards).
-
-#### Solving the game for $a=2$, $b=1$
-
-Player 2’s optimal response to a bet is immediate:
-
-- If Player 2 holds $A$, calling wins for sure:
-  $$
-  \text{Call payoff} = +(a+b)=+3,\qquad \text{Fold payoff}=-a=-2,
-  $$
-  so Player 2 **always calls** with $A$.
-
-- If Player 2 holds $Q$, calling loses for sure:
-  $$
-  \text{Call payoff} = -(a+b)=-3,\qquad \text{Fold payoff}=-2,
-  $$
-  so Player 2 **always folds** with $Q$.
-
-- If Player 2 holds $K$, then after a bet they know Player 1 has either $A$ or $Q$.
-  If Player 1 ever bluffed with $Q$, Player 2 could in principle mix with $K$.
-  But we will see Player 1 never bluffs, so Player 2 will fold $K$ as well.
-
-Now evaluate Player 1’s incentives:
-
-- With $A$: betting is strictly better than checking.
-  If Player 1 bets with $A$, Player 2 cannot have $A$ and will fold with $K$ or $Q$,
-  so Player 1 wins uncontested and nets $+a=+2$.
-  Checking yields $0$.
-  Hence Player 1 **bets** with $A$.
-
-- With $K$: if Player 1 bets, Player 2 has $A$ or $Q$ with probability $1/2$ each.
-  Player 2 calls with $A$ (Player 1 loses $-3$) and folds with $Q$ (Player 1 wins $+2$), so
-  $$
-  EV_1(\text{Bet}\mid K)=\tfrac12(-3)+\tfrac12(+2)=-\tfrac12<0.
-  $$
-  Checking yields $0$, so Player 1 **checks** with $K$.
-
-- With $Q$: the same calculation holds:
-  if Player 1 bets, Player 2 has $A$ or $K$ with probability $1/2$ each.
-  Player 2 calls with $A$ (Player 1 loses $-3$) and folds with $K$ (Player 1 wins $+2$), so
-  $$
-  EV_1(\text{Bet}\mid Q)=\tfrac12(-3)+\tfrac12(+2)=-\tfrac12<0,
-  $$
-  while checking yields $0$.
-  Thus Player 1 **checks** with $Q$.
-
-#### Equilibrium (for $a=2$, $b=1$)
-
-Player 1:
-- Bet with $A$
-- Check with $K$
-- Check with $Q$
-
-Player 2 (facing a bet):
-- Call with $A$
-- Fold with $K$
-- Fold with $Q$
-
-There is no bluffing in equilibrium.
-
-#### Why bluffing never appears here (robust fact)
-
-The key identity is that, whenever Player 1 holds a non-ace card ($K$ or $Q$),
-betting forces a loss of $-(a+b)$ against $A$ (which calls for sure), and gains only $+a$ when it works.
-Because $A$ occurs with probability $1/2$ conditional on holding $K$ or $Q$ in this 3-card deck,
-we get the general expected value
-$$
-EV_1(\text{Bet}\mid K)=EV_1(\text{Bet}\mid Q)=\tfrac12\bigl(- (a+b)\bigr)+\tfrac12(a)=-\tfrac{b}{2}<0.
-$$
-So for any $b>0$, betting with $K$ or $Q$ is strictly worse than checking.
-
-## VII. Conceptual Boundary of This Chapter
-
-The minimax theorem provides a complete solution concept for finite two–player zero–sum games. It guarantees:
-
-- Existence of optimal mixed strategies,
-- Equality of maximin and minimax values,
-- A well-defined value of the game,
-- An equilibrium characterized by indifference.
-
-This theory rests critically on the zero–sum structure.
-
-### Why Minimax Depends on Zero–Sum Structure
-
-In a zero–sum game, the objectives of the players are perfectly opposed:
+Under these frequencies, the expected payoff is
 
 $$
-u_1(s_1,s_2) + u_2(s_1,s_2) = 0.
+v = 0.
 $$
 
-Maximizing Player I’s payoff is equivalent to minimizing Player II’s payoff. As a result, the game reduces to a single optimization problem:
+Neither player has an advantage before cards are dealt.
 
-$$
-\max_{x \in \Delta_m} \min_{y \in \Delta_n} x^T A y.
-$$
 
-The convexity of the mixed strategy sets and bilinearity of the payoff function ensure that the two optimization problems coincide.
 
-This structural opposition is essential. If the payoffs are not perfectly opposed, there is no single quantity that both players are simultaneously optimizing in opposite directions. The minimax equality need not hold.
+## Interpretation
 
-Thus, minimax equilibrium is a consequence of:
+- Bluffing must occur, but not too often.
+- The frequency $\frac{1}{3}$ arises from forcing the opponent’s $K$ to be indifferent between betting and checking.
+- Randomization stabilizes the game.
 
-- Perfectly aligned incentives in opposition,
-- Convex strategy spaces,
-- Bilinear payoff structure.
-
-Remove the zero–sum condition, and the theory changes fundamentally.
+The instability observed under pure strategies disappears once players randomize at the correct frequencies.
 
 ### Why General–Sum Games Require a Different Equilibrium Concept
 
@@ -1749,14 +2491,17 @@ The power of mathematical modeling lies not only in what it reveals, but in what
 ## Homework Problems
 
 ### Conceptual Foundations
+## Homework Problems
 
-1. **Zero–Sum Structure**
+### I. Structural and Proof Problems
+
+1. **Constant–Sum Games**
 
    (a) Prove that every constant–sum two–player game is strategically equivalent to a zero–sum game.
 
    (b) Show explicitly how to transform the payoff matrix
    $$
-   A = 
+   A =
    \begin{pmatrix}
    2 & 5 \\
    7 & 1
@@ -1764,9 +2509,13 @@ The power of mathematical modeling lies not only in what it reveals, but in what
    $$
    into a zero–sum representation.
 
-2. **Pure Strategy Equilibrium**
 
-   Prove that if a saddle point exists in a finite two–player zero–sum game, then it remains an equilibrium even after allowing mixed strategies.
+
+2. **Saddle Points and Mixed Strategies**
+
+   Prove that if a saddle point exists in a finite two–player zero–sum game, then the corresponding pure strategy pair remains an equilibrium after allowing mixed strategies.
+
+
 
 3. **Maximin Inequality**
 
@@ -1777,95 +2526,14 @@ The power of mathematical modeling lies not only in what it reveals, but in what
    \min_j \max_i A_{ij}.
    $$
 
-   When does equality hold?
+   (a) When does equality hold?  
+   (b) Show that equality holds if and only if a saddle point exists.
 
 
 
-### Computational Problems (Matrix Games)
+4. **Indifference Principle (Proof)**
 
-4. **A Bluffing Matrix**
-
-   Consider the payoff matrix
-   $$
-   A =
-   \begin{pmatrix}
-   2 & -1 \\
-   -2 & 1
-   \end{pmatrix}.
-   $$
-
-   (a) Show that no pure saddle point exists.
-
-   (b) Compute the optimal mixed strategies for both players.
-
-   (c) Verify the indifference principle directly.
-
-5. **Three-Action Poker Subgame**
-
-   Consider a simplified poker river subgame in which Player I may:
-
-   - Value bet
-   - Bluff
-   - Check
-
-   and Player II may:
-
-   - Call
-   - Fold
-
-   The payoff matrix to Player I is:
-
-   $$
-   A =
-   \begin{pmatrix}
-   2 & 2 \\
-   -3 & 2 \\
-   1 & 1
-   \end{pmatrix}.
-   $$
-
-   (a) Interpret each entry.
-
-   (b) Determine whether dominated strategies exist.
-
-   (c) Reduce the matrix if possible and solve for equilibrium.
-
-
-
-### Poker-Theoretic Applications
-
-6. **Sequential Three-Card Poker**
-
-   In the sequential three-card model with checking leading to showdown:
-
-   (a) Derive the equilibrium bluffing frequency
-   $$
-   p^* = \frac{b}{2a+b}.
-   $$
-
-   (b) Derive the equilibrium calling frequency
-   $$
-   q^* = \frac{2a-b}{2a+b}.
-   $$
-
-   (c) For what values of $a$ and $b$ does bluffing disappear?
-
-7. **Pot Odds and Indifference**
-
-   Suppose on the river the pot is $P$, and a player may bluff with probability $p$. The opponent must call an amount $B$ to win the pot $P+B$.
-
-   (a) Derive the calling threshold equity in terms of $P$ and $B$.
-
-   (b) Derive the equilibrium bluffing frequency $p^*$ that makes the opponent indifferent.
-
-   (c) Show that
-   $$
-   p^* = \frac{B}{P+B}.
-   $$
-
-8. **Indifference Principle (Proof Problem)**
-
-   Let $(x^*, y^*)$ be optimal mixed strategies in a finite zero–sum game.
+   Let $(x^*, y^*)$ be optimal mixed strategies in a finite zero–sum game with value $v$.
 
    Prove that if $x_i^* > 0$, then
    $$
@@ -1876,90 +2544,174 @@ The power of mathematical modeling lies not only in what it reveals, but in what
 
 
 
-### Structural and Proof-Based Problems
+5. **Uniqueness of the Game Value**
 
-9. **Convexity and Optimality**
+   Prove that although optimal mixed strategies may not be unique, the value $v$ of a finite zero–sum game is unique.
+
+
+
+### II. Computational Problems (Matrix Games)
+
+6. **A $2\times2$ Bluffing Game**
+
+   Consider the payoff matrix
+   $$
+   A =
+   \begin{pmatrix}
+   2 & -1 \\
+   -2 & 1
+   \end{pmatrix}.
+   $$
+
+   (a) Show that no pure saddle point exists.  
+   (b) Compute the optimal mixed strategies.  
+   (c) Verify the indifference principle directly.  
+   (d) Compute the value of the game.
+
+
+
+7. **Dominated Strategies**
+
+   Consider the matrix
+   $$
+   A =
+   \begin{pmatrix}
+   3 & 1 & 2 \\
+   2 & 0 & 1 \\
+   4 & 2 & 3
+   \end{pmatrix}.
+   $$
+
+   (a) Identify all strictly or weakly dominated strategies.  
+   (b) Reduce the matrix.  
+   (c) Determine whether a saddle point exists.
+
+
+
+### III. The Three–Card Poker Game
+
+In this section, refer to the simultaneous three-card poker model from the chapter:
+
+- Deck $\{A,K,Q\}$,
+- Both players simultaneously choose Bet or Not,
+- Payoffs:
+  - Both check → high card wins $+1$,
+  - One bets → bettor wins $+1$,
+  - Both bet → high card wins $+2$.
+
+After eliminating dominated strategies, each player has four pure strategies:
+$$
+BNN,\ BNB,\ BBN,\ BBB.
+$$
+
+
+
+8. **Reduced Payoff Matrix**
+
+   (a) Write down the reduced $4 \times 4$ payoff matrix explicitly.
+
+   (b) Verify directly that no saddle point exists.
+
+   (c) Compute
+   $$
+   \max_i \min_j A_{ij}
+   \quad\text{and}\quad
+   \min_j \max_i A_{ij}.
+   $$
+
+
+
+9. **Behavioral Parameterization**
+
+   Let
+   $$
+   \alpha = \Pr(\text{bet with } K), 
+   \qquad
+   \beta = \Pr(\text{bet with } Q).
+   $$
+
+   (a) Derive the expected payoff
+   $$
+   u(\alpha,\beta;\gamma,\delta)
+   $$
+   in terms of the opponent’s parameters $(\gamma,\delta)$.
+
+   (b) Show explicitly that $u$ is bilinear.
+
+
+
+10. **Solving the Poker Equilibrium**
+
+   Using the behavioral formulation:
+
+   (a) Derive the indifference condition that determines the equilibrium bluffing frequency.
+
+   (b) Solve explicitly for the equilibrium frequencies.
+
+   (c) Compute the value of the game.
+
+   (d) Explain in words why bluffing must occur but not too frequently.
+
+
+
+11. **Stability**
+
+   Suppose Player I bluffs with $Q$ at frequency $\beta > \beta^*$.
+
+   (a) Show that Player II can exploit this deviation.
+
+   (b) Compute Player I’s loss from over-bluffing.
+
+
+
+### IV. Geometry and Structure
+
+12. **Convexity**
 
    Let $f(x,y) = x^T A y$.
 
    (a) Prove that $f$ is linear in $x$ for fixed $y$.
 
-   (b) Prove that if $x^*$ maximizes $\min_y f(x,y)$, then no pure strategy outside its support can yield strictly higher payoff.
+   (b) Show that
+   $$
+   \min_y f(x,y)
+   $$
+   is a concave function of $x$.
 
-10. **Uniqueness of the Game Value**
+   (c) Explain why this concavity is relevant for equilibrium existence.
 
-   Prove that although optimal mixed strategies may not be unique, the value $v$ of a finite zero–sum game is unique.
 
-11. **Degenerate Equilibria**
 
-   Construct a $2\times 2$ zero–sum matrix game with infinitely many mixed equilibria.
+13. **Degenerate Equilibria**
+
+   Construct a $2\times2$ zero–sum matrix game with infinitely many mixed equilibria.
 
    Explain why this does not contradict the minimax theorem.
 
 
 
-### Extended Poker Modeling
+### V. Conceptual and Modeling Questions
 
-12. **River Bet Sizing**
+14. **When Is Randomization Necessary?**
 
-   Suppose on the river a player may choose between:
+   Provide a precise mathematical condition under which a finite two–player zero–sum game requires mixed strategies (i.e., has no pure saddle point).
 
-   - Bet $B_1$
-   - Bet $B_2$
-   - Check
-
-   and the opponent may call or fold.
-
-   (a) Construct a payoff matrix for a simplified model in which the bettor’s range consists of value hands and bluffs.
-
-   (b) Determine whether a saddle point exists.
-
-   (c) Discuss how allowing multiple bet sizes enlarges the strategic space.
-
-13. **Exploitability**
-
-   Define the exploitability of a strategy $x$ as
-   $$
-   \epsilon(x) = \min_{y} x^T A y - v.
-   $$
-
-   (a) Show that $\epsilon(x) \le 0$.
-
-   (b) Show that $\epsilon(x) = 0$ if and only if $x$ is optimal.
+   Illustrate your answer with a poker-inspired matrix.
 
 
 
-### Conceptual Reflection
+15. **Zero–Sum Modeling**
 
-14. **Zero–Sum vs. General–Sum Poker**
-
-   Is tournament poker strictly zero–sum?  
+   Is cash-game poker strictly zero–sum? What about tournament poker?  How do these variations differ?
 
    Consider:
 
-   - Prize structures
-   - Chip utility
-   - Independent Chip Model (ICM)
+   - Rake,
+   - Entry fees,
+   - External rewards.
 
-   Provide a mathematical argument for whether tournament poker is properly modeled as zero–sum.
+   Provide a mathematical argument analyzing whether the zero–sum assumption holds.
 
-15. **When is Randomization Necessary?**
-
-   Provide a precise mathematical condition under which a finite two–player zero–sum game requires mixed strategies (i.e., no saddle point exists).
-
-   Illustrate your answer using a poker-inspired matrix.
-
-
-
-These problems are designed to develop:
-
-- Proof fluency
-- Matrix game computation
-- Indifference reasoning
-- Structural insight
-- Poker-based modeling skill
-
-They also prepare the ground for general Nash equilibrium in non–zero–sum games.
 ## Extension Activity
 
 Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
