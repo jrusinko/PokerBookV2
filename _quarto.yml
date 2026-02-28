@@ -11,7 +11,8 @@ book:
   - chapters/05-conditional-probability-and-bayes-rule.qmd
   - chapters/06-expected-value-in-multi-stage-decisions.qmd
   - chapters/07-inference-with-discrete-distributions-ranges-and-blockers.qmd
-  - chapters/08-zero-sum-games-and-mixed-strategies.qmd
+  - chapters/08-zero-sum-games-and-pure-strategies.qmd
+  - chapters/09-zero-sum-games-and-mixed-strategies.qmd
   - chapters/09-nash-equilibrium-and-indifference-conditions.qmd
   - chapters/10-exploitative-play-vs-equilibrium-thinking.qmd
   - chapters/11-betting-as-optimization.qmd

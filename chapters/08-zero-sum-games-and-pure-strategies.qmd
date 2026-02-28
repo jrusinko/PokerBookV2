@@ -1,5 +1,5 @@
 ---
-title: "Zero-Sum Games and Mixed Strategies"
+title: "Zero-Sum Games and Pure Strategies"
 chapter-id: "ch08"
 part: "Part III: Game Theory (Intro / Toy Models)"
 poker-topics:
@@ -1450,959 +1450,321 @@ The strategic tension now lies entirely in how frequently players bluff with $Q$
 
 This structural failure of pure strategies motivates enlarging the strategy space.
 
-## V. Mixed Strategies
+### 3.X  A Sequential Zero–Sum Game: Extended Three-Card Poker
+
+The previous example in this chapter considered a simultaneous-move matrix game.  
+We now examine a **sequential** zero–sum game and show how it can be converted to normal form and simplified by dominance.
+
+The purpose is structural: to illustrate how a game tree generates a payoff matrix, and how dominance can dramatically reduce its size before any minimax computation is attempted.
+
+
+  
+  ## The Game
+  
+  Let the deck consist of three cards
+\[
+  Q<K<A.
+  \]
+One card is dealt uniformly at random to each player without replacement.  
+Each player antes 1 chip, so the pot begins at 2.
+
+The betting proceeds sequentially:
+  
+  1. **Player 1 acts first**:  
+  - Check, or  
+- Bet 2.
+
+2. If Player 1 bets, **Player 2** chooses:  
+  - Call, or  
+- Fold.
+
+3. If Player 1 checks, **Player 2** chooses:  
+  - Check, or  
+- Bet 2.
+
+If Player 2 bets, Player 1 then chooses Call or Fold.
+
+If both players check, or if a bet is called, the higher card wins at showdown.
+
+
+  
+  ## Payoffs (net chips to Player 1)
+  
+  - **Check–check:** pot = 2; winner nets \(+1\), loser nets \(-1\).
+- **Bet–fold:** pot = 4; bettor nets \(+1\), folder nets \(-1\).
+- **Bet–call:** pot = 6; winner nets \(+3\), loser nets \(-3\).
+
+The game is finite and zero–sum.
+
+
+  
+  ## Step 1. Normal form with reduced Player 1 strategies
+  
+  To convert the sequential game to a simultaneous (normal-form) game, we replace moves by complete contingent plans.
+
+For **Player 1**, a reduced pure strategy is a function
+\[
+  s_1:\{Q,K,A\}\to\{B,C,F\},
+  \]
+where:
+  
+  - \(B\): bet immediately;
+- \(C\): check, then call if facing a bet;
+- \(F\): check, then fold if facing a bet.
+
+This reduction is valid because if Player 1 bets initially, no later call/fold decision occurs. Hence Player 1 has
+\[
+  3^3=27
+  \]
+pure strategies.
+
+For **Player 2**, a pure strategy consists of two maps:
+  \[
+    r_2:\{Q,K,A\}\to\{\text{Call},\text{Fold}\}
+    \]
+(when facing a bet from Player 1), and
+\[
+  a_2:\{Q,K,A\}\to\{\text{Bet},\text{Check}\}
+  \]
+(after Player 1 checks).
+
+Thus Player 2 has \(2^3\cdot 2^3=64\) pure strategies.
+
+The full normal-form payoff matrix is therefore \(27\times 64\).
+
+
+  
+  ## Step 2. Dominance elimination
+  
+  We now remove dominated actions card-by-card.
+
+### Player 1
+
+1. **Never fold \(A\).**  
+  Calling with \(A\) guarantees winning any called pot; folding yields \(-1\).  
+Hence \(s_1(A)=F\) is strictly dominated by \(s_1(A)=C\).
+
+2. **Never call with \(Q\).**  
+  Calling with \(Q\) always loses a called pot (net \(-3\)), while folding loses only \(-1\).  
+Hence \(s_1(Q)=C\) is strictly dominated by \(s_1(Q)=F\).
+
+After these eliminations:
+  \[
+    s_1(Q)\in\{B,F\},\qquad
+    s_1(K)\in\{B,C,F\},\qquad
+    s_1(A)\in\{B,C\}.
+    \]
+Player 1 now has
+\[
+  2\cdot 3\cdot 2 = 12
+  \]
+remaining strategies.
+
+
+  
+  ### Player 2
+  
+  1. **Never call with \(Q\).**  
+  Calling always loses the called pot; folding dominates.
+
+2. **Never check with \(A\) after a check.**  
+  Betting weakly increases payoff in all contingencies and strictly increases it whenever called.
+
+3. **Never bet with \(K\) after a check.**  
+  Betting \(K\) risks being called only by \(A\) while failing to fold out \(A\); checking weakly dominates betting.
+
+After these eliminations, Player 2’s remaining freedom is:
+  
+  - \(r_2(K)\in\{\text{Call},\text{Fold}\}\),
+- \(a_2(Q)\in\{\text{Bet},\text{Check}\}\),
+
+while the remaining components are fixed:
+  \[
+    r_2(Q)=\text{Fold},\qquad
+    a_2(A)=\text{Bet},\qquad
+    a_2(K)=\text{Check}.
+    \]
+
+Thus Player 2 has \(2\cdot 2=4\) remaining strategies.
+
+The payoff matrix has been reduced from \(27\times 64\) to
+\[
+  12\times 4.
+  \]
+
+
+  
+  ## Step 3. Further elimination
+  
+  Computing the resulting \(12\times 4\) payoff matrix and comparing rows reveals that only four Player 1 strategies are undominated:
+  
+  \[
+    (F,C,B),\quad
+    (F,C,C),\quad
+    (F,F,B),\quad
+    (F,F,C).
+    \]
+
+Restricting to these rows and re-evaluating the columns shows that “call with \(K\)” is dominated by “fold with \(K\).”  
+
+The game therefore reduces to the following \(4\times 2\) payoff matrix:
+  
+  \[
+    \begin{array}{c|cc}
+    & (r_K=\text{Fold},\,a_Q=\text{Bet})
+    & (r_K=\text{Fold},\,a_Q=\text{Check}) \\ \hline
+    (F,C,B) & 0 & -\tfrac13 \\
+    (F,C,C) & \tfrac13 & -\tfrac13 \\
+    (F,F,B) & -\tfrac13 & 0 \\
+    (F,F,C) & 0 & 0
+    \end{array}
+    \]
+
+All entries are expected net payoffs to Player 1.
+
+
+  
+  ## Interpretation
+  
+  A sequential game that initially generated a \(27\times 64\) normal form has, through systematic dominance elimination, collapsed to a \(4\times 2\) matrix.
+
+This reduction reveals structure:
+  
+  - With the bottom card, both players behave defensively.
+- With the top card, betting after a check is forced by dominance.
+- The strategic tension concentrates entirely in how the middle card is played.
+
+At this point, the minimax analysis becomes transparent. The next subsection determines the value of the game and identifies its saddle point.
+
+### 3.X+1  Minimax Analysis of the Reduced Game
+
+After dominance elimination, the sequential game has been reduced to the following \(4\times 2\) normal-form matrix. Entries are expected net payoffs to Player 1.
+
+\[
+  \begin{array}{c|cc}
+  & (r_K=\text{Fold},\,a_Q=\text{Bet})
+  & (r_K=\text{Fold},\,a_Q=\text{Check}) \\ \hline
+  (F,C,B) & 0 & -\tfrac13 \\
+  (F,C,C) & \tfrac13 & -\tfrac13 \\
+  (F,F,B) & -\tfrac13 & 0 \\
+  (F,F,C) & 0 & 0
+  \end{array}
+  \]
+
+Here the rows are Player 1 strategies:
+  
+  - \(F\) = check–fold,
+- \(C\) = check–call,
+- \(B\) = bet,
+
+listed in the order \((Q,K,A)\).
+
+The two remaining Player 2 strategies are:
+  
+  - Column 1: fold with \(K\), bet with \(Q\);
+- Column 2: fold with \(K\), check with \(Q\).
+
+All other components of Player 2’s strategy were fixed by dominance.
+
+
+  
+  ## Pure maximin and minimax
+  
+  We compute the row minima (Player 1’s worst-case payoffs):
+  
+  \[
+    \begin{aligned}
+    (F,C,B) &: \min\{0,-\tfrac13\}=-\tfrac13, \\
+    (F,C,C) &: \min\{\tfrac13,-\tfrac13\}=-\tfrac13, \\
+    (F,F,B) &: \min\{-\tfrac13,0\}=-\tfrac13, \\
+    (F,F,C) &: \min\{0,0\}=0.
+    \end{aligned}
+    \]
+
+Hence Player 1’s **pure maximin value** is
+\[
+  \underline v
+  =\max\{-\tfrac13,-\tfrac13,-\tfrac13,0\}
+  =0,
+  \]
+achieved by the strategy
+\[
+  (F,F,C).
+  \]
+
+Next compute the column maxima (Player 2 anticipating Player 1’s best response):
+  
+  \[
+    \begin{aligned}
+    \text{Column 1} &: \max\{0,\tfrac13,-\tfrac13,0\}
+    =\tfrac13, \\
+    \text{Column 2} &: \max\{-\tfrac13,-\tfrac13,0,0\}
+    =0.
+    \end{aligned}
+    \]
+
+Thus Player 2’s **pure minimax value** is
+\[
+  \overline v
+  =\min\{\tfrac13,0\}
+  =0,
+  \]
+achieved by Column 2.
+
+Since
+\[
+  \underline v=\overline v=0,
+  \]
+a pure-strategy saddle point exists.
+
+
+  
+  ## The Saddle Point
+  
+  The saddle point occurs at the entry
+
+\[
+  \bigl((F,F,C),\ (r_K=\text{Fold},\,a_Q=\text{Check})\bigr),
+  \]
+with value \(0\).
+
+### Interpreting the equilibrium strategies
+
+**Player 1: \((F,F,C)\)**  
+  - With \(Q\): check–fold.  
+- With \(K\): check–fold.  
+- With \(A\): check–call.
+
+**Player 2:**  
+  - After a check: bet with \(A\), check with \(K\), check with \(Q\).  
+- Facing a bet: fold with \(Q\), fold with \(K\), (call with \(A\), by symmetry of dominance).
+
+Under this profile:
+  
+  - Whenever Player 2 holds \(A\), they bet and Player 1 folds unless also holding \(A\), which is impossible.
+- Otherwise the hand goes to showdown for a pot of 2.
+
+A direct enumeration of the six equally likely deals shows that Player 1 wins exactly half the time and loses half the time, so the expected payoff is \(0\).
+
+
+  
+  ## Structural Interpretation
+  
+  Several features are noteworthy.
+
+1. **Aggression concentrates at the top of the distribution.**  
+  After dominance elimination, betting occurs only with the highest card.
+
+2. **The middle card becomes strategically passive.**  
+  Once dominated behaviors are removed, neither player benefits from escalating with \(K\).
+
+3. **The value is zero without mixed strategies.**  
+  Unlike many poker-style models, this extended sequential structure admits a pure saddle point after dominance reduction.
+
+This example illustrates an important methodological lesson:  
+  a sequential zero–sum game may generate a large normal-form matrix, but careful dominance analysis can reveal a small core game in which the minimax structure becomes transparent.
 
-The failure of pure strategies in the reduced three-card poker game forces us to enlarge the strategic framework.
 
-After eliminating dominated strategies, each player has four pure strategies:
-
-$$
-BNN,\ BNB,\ BBN,\ BBB,
-$$
-
-that is:
-
-- Always bet with $A$,
-- Choose whether to bet with $K$,
-- Choose whether to bet with $Q$.
-
-We saw that no saddle point exists in this $4 \times 4$ matrix.  
-Every deterministic betting rule can be countered.
-
-
-
-### Motivation
-
-The structural problem is rigidity.
-
-A pure strategy fixes a single row (or column) of the payoff matrix. Once this row is known, the opponent chooses the column that minimizes it. The player is exposed to their worst-case outcome.
-
-To prevent exploitation, a player may deliberately introduce randomness.
-
-Instead of choosing a single pure strategy, the player chooses a probability distribution over the four available strategies.
-
-Randomization here is not ignorance. It is a strategic device. By mixing between pure strategies, a player can make the opponent indifferent among responses and eliminate systematic vulnerability.
-
-This enlargement of the strategy space is the key conceptual step that allows equilibrium to exist.
-
-
-
-### Application to the Three-Card Poker Game
-
-In the reduced game, betting with $A$ is fixed.  
-The strategic tension lies in how often to bet with $K$ and how often to bluff with $Q$.
-
-For example:
-
-- If Player I never bluffs with $Q$, Player II can safely fold weak hands.
-- If Player I always bluffs with $Q$, Player II can call more aggressively.
-
-Thus Player I may choose to bet with $Q$ only with some probability $p$.
-
-Similarly, Player II may choose to call (equivalently, bet in the simultaneous model) with $K$ only with some probability $q$.
-
-These probabilities become part of the strategic choice.
-
-
-
-### Probability Simplex
-
-Let
-
-$$
-S_1 = \{BNN,\ BNB,\ BBN,\ BBB\}
-$$
-
-be Player I’s reduced pure strategy set.
-
-A **mixed strategy** for Player I is a probability vector
-
-$$
-x = (x_1,x_2,x_3,x_4)
-$$
-
-satisfying
-
-$$
-x_i \ge 0
-\quad\text{and}\quad
-\sum_{i=1}^4 x_i = 1.
-$$
-
-The set of all mixed strategies is the probability simplex
-
-$$
-\Delta_4
-=
-\left\{
-x \in \mathbb{R}^4 :
-x_i \ge 0,\;
-\sum_{i=1}^4 x_i = 1
-\right\}.
-$$
-
-Similarly, Player II’s mixed strategies form a simplex $\Delta_4$.
-
-Each vertex of the simplex corresponds to a pure strategy.  
-Interior points correspond to genuine randomization.
-
-
-
-### Behavioral Interpretation
-
-Although a mixed strategy is formally a probability distribution over the four complete betting plans, the structure of the game suggests a more natural interpretation.
-
-Since betting with $A$ is fixed, a player’s behavior is fully described by two numbers:
-
-- The probability of betting with $K$,
-- The probability of betting with $Q$.
-
-Thus the strategic space effectively becomes a rectangle inside the simplex, parameterized by bluffing and thin-value frequencies.
-
-Mixed strategies therefore smooth the payoff landscape by averaging across rows of the reduced payoff matrix.
-
-In the next subsection, we compute expected payoffs under mixed strategies and examine the structure that makes equilibrium possible.
-
-### Expected Payoff
-
-Let
-
-$$
-A \in \mathbb{R}^{m \times n}
-$$
-
-be the payoff matrix of a finite two–player zero–sum game.
-
-If Player I chooses a mixed strategy
-
-$$
-x \in \Delta_m
-$$
-
-and Player II chooses
-
-$$
-y \in \Delta_n,
-$$
-
-the expected payoff to Player I is
-
-$$
-u(x,y) = x^T A y.
-$$
-
-Explicitly,
-
-$$
-u(x,y)
-=
-\sum_{i=1}^m \sum_{j=1}^n x_i A_{ij} y_j.
-$$
-
-Interpretation:
-
-- Player I randomizes over rows according to $x$.
-- Player II randomizes over columns according to $y$.
-- The payoff is the weighted average of matrix entries.
-
-Mixed strategies therefore transform a discrete payoff table into a continuous bilinear function defined on
-
-$$
-\Delta_m \times \Delta_n.
-$$
-
-
-
-## Application to the Three-Card Poker Game
-
-After eliminating dominated strategies, each player has four pure strategies:
-
-$$
-BNN,\ BNB,\ BBN,\ BBB.
-$$
-
-Thus the reduced payoff matrix is
-
-$$
-A \in \mathbb{R}^{4 \times 4}.
-$$
-
-Each entry $A_{ij}$ already represents an expectation over the six equally likely card deals.
-
-
-
-### Full Simplex Viewpoint (4–Dimensional)
-
-A mixed strategy for Player I is
-
-$$
-x = (x_1,x_2,x_3,x_4) \in \Delta_4,
-$$
-
-where
-
-- $x_1$ = probability of $BNN$,
-- $x_2$ = probability of $BNB$,
-- $x_3$ = probability of $BBN$,
-- $x_4$ = probability of $BBB$.
-
-Similarly,
-
-$$
-y = (y_1,y_2,y_3,y_4) \in \Delta_4
-$$
-
-for Player II.
-
-The expected payoff is
-
-$$
-u(x,y) = x^T A y.
-$$
-
-This averages over:
-
-1. Nature’s random deal (already built into each $A_{ij}$),
-2. Player I’s strategic randomization,
-3. Player II’s strategic randomization.
-
-Thus the total expectation is layered:
-
-- Card randomness inside each matrix entry,
-- Strategic randomness across matrix entries.
-
-
-
-### Behavioral Parameterization (2–Dimensional View)
-
-Although formally each player chooses a point in $\Delta_4$, the structure of the game allows a simpler description.
-
-Betting with $A$ is fixed in all nondominated strategies.
-
-The only strategic freedom lies in:
-
-- Whether to bet with $K$,
-- Whether to bet with $Q$.
-
-Thus Player I’s behavior can be described by two probabilities:
-
-$$
-\alpha = \Pr(\text{bet with } K),
-$$
-
-$$
-\beta = \Pr(\text{bet with } Q).
-$$
-
-Similarly for Player II:
-
-$$
-\gamma = \Pr(\text{bet with } K),
-$$
-
-$$
-\delta = \Pr(\text{bet with } Q).
-$$
-
-These four parameters determine a unique mixed strategy in $\Delta_4$.
-
-For example, Player I’s simplex coordinates become
-
-$$
-\begin{aligned}
-x_1 &= (1-\alpha)(1-\beta), \\
-x_2 &= (1-\alpha)\beta, \\
-x_3 &= \alpha(1-\beta), \\
-x_4 &= \alpha\beta.
-\end{aligned}
-$$
-
-Thus the 4–dimensional simplex collapses to a rectangle
-
-$$
-[0,1]^2
-$$
-
-parameterized by $(\alpha,\beta)$.
-
-The expected payoff may therefore be written equivalently as
-
-$$
-u(\alpha,\beta;\gamma,\delta),
-$$
-
-a bilinear function of the bluffing and value-betting frequencies.
-
-
-
-### Conceptual Perspective
-
-There are two equivalent viewpoints:
-
-1. **Strategic-form viewpoint**  
-   Players choose probability vectors in $\Delta_4$, and payoffs are computed as $x^T A y$.
-
-2. **Behavioral viewpoint**  
-   Players randomize directly at decision points (with $K$ and $Q$), producing a lower-dimensional parameterization.
-
-The first viewpoint emphasizes linear algebra and convex geometry.  
-The second emphasizes poker interpretation.
-
-Mathematically, they describe the same mixed strategies.
-### Structural Properties
-
-The expected payoff function
-
-$$
-u(x,y) = x^T A y
-$$
-
-has several key structural properties.
-
-We interpret these properties both in the full simplex formulation
-$$
-x,y \in \Delta_4
-$$
-and in the behavioral parameterization
-$$
-(\alpha,\beta), (\gamma,\delta) \in [0,1]^2
-$$
-for the three-card poker game.
-
-
-
-#### Bilinearity
-
-The payoff function is linear in each argument separately.
-
-Fix $y$. Then
-
-$$
-u(x,y)
-=
-x^T (A y)
-$$
-
-is linear in $x$.
-
-Fix $x$. Then
-
-$$
-u(x,y)
-=
-(A^T x)^T y
-$$
-
-is linear in $y$.
-
-Thus the function is **bilinear**.
-
-
-
-##### Interpretation in the Reduced Poker Game
-
-In the simplex formulation:
-
-- Player I mixes between the four strategies
-  $$
-  BNN,\ BNB,\ BBN,\ BBB.
-  $$
-- Increasing the weight on one row shifts the payoff linearly.
-
-In the behavioral formulation:
-
-Let
-
-$$
-\alpha = \Pr(\text{bet with } K), 
-\qquad
-\beta = \Pr(\text{bet with } Q).
-$$
-
-Then $u$ becomes a bilinear function
-
-$$
-u(\alpha,\beta;\gamma,\delta).
-$$
-
-If Player I increases $\beta$ (bluff frequency), the expected payoff changes linearly in $\beta$ for fixed opponent behavior.
-
-There are no nonlinear strategic effects at this stage.  
-The complexity arises from strategic interaction, not from curvature of the payoff function.
-
-
-
-#### Convexity of Strategy Sets
-
-The mixed strategy set
-
-$$
-\Delta_4
-$$
-
-is a convex subset of $\mathbb{R}^4$.
-
-If
-
-$$
-x, x' \in \Delta_4
-$$
-
-and
-
-$$
-0 \le \lambda \le 1,
-$$
-
-then
-
-$$
-\lambda x + (1-\lambda)x' \in \Delta_4.
-$$
-
-Thus mixing between mixed strategies remains valid.
-
-
-
-##### Behavioral Interpretation
-
-Under the behavioral parameterization, the strategy space reduces to
-
-$$
-[0,1]^2.
-$$
-
-If Player I uses bluff frequency $\beta_1$ and another strategy uses $\beta_2$, then any convex combination
-
-$$
-\lambda \beta_1 + (1-\lambda)\beta_2
-$$
-
-is again a valid bluff frequency.
-
-Thus the strategic space contains no gaps.
-
-Convexity eliminates the discrete rigidity that caused pure strategies to fail.
-
-
-
-#### Continuity
-
-Because $u(x,y)$ is linear in each argument, it is continuous on
-
-$$
-\Delta_4 \times \Delta_4.
-$$
-
-Equivalently, in behavioral form,
-
-$$
-u(\alpha,\beta;\gamma,\delta)
-$$
-
-is continuous on
-
-$$
-[0,1]^2 \times [0,1]^2.
-$$
-
-Small changes in bluffing or value-betting frequencies produce small changes in expected payoff.
-
-
-
-### Structural Summary
-
-The enlargement from four discrete betting rules to the convex set $\Delta_4$ (or equivalently $[0,1]^2$) produces:
-
-- A convex strategic domain,
-- A bilinear payoff function,
-- A continuous optimization problem.
-
-These structural properties are precisely what fail in pure strategies.
-
-Together they create the mathematical environment in which equilibrium can be guaranteed.
-
-We now formalize this guarantee.
-
-### Solving the Three–Card Game in Behavioral Form
-
-Because betting with $A$ strictly dominates checking with $A$, we restrict attention to strategies determined by two parameters:
-
-For Player I:
-$$
-\alpha = \Pr(\text{bet with } K),
-\qquad
-\beta = \Pr(\text{bet with } Q).
-$$
-
-For Player II:
-$$
-\gamma = \Pr(\text{bet with } K),
-\qquad
-\delta = \Pr(\text{bet with } Q).
-$$
-
-Thus each player’s strategy lies in $[0,1]^2$.
-
-We now compute equilibrium frequencies.
-
-
-
-## Step 1: Expected Payoff with $Q$ (Bluffing)
-
-Suppose Player I holds $Q$.
-
-The opponent holds $A$ or $K$, each with probability $1/2$.
-
-Player II always bets with $A$, and bets with $K$ with probability $\gamma$.
-
-Thus Player II bets with probability
-
-$$
-\frac{1 + \gamma}{2}.
-$$
-
-If Player I bets with $Q$:
-
-- If Player II does not bet, Player I wins $+1$.
-- If Player II bets, both bet and $Q$ loses $-2$.
-
-Therefore
-
-$$
-EV_Q(\text{Bet})
-=
-1 \cdot \left(1 - \frac{1+\gamma}{2}\right)
-+
-(-2) \cdot \frac{1+\gamma}{2}.
-$$
-
-Simplify:
-
-$$
-EV_Q(\text{Bet})
-=
-\frac{1-\gamma}{2}
--
-\frac{2(1+\gamma)}{2}
-=
-\frac{1-\gamma - 2 - 2\gamma}{2}
-=
-\frac{-1 - 3\gamma}{2}.
-$$
-
-If Player I does not bet with $Q$, then both check unless Player II bets:
-
-- If Player II bets, Player I loses $-1$.
-- If Player II does not bet, both check and $Q$ loses $-1$.
-
-Thus checking yields
-
-$$
-EV_Q(\text{Check}) = -1.
-$$
-
-Indifference requires
-
-$$
-EV_Q(\text{Bet}) = EV_Q(\text{Check}).
-$$
-
-So
-
-$$
-\frac{-1 - 3\gamma}{2} = -1.
-$$
-
-Multiply by 2:
-
-$$
--1 - 3\gamma = -2.
-$$
-
-Thus
-
-$$
-3\gamma = 1
-\quad\Rightarrow\quad
-\gamma = \frac{1}{3}.
-$$
-
-So in equilibrium:
-
-> Player II must bet with $K$ with probability $\frac{1}{3}$.
-
-
-
-## Step 2: Expected Payoff with $K$
-
-Now suppose Player I holds $K$.
-
-The opponent holds $A$ or $Q$, each with probability $1/2$.
-
-Player II bets with $A$ always, and with $Q$ with probability $\delta$.
-
-Thus Player II bets with probability
-
-$$
-\frac{1 + \delta}{2}.
-$$
-
-If Player I bets with $K$:
-
-- If Player II does not bet, Player I wins $+1$.
-- If Player II bets:
-  - against $A$, $K$ loses $-2$,
-  - against $Q$, $K$ wins $+2$.
-
-Conditional on betting by Player II, the opponent holds $A$ with probability
-$$
-\frac{1}{1+\delta}
-$$
-and $Q$ with probability
-$$
-\frac{\delta}{1+\delta}.
-$$
-
-Thus
-
-$$
-EV_K(\text{Bet})
-=
-1 \cdot \left(1 - \frac{1+\delta}{2}\right)
-+
-\left(
-\frac{\delta}{1+\delta} \cdot 2
-+
-\frac{1}{1+\delta} \cdot (-2)
-\right)
-\cdot
-\frac{1+\delta}{2}.
-$$
-
-Simplify inside:
-
-$$
-\frac{\delta - 1}{1+\delta} \cdot 2.
-$$
-
-Multiplying by $(1+\delta)/2$ gives
-
-$$
-\delta - 1.
-$$
-
-So
-
-$$
-EV_K(\text{Bet})
-=
-\frac{1-\delta}{2}
-+
-(\delta - 1)
-=
-\frac{-1 + \delta}{2}.
-$$
-
-If Player I checks with $K$:
-
-- If Player II bets, Player I loses $-1$.
-- If Player II checks, both check and $K$ wins $+1$.
-
-Thus
-
-$$
-EV_K(\text{Check})
-=
-\frac{1-\delta}{2}.
-$$
-
-Indifference requires
-
-$$
-\frac{-1 + \delta}{2}
-=
-\frac{1-\delta}{2}.
-$$
-
-Multiply by 2:
-
-$$
--1 + \delta = 1 - \delta.
-$$
-
-So
-
-$$
-2\delta = 2
-\quad\Rightarrow\quad
-\delta = 1.
-$$
-
-Thus Player II must bet with $Q$ with probability 1.
-
-But betting with $Q$ is strictly worse than checking (it loses at showdown and loses double when both bet). Therefore $\delta = 0$ is enforced by dominance.
-
-So Player I must not be indifferent on $K$.
-
-Instead, optimal play forces
-
-$$
-\alpha = 0.
-$$
-
-Thus Player I never bets with $K$.
-
-
-
-## Step 3: Symmetry
-
-By symmetry, Player II also must bluff with $Q$ at frequency
-
-$$
-\beta = \frac{1}{3},
-$$
-
-and never bet with $K$.
-
-
-
-## Equilibrium
-
-The symmetric equilibrium is:
-
-$$
-\Pr(\text{Bet}\mid A)=1,
-$$
-$$
-\Pr(\text{Bet}\mid K)=0,
-$$
-$$
-\Pr(\text{Bet}\mid Q)=\frac{1}{3}.
-$$
-
-Each player bluffs with $Q$ one-third of the time.
-
-
-
-## Value of the Game
-
-Under these frequencies, the expected payoff is
-
-$$
-v = 0.
-$$
-
-Neither player has an advantage before cards are dealt.
-
-
-
-## Interpretation
-
-- Bluffing must occur, but not too often.
-- The frequency $\frac{1}{3}$ arises from forcing the opponent’s $K$ to be indifferent between betting and checking.
-- Randomization stabilizes the game.
-
-The instability observed under pure strategies disappears once players randomize at the correct frequencies.
-
-### Why General–Sum Games Require a Different Equilibrium Concept
-
-In a general–sum game, the sum
-
-$$
-u_1(s_1,s_2) + u_2(s_1,s_2)
-$$
-
-varies across strategy profiles.
-
-Players may have:
-
-- Partially aligned interests,
-- Mutually beneficial outcomes,
-- Strategic tradeoffs that are not purely adversarial.
-
-In such games:
-
-- There is no single value $v$ that both players can force.
-- One player’s maximization problem does not coincide with the other’s minimization problem.
-- Indifference conditions arise differently, if at all.
-
-The correct equilibrium concept must capture mutual best responses rather than strict opposition.
-
-### Preview: Nash Equilibrium
-
-The natural generalization of minimax equilibrium is the concept of **Nash equilibrium**.
-
-A strategy profile $(x^*, y^*)$ is a Nash equilibrium if:
-
-- $x^*$ is a best response to $y^*$,
-- $y^*$ is a best response to $x^*$.
-
-Formally,
-
-$$
-u_1(x^*, y^*) \ge u_1(x, y^*) \quad \text{for all } x,
-$$
-
-$$
-u_2(x^*, y^*) \ge u_2(x^*, y) \quad \text{for all } y.
-$$
-
-In zero–sum games, Nash equilibrium coincides with minimax equilibrium. The two concepts agree.
-
-In general–sum games, however, Nash equilibrium replaces minimax as the central solution concept. It does not rely on a single game value, but on mutual optimality.
-
-The transition from minimax to Nash marks a conceptual shift:
-
-- From pure conflict to mixed incentives,
-- From a single scalar value to a vector of payoffs,
-- From minimization–maximization symmetry to mutual best responses.
-
-The tools developed in this chapter — mixed strategies, convexity, and indifference — remain central. But the structure of strategic interaction broadens.
-
-In the next chapter, we begin that transition.
-
-## Beyond Poker: Mixed Strategies in Sports Analytics
-
-Mixed strategies are not confined to gambling games. They arise naturally in competitive environments where opponents actively adapt.
-
-A canonical example comes from American football play-calling.
-
-### A Simplified Run–Pass Model
-
-Consider a short-yardage situation. The offense must choose between:
-
-- **Run**
-- **Pass**
-
-The defense must choose between:
-
-- **Defend Run**
-- **Defend Pass**
-
-Assume the following payoff matrix represents the expected yards gained by the offense:
-
-$$
-A =
-\begin{pmatrix}
-4 & 1 \\
-2 & 5
-\end{pmatrix}
-$$
-
-Rows correspond to the offense (Run, Pass).  
-Columns correspond to the defense (Defend Run, Defend Pass).
-
-Interpretation:
-
-- If the offense runs and the defense defends run, the offense gains 4 yards.
-- If the offense runs and the defense defends pass, the offense gains 1 yard.
-- If the offense passes and the defense defends run, the offense gains 2 yards.
-- If the offense passes and the defense defends pass, the offense gains 5 yards.
-
-This is a zero–sum model if we interpret defensive payoff as the negative of offensive yardage.
-
-### No Pure Strategy Equilibrium
-
-If the offense always runs, the defense will defend run.  
-If the offense always passes, the defense will defend pass.  
-Each pure strategy can be exploited.
-
-Thus we look for mixed strategies.
-
-Let:
-
-- $p$ = probability the offense runs,
-- $q$ = probability the defense defends run.
-
-### Indifference Conditions
-
-If the defense chooses $q$, the offense’s expected payoff from running is
-
-$$
-EV_{\text{Run}} = 4q + 1(1-q) = 1 + 3q.
-$$
-
-The payoff from passing is
-
-$$
-EV_{\text{Pass}} = 2q + 5(1-q) = 5 - 3q.
-$$
-
-At equilibrium, the offense must be indifferent:
-
-$$
-1 + 3q = 5 - 3q
-\quad\Longrightarrow\quad
-6q = 4
-\quad\Longrightarrow\quad
-q = \frac{2}{3}.
-$$
-
-Thus the defense must defend the run $2/3$ of the time.
-
-Now solve for the offense’s mixing probability.
-
-If the offense chooses $p$, the defense’s expected loss from defending run is
-
-$$
-L_{\text{Def Run}} = 4p + 2(1-p) = 2 + 2p,
-$$
-
-and from defending pass:
-
-$$
-L_{\text{Def Pass}} = 1p + 5(1-p) = 5 - 4p.
-$$
-
-Indifference requires
-
-$$
-2 + 2p = 5 - 4p
-\quad\Longrightarrow\quad
-6p = 3
-\quad\Longrightarrow\quad
-p = \frac{1}{2}.
-$$
-
-### Equilibrium Interpretation
-
-The equilibrium mixed strategies are:
-
-- Offense runs with probability $1/2$.
-- Defense defends run with probability $2/3$.
-
-Under these probabilities:
-
-- Neither side can improve expected yardage by deviating.
-- Each side makes the other indifferent between their available actions.
-
-The expected value of the play is
-
-$$
-v = 1 + 3\left(\frac{2}{3}\right) = 3.
-$$
-
-Thus, under optimal play, the offense gains 3 expected yards.
-
-### Strategic Insight
-
-The offense does not run 50% of the time because running is intrinsically optimal.  
-It runs 50% of the time because doing so prevents the defense from exploiting predictability.
-
-Similarly, the defense does not defend the run 2/3 of the time because that action is intrinsically superior.  
-It does so to eliminate the offense’s ability to gain by shifting play selection.
-
-Mixed strategies emerge as a structural necessity of competition, not as indecision.
-
-The same logic governs:
-
-- Pitch selection in baseball,
-- Shot distribution in basketball,
-- Serve placement in tennis,
-- Penalty kick direction in soccer.
-
-Whenever opponents adapt strategically, equilibrium requires carefully calibrated randomness.
 
 
 ## Liberal Arts Sidebar  
@@ -2540,11 +1902,66 @@ The power of mathematical modeling lies not only in what it reveals, but in what
    (A y^*)_i = v.
    $$
 
-   (Hint: argue by contradiction.)
+
+5.  **Crossed Saddle Points** Let $A$ be the payoff matrix of a finite two–player zero–sum game (payoff to the row player).
+
+Suppose that $(i_a, j_a)$ and $(i_b, j_b)$ are saddle points. Denote the saddle value by
+$$
+v = A_{i_a j_a} = A_{i_b j_b}.
+$$
+
+Recall that $(i^*, j^*)$ is a saddle point if and only if
+$$
+A_{i j^*} \le A_{i^* j^*} \le A_{i^* j}
+\quad \text{for all } i,j.
+$$
+
+1. Prove that
+   $$
+   A_{i_a j_b} = v
+   \qquad\text{and}\qquad
+   A_{i_b j_a} = v.
+   $$
+
+2. Prove that both $(i_a, j_b)$ and $(i_b, j_a)$ are themselves saddle points.
+
+Your proof must rely only on the defining inequalities of a saddle point and should explicitly indicate where each inequality is used.
 
 
+6. **Rectangular Structure of Pure Equilibria**
 
-5. **Uniqueness of the Game Value**
+Let $A$ be the payoff matrix of a finite two–player zero–sum game.  
+Suppose the game has at least two distinct saddle points.
+
+Define
+$$
+R^* = \{\, i : \exists j \text{ such that } (i,j) \text{ is a saddle point} \,\},
+$$
+$$
+C^* = \{\, j : \exists i \text{ such that } (i,j) \text{ is a saddle point} \,\}.
+$$
+
+Let $v$ denote the value of the game.
+
+1. Prove that for every $i \in R^*$ and every $j \in C^*$,
+   $$
+   A_{ij} = v.
+   $$
+
+2. Conclude that every pair in
+   $$
+   R^* \times C^*
+   $$
+   is a saddle point.
+
+3. In complete sentences, explain why this result implies that whenever a zero–sum game has more than one pure–strategy equilibrium, the set of equilibria must form a rectangular block in the payoff matrix.
+
+Your explanation should carefully distinguish between:
+
+- equality of payoff values, and  
+- equilibrium (best–response) structure.
+
+7. **Uniqueness of the Game Value**
 
    Prove that although optimal mixed strategies may not be unique, the value $v$ of a finite zero–sum game is unique.
 
@@ -2552,7 +1969,7 @@ The power of mathematical modeling lies not only in what it reveals, but in what
 
 ### II. Computational Problems (Matrix Games)
 
-6. **A $2\times2$ Bluffing Game**
+8. **A $2\times2$ Bluffing Game**
 
    Consider the payoff matrix
    $$
@@ -2570,7 +1987,7 @@ The power of mathematical modeling lies not only in what it reveals, but in what
 
 
 
-7. **Dominated Strategies**
+9. **Dominated Strategies**
 
    Consider the matrix
    $$
@@ -2606,7 +2023,7 @@ $$
 
 
 
-8. **Reduced Payoff Matrix**
+10. **Reduced Payoff Matrix**
 
    (a) Write down the reduced $4 \times 4$ payoff matrix explicitly.
 
@@ -2621,7 +2038,7 @@ $$
 
 
 
-9. **Behavioral Parameterization**
+11. **Behavioral Parameterization**
 
    Let
    $$
@@ -2640,7 +2057,7 @@ $$
 
 
 
-10. **Solving the Poker Equilibrium**
+12. **Solving the Poker Equilibrium**
 
    Using the behavioral formulation:
 
@@ -2654,7 +2071,7 @@ $$
 
 
 
-11. **Stability**
+13. **Stability**
 
    Suppose Player I bluffs with $Q$ at frequency $\beta > \beta^*$.
 
@@ -2666,7 +2083,7 @@ $$
 
 ### IV. Geometry and Structure
 
-12. **Convexity**
+14. **Convexity**
 
    Let $f(x,y) = x^T A y$.
 
@@ -2682,7 +2099,7 @@ $$
 
 
 
-13. **Degenerate Equilibria**
+15. **Degenerate Equilibria**
 
    Construct a $2\times2$ zero–sum matrix game with infinitely many mixed equilibria.
 
@@ -2692,7 +2109,7 @@ $$
 
 ### V. Conceptual and Modeling Questions
 
-14. **When Is Randomization Necessary?**
+16. **When Is Randomization Necessary?**
 
    Provide a precise mathematical condition under which a finite two–player zero–sum game requires mixed strategies (i.e., has no pure saddle point).
 
@@ -2700,7 +2117,7 @@ $$
 
 
 
-15. **Zero–Sum Modeling**
+17. **Zero–Sum Modeling**
 
    Is cash-game poker strictly zero–sum? What about tournament poker?  How do these variations differ?
 
@@ -2715,4 +2132,5 @@ $$
 ## Extension Activity
 
 Extend the chapter’s main tool using a small simulation or a short written reflection connecting poker to another domain.
+
 
