@@ -1851,15 +1851,25 @@ Game theory helps clarify strategic stability. But it also shapes how conflicts 
 The power of mathematical modeling lies not only in what it reveals, but in what it leaves out.
 
 ## Homework Problems
-
-### Conceptual Foundations
-## Homework Problems
-
-### I. Structural and Proof Problems
-
 1. **Constant–Sum Games**
 
-   (a) Prove that every constant–sum two–player game is strategically equivalent to a zero–sum game.
+   We say that two two–player games are **strategically equivalent** if
+   one can be obtained from the other by adding constants to players’
+   payoffs in a way that does not change any player’s best–response
+   structure.  
+
+   More precisely: two payoff matrices \(A\) and \(\widetilde A\)
+   (row-player payoffs) are strategically equivalent if there exist
+   vectors \(r\in\mathbb{R}^m\) and \(c\in\mathbb{R}^n\) such that
+   \[
+   \widetilde A_{ij} = A_{ij} + r_i + c_j
+   \]
+   for all \(i,j\).  
+   Such transformations shift payoffs but do not change the location of
+   saddle points or the set of optimal pure strategies.
+
+   (a) Prove that every constant–sum two–player game is strategically
+   equivalent to a zero–sum game.
 
    (b) Show explicitly how to transform the payoff matrix
    $$
@@ -1871,263 +1881,120 @@ The power of mathematical modeling lies not only in what it reveals, but in what
    $$
    into a zero–sum representation.
 
-
-
-2. **Saddle Points and Mixed Strategies**
-
-   Prove that if a saddle point exists in a finite two–player zero–sum game, then the corresponding pure strategy pair remains an equilibrium after allowing mixed strategies.
-
-
-
-3. **Maximin Inequality**
-
-   Prove that for every real matrix $A$,
-   $$
-   \max_i \min_j A_{ij}
-   \;\le\;
-   \min_j \max_i A_{ij}.
-   $$
-
-   (a) When does equality hold?  
-   (b) Show that equality holds if and only if a saddle point exists.
-
-
-
-4. **Indifference Principle (Proof)**
-
-   Let $(x^*, y^*)$ be optimal mixed strategies in a finite zero–sum game with value $v$.
-
-   Prove that if $x_i^* > 0$, then
-   $$
-   (A y^*)_i = v.
-   $$
-
-
-5.  **Crossed Saddle Points** Let $A$ be the payoff matrix of a finite two–player zero–sum game (payoff to the row player).
-
-Suppose that $(i_a, j_a)$ and $(i_b, j_b)$ are saddle points. Denote the saddle value by
+2. **Maximin Inequality (Pure Strategies)**
+  
+  Prove that for every real matrix \(A\),
 $$
-v = A_{i_a j_a} = A_{i_b j_b}.
+  \max_i \min_j A_{ij}
+\;\le\;
+\min_j \max_i A_{ij}.
 $$
+  
+  (a) When does equality hold?  
+  (b) Show that equality holds if and only if a saddle point exists.
 
-Recall that $(i^*, j^*)$ is a saddle point if and only if
+3. **Dominated Strategies**
+  
+  Consider the matrix
 $$
-A_{i j^*} \le A_{i^* j^*} \le A_{i^* j}
+  A =
+  \begin{pmatrix}
+3 & 1 & 2 \\
+2 & 0 & 1 \\
+4 & 2 & 3
+\end{pmatrix}.
+$$
+  
+  (a) Identify all strictly or weakly dominated strategies (rows and/or columns).  
+(b) Reduce the matrix by iterated elimination of dominated strategies.  
+(c) Determine whether a saddle point exists in the reduced game.  
+(d) If a saddle point exists, compute the value and give optimal pure strategies.
+
+4. **Crossed Saddle Points**
+  
+  Let \(A\) be the payoff matrix of a finite two–player zero–sum game
+(payoff to the row player).
+
+Suppose that \((i_a, j_a)\) and \((i_b, j_b)\) are saddle points.
+Denote the saddle value by
+$$
+  v = A_{i_a j_a} = A_{i_b j_b}.
+$$
+  
+  Recall that \((i^*, j^*)\) is a saddle point if and only if
+$$
+  A_{i j^*} \le A_{i^* j^*} \le A_{i^* j}
 \quad \text{for all } i,j.
 $$
+  
+  (a) Prove that
+$$
+  A_{i_a j_b} = v
+\qquad\text{and}\qquad
+A_{i_b j_a} = v.
+$$
+  
+  (b) Prove that both \((i_a, j_b)\) and \((i_b, j_a)\) are themselves saddle points.
 
-1. Prove that
-   $$
-   A_{i_a j_b} = v
-   \qquad\text{and}\qquad
-   A_{i_b j_a} = v.
-   $$
+Your proof must rely only on the defining inequalities of a saddle point and should
+explicitly indicate where each inequality is used.
 
-2. Prove that both $(i_a, j_b)$ and $(i_b, j_a)$ are themselves saddle points.
-
-Your proof must rely only on the defining inequalities of a saddle point and should explicitly indicate where each inequality is used.
-
-
-6. **Rectangular Structure of Pure Equilibria**
-
-Let $A$ be the payoff matrix of a finite two–player zero–sum game.  
+5. **Rectangular Structure of Pure Equilibria**
+  
+  Let \(A\) be the payoff matrix of a finite two–player zero–sum game.
 Suppose the game has at least two distinct saddle points.
 
 Define
 $$
-R^* = \{\, i : \exists j \text{ such that } (i,j) \text{ is a saddle point} \,\},
-$$
-$$
+  R^* = \{\, i : \exists j \text{ such that } (i,j) \text{ is a saddle point} \,\},
+\qquad
 C^* = \{\, j : \exists i \text{ such that } (i,j) \text{ is a saddle point} \,\}.
 $$
+  
+  Let \(v\) denote the value of the game.
 
-Let $v$ denote the value of the game.
+(a) Prove that for every \(i \in R^*\) and every \(j \in C^*\),
+$$
+  A_{ij} = v.
+$$
+  
+  (b) Conclude that every pair in \(R^*\times C^*\) is a saddle point.
 
-1. Prove that for every $i \in R^*$ and every $j \in C^*$,
-   $$
-   A_{ij} = v.
-   $$
-
-2. Conclude that every pair in
-   $$
-   R^* \times C^*
-   $$
-   is a saddle point.
-
-3. In complete sentences, explain why this result implies that whenever a zero–sum game has more than one pure–strategy equilibrium, the set of equilibria must form a rectangular block in the payoff matrix.
+(c) In complete sentences, explain why this result implies that whenever
+a zero–sum game has more than one pure–strategy equilibrium, the set of equilibria
+must form a rectangular block in the payoff matrix.
 
 Your explanation should carefully distinguish between:
-
-- equality of payoff values, and  
+  
+  - equality of payoff values, and
 - equilibrium (best–response) structure.
 
-7. **Uniqueness of the Game Value**
-
-   Prove that although optimal mixed strategies may not be unique, the value $v$ of a finite zero–sum game is unique.
-
-
-
-### II. Computational Problems (Matrix Games)
-
-8. **A $2\times2$ Bluffing Game**
-
-   Consider the payoff matrix
-   $$
-   A =
-   \begin{pmatrix}
-   2 & -1 \\
-   -2 & 1
-   \end{pmatrix}.
-   $$
-
-   (a) Show that no pure saddle point exists.  
-   (b) Compute the optimal mixed strategies.  
-   (c) Verify the indifference principle directly.  
-   (d) Compute the value of the game.
-
-
-
-9. **Dominated Strategies**
-
-   Consider the matrix
-   $$
-   A =
-   \begin{pmatrix}
-   3 & 1 & 2 \\
-   2 & 0 & 1 \\
-   4 & 2 & 3
-   \end{pmatrix}.
-   $$
-
-   (a) Identify all strictly or weakly dominated strategies.  
-   (b) Reduce the matrix.  
-   (c) Determine whether a saddle point exists.
-
-
-
-### III. The Three–Card Poker Game
-
-In this section, refer to the simultaneous three-card poker model from the chapter:
-
-- Deck $\{A,K,Q\}$,
-- Both players simultaneously choose Bet or Not,
-- Payoffs:
-  - Both check → high card wins $+1$,
-  - One bets → bettor wins $+1$,
-  - Both bet → high card wins $+2$.
-
-After eliminating dominated strategies, each player has four pure strategies:
+6. **A Poker-Flavored Pure Game with a Saddle Point (New)**
+  
+  Consider the payoff matrix (to the row player)
 $$
-BNN,\ BNB,\ BBN,\ BBB.
+  A=
+  \begin{pmatrix}
+1 & 1 & 1\\
+-1 & 2 & 0\\
+-1 & 0 & 2
+\end{pmatrix}.
 $$
+  
+  (a) Compute \(\max_i \min_j A_{ij}\) and \(\min_j \max_i A_{ij}\).  
+(b) Determine whether a saddle point exists. If so, identify *all* saddle points.  
+(c) Give a short interpretation: which row is “safe,” and why?
+  
+  7. **Outcome vs. Strategy (New, Conceptual)**
+  
+  A student claims: “If the row player loses a hand, then their strategy was bad.”
 
+(a) Give a concrete counterexample using a \(2\times 2\) zero–sum game in which
+an optimal pure strategy can still lose in a single play.
 
+(b) In complete sentences, explain the difference between an optimal strategy
+and a favorable realized outcome.
 
-10. **Reduced Payoff Matrix**
-
-   (a) Write down the reduced $4 \times 4$ payoff matrix explicitly.
-
-   (b) Verify directly that no saddle point exists.
-
-   (c) Compute
-   $$
-   \max_i \min_j A_{ij}
-   \quad\text{and}\quad
-   \min_j \max_i A_{ij}.
-   $$
-
-
-
-11. **Behavioral Parameterization**
-
-   Let
-   $$
-   \alpha = \Pr(\text{bet with } K), 
-   \qquad
-   \beta = \Pr(\text{bet with } Q).
-   $$
-
-   (a) Derive the expected payoff
-   $$
-   u(\alpha,\beta;\gamma,\delta)
-   $$
-   in terms of the opponent’s parameters $(\gamma,\delta)$.
-
-   (b) Show explicitly that $u$ is bilinear.
-
-
-
-12. **Solving the Poker Equilibrium**
-
-   Using the behavioral formulation:
-
-   (a) Derive the indifference condition that determines the equilibrium bluffing frequency.
-
-   (b) Solve explicitly for the equilibrium frequencies.
-
-   (c) Compute the value of the game.
-
-   (d) Explain in words why bluffing must occur but not too frequently.
-
-
-
-13. **Stability**
-
-   Suppose Player I bluffs with $Q$ at frequency $\beta > \beta^*$.
-
-   (a) Show that Player II can exploit this deviation.
-
-   (b) Compute Player I’s loss from over-bluffing.
-
-
-
-### IV. Geometry and Structure
-
-14. **Convexity**
-
-   Let $f(x,y) = x^T A y$.
-
-   (a) Prove that $f$ is linear in $x$ for fixed $y$.
-
-   (b) Show that
-   $$
-   \min_y f(x,y)
-   $$
-   is a concave function of $x$.
-
-   (c) Explain why this concavity is relevant for equilibrium existence.
-
-
-
-15. **Degenerate Equilibria**
-
-   Construct a $2\times2$ zero–sum matrix game with infinitely many mixed equilibria.
-
-   Explain why this does not contradict the minimax theorem.
-
-
-
-### V. Conceptual and Modeling Questions
-
-16. **When Is Randomization Necessary?**
-
-   Provide a precise mathematical condition under which a finite two–player zero–sum game requires mixed strategies (i.e., has no pure saddle point).
-
-   Illustrate your answer with a poker-inspired matrix.
-
-
-
-17. **Zero–Sum Modeling**
-
-   Is cash-game poker strictly zero–sum? What about tournament poker?  How do these variations differ?
-
-   Consider:
-
-   - Rake,
-   - Entry fees,
-   - External rewards.
-
-   Provide a mathematical argument analyzing whether the zero–sum assumption holds.
 
 ## Extension Activity
 
