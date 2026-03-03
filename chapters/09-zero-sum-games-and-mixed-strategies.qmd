@@ -573,9 +573,6 @@ conflicts are conceptualized.
 The power of mathematical modeling lies not only in what it reveals, but
 in what it leaves out.
 
-## Homework Problems
-
-### Conceptual Foundations
 
 ## Homework Problems
 1. **Saddle Points Persist Under Mixing**
