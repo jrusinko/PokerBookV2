@@ -1853,20 +1853,23 @@ The power of mathematical modeling lies not only in what it reveals, but in what
 ## Homework Problems
 1. **Constant–Sum Games**
 
-   We say that two two–player games are **strategically equivalent** if
-   one can be obtained from the other by adding constants to players’
-   payoffs in a way that does not change any player’s best–response
-   structure.  
+   We say that two normal–form games are **strategically equivalent**
+   if, for every player, the relative payoff comparisons between that
+   player’s strategies are the same in both games, holding the other
+   players’ strategies fixed.
 
-   More precisely: two payoff matrices \(A\) and \(\widetilde A\)
-   (row-player payoffs) are strategically equivalent if there exist
-   vectors \(r\in\mathbb{R}^m\) and \(c\in\mathbb{R}^n\) such that
-   \[
-   \widetilde A_{ij} = A_{ij} + r_i + c_j
-   \]
-   for all \(i,j\).  
-   Such transformations shift payoffs but do not change the location of
-   saddle points or the set of optimal pure strategies.
+   More precisely, two games are strategically equivalent if, for each
+   player \(i\):
+
+   - Fix any profile of opponents’ strategies \(s_{-i}\).
+   - Take any two of player \(i\)’s strategies, \(s_i\) and \(s_i'\).
+   - The payoff difference
+     \[
+     u_i(s_i,s_{-i}) - u_i(s_i',s_{-i})
+     \]
+     has the same sign and magnitude in both games.
+
+   In particular, best responses and equilibrium structure are preserved.
 
    (a) Prove that every constant–sum two–player game is strategically
    equivalent to a zero–sum game.
@@ -1880,17 +1883,15 @@ The power of mathematical modeling lies not only in what it reveals, but in what
    \end{pmatrix}
    $$
    into a zero–sum representation.
-
 2. **Maximin Inequality (Pure Strategies)**
   
-  Prove that for every real matrix \(A\),
+  (a) Prove that for every real matrix \(A\),
 $$
   \max_i \min_j A_{ij}
 \;\le\;
 \min_j \max_i A_{ij}.
 $$
   
-  (a) When does equality hold?  
   (b) Show that equality holds if and only if a saddle point exists.
 
 3. **Dominated Strategies**
@@ -1918,7 +1919,7 @@ $$
 Suppose that \((i_a, j_a)\) and \((i_b, j_b)\) are saddle points.
 Denote the saddle value by
 $$
-  v = A_{i_a j_a} = A_{i_b j_b}.
+  v_a = A_{i_a j_a}, v_b=A_{i_b j_b}.
 $$
   
   Recall that \((i^*, j^*)\) is a saddle point if and only if
@@ -1929,9 +1930,7 @@ $$
   
   (a) Prove that
 $$
-  A_{i_a j_b} = v
-\qquad\text{and}\qquad
-A_{i_b j_a} = v.
+v_a=v_b
 $$
   
   (b) Prove that both \((i_a, j_b)\) and \((i_b, j_a)\) are themselves saddle points.
