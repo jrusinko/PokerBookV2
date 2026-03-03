@@ -23,87 +23,2898 @@ sidebar:
 
 :::
 
-## Motivating Example
+## 1. Motivating Example
 
-You think you’re ahead. Do you bet small to get called, or large to deny equity? Bet sizing is an optimization problem.
+### Getting Paid
 
-**Guiding question.** How do we choose bet sizes that balance value, fold equity, and risk?
+Hero is on the flop with what players informally call a “monster.”
 
-- Situation: You think you’re ahead. Do you bet small to get called, or large to deny equity? Bet sizing is an optimization problem.
-- Why it matters: this introduces 16 Bet Sizing as Optimization, 3 Risk vs Reward Tradeoffs.
+The pot is $P$.  
+The effective stack is $S$.  
+There are three betting streets remaining: flop, turn, river.
 
-## Mathematical Framework and Poker Theory
+Hero’s goal is simple to state and difficult to execute:
 
-### Roadmap
+> She wants all of the effective stack in the pot by the river — but only if the opponent continues.
 
-- Objective functions for bet sizing (EV/utility)
-- Constraints (stack sizes, pot, ranges)
-- Tradeoffs: fold equity vs value
-- Sizing heuristics and check strategies
+She does not know the opponent’s precise calling function.  
+She does not know which bet size is “best.”  
+She only knows two things:
 
-### Definitions
+- Her hand is strong enough that she prefers to build a large pot.
+- If she sizes poorly early, she may fail to get the full stack in by the end.
 
-**objective function.** *[Definition.]*
 
-**constraint.** *[Definition.]*
 
-**feasible set.** *[Definition.]*
+### The Naïve Approaches
 
-**optimal solution.** *[Definition.]*
+She considers several natural plans.
 
-**marginal value.** *[Definition.]*
+**Plan A: Bet Small Early, Shove River**
 
-### Core concepts
+- Bet small on the flop.
+- Bet medium on the turn.
+- Jam the river.
 
-- tradeoffs
-- risk vs reward as constraints/objectives
-- sizing as maximizing expected value (or utility)
+The worry: if the early bets are too small, the pot may still be too small on the river to comfortably commit the full stack.
 
-### Core results
 
-**finite optimization principle (argmax).** *[Statement / proof placeholder.]*
 
-**marginal analysis principle (informal).** *[Statement / proof placeholder.]*
+**Plan B: Bet Large Early**
 
-### Worked example ideas
+- Bet large on the flop.
+- Continue betting large on the turn.
 
-- Choose a bet size maximizing EV in a simplified model with fold/call/raise frequencies
+The worry: betting too large too early may scare away the opponent’s marginal hands, reducing the probability of reaching the river with a stack behind.
 
-### Computation notes
 
-['Optional: plot EV vs bet size over a parameter grid']
 
-## Beyond Poker
+**Plan C: Bet the Same Fraction Each Street**
 
-These applications use the same core mathematical move: define a model, quantify uncertainty/value, and choose actions under constraints.
+- Choose some fraction $r$ of the pot.
+- Bet $rP$ on the flop.
+- Bet $rP_2$ on the turn.
+- Bet $rP_3$ on the river.
 
-Possible directions:
+This feels “balanced.” But is it optimal? And which fraction $r$ should she choose?
 
-- engineering design (optimize under constraints)
-- portfolio allocation (risk/return)
-- resource allocation (budgets/scheduling)
 
-## Liberal Arts Sidebar
 
-**Optimization and the Good Life**
+### The Structural Constraint
 
-*Lens:* Philosophy
+Suppose every bet is called.  
+If Hero bets $b_1$ on the flop, $b_2$ on the turn, and $b_3$ on the river, then pot evolution satisfies
 
-*Theme:* Critiques of reducing life to objective functions; what should not be optimized (or cannot be).
+$$
+P_{t+1} = P_t + 2b_t.
+$$
 
-> What should not be optimized? Where does optimization break down as a worldview?
+If Hero wishes to commit the entire stack by the river, then after three streets the pot must satisfy
+
+$$
+P_4 = P + S.
+$$
+
+Different sequences $(b_1,b_2,b_3)$ can achieve this.  
+But they impose very different pressures along the way.
+
+Which sequence should she choose?
+
+
+
+### A More Precise Question
+
+Rather than guessing, Hero reframes the problem:
+
+> Among all betting sequences that get stacks in by the river if called, which one distributes pressure most effectively across streets?
+
+In particular:
+
+- If she bets too small early, the opponent may continue with too wide a range.
+- If she bets too large early, she may eliminate too much of the opponent’s continuing range.
+
+Is there a principled way to determine how the pot *should* grow?
+
+
+
+### Toward a Mathematical Formulation
+
+Let the stack-to-pot ratio be
+
+$$
+\mathrm{SPR} = \frac{S}{P}.
+$$
+
+If there are $n=3$ streets remaining, can we find a fraction $r$ such that betting
+
+$$
+b_t = rP_t
+$$
+
+each street results in
+
+$$
+P(1+2r)^3 = P+S?
+$$
+
+Solving
+
+$$
+(1+2r)^3 = 1+\mathrm{SPR}
+$$
+
+would determine the unique fraction $r$ that exactly commits the stack by the river if all bets are called.
+
+But this calculation raises deeper questions:
+
+- Does equal fractional growth create consistent defensive pressure?
+- Does it maximize the chance that marginal hands survive to later streets?
+- Is it better than uneven sizing sequences that also get stacks in?
+
+Hero began with a practical goal — “get all the chips in” — but quickly encountered a structural puzzle:
+
+> How should the pot grow across streets?
+
+Answering that question will lead us to recurrence relations, exponential growth, minimum defense frequency, and ultimately to optimization under uncertainty.
+
+What begins as a question about getting paid becomes a question about geometry.
+
+## 2. Mathematical Framework and Poker Theory
+
+
+
+### I. Structural Constraints on Bet Sizing
+
+#### Stack-to-Pot Ratio (SPR) as a State Variable
+
+Bet sizing does not occur in a vacuum. Before we ask what size is *optimal*, we must first ask what sizes are even structurally meaningful. That question is governed by a single ratio.
+
+
+
+**Definition (Effective Stack).**
+
+In a two-player pot, the **effective stack** is the smaller of the two players’ remaining stacks.  
+
+If Player 1 has stack $S_1$ and Player 2 has stack $S_2$, then
+
+$$
+S = \min\{S_1, S_2\}.
+$$
+
+No player can win more than the opponent has remaining. Thus all future betting decisions are constrained by $S$, not by the larger stack.
+
+
+
+**Definition (Stack-to-Pot Ratio).**
+
+Let $P > 0$ denote the current pot and $S > 0$ the effective stack. The **stack-to-pot ratio** is
+
+$$
+\mathrm{SPR} = \frac{S}{P}.
+$$
+
+SPR is dimensionless and scale-invariant. If we double both stacks and pot, SPR remains unchanged. It therefore captures structure rather than magnitude.
+
+Equivalently,
+
+$$
+S = P \cdot \mathrm{SPR}.
+$$
+
+In words: SPR measures how many pot-sized bets remain in the effective stack.
+
+
+
+### Mathematical Role
+
+SPR determines the feasible geometry of the remaining game.
+
+Any bet $b$ must satisfy
+
+$$
+0 \le b \le S.
+$$
+
+If the bet is called, the next street begins with
+
+$$
+P' = P + 2b,
+\qquad
+S' = S - b.
+$$
+
+The next street’s stack-to-pot ratio is therefore
+
+$$
+\mathrm{SPR}' = \frac{S-b}{P+2b}.
+$$
+
+Thus each choice of $b$ transforms the future state variables. Bet sizing is not merely a local action; it reshapes the decision space that follows.
+
+Two structural regimes emerge:
+
+- **Low SPR.**  
+  If $\mathrm{SPR}$ is small (for example, $\mathrm{SPR} \le 1$), a single pot-sized bet commits the stack. The action space collapses toward “all-in or not.” Fine distinctions between fractional bet sizes lose importance.
+
+- **High SPR.**  
+  If $\mathrm{SPR}$ is large, multiple betting rounds remain before stacks are exhausted. Early bet sizes compound through pot growth. Small differences in fractional sizing propagate forward and meaningfully alter leverage on later streets.
+
+In optimization language, SPR restricts the feasible region before we ever compute expected value.
+
+
+
+### Poker Context
+
+SPR governs commitment thresholds and leverage.
+
+When SPR is low:
+
+- Medium-strength hands often become strong enough to commit.
+- The difference between betting half-pot and three-quarters pot may be negligible relative to stack size.
+- The central question is whether to commit, not how precisely to size.
+
+When SPR is high:
+
+- Future fold equity depends critically on current pot growth.
+- Bet sizes influence not just present value but future leverage.
+- Early sizing errors compound geometrically.
+
+Thus SPR functions as a **state variable** in a dynamic system. It measures how much strategic depth remains. Before we optimize expected value, we must understand the structural constraints imposed by the stack-to-pot ratio.
+
+### II. Geometric Bet Sizing
+
+Multi-street bet sizing is not only about *how fast the pot grows*.  
+It is also about how much *defensive work* the opponent must do, street after street, to avoid being exploited by bluffs.
+
+A convenient way to quantify that pressure is the **minimum defense frequency (MDF)**.
+
+
+
+#### Pot Growth and Minimum Defense Frequency
+
+Let $P_t$ be the pot at the start of street $t$, and suppose we bet $b_t$ (and consider the branch where the bet is called). Then
+
+$$
+P_{t+1} \;=\; P_t + 2b_t.
+$$
+
+On street $t$, the **minimum defense frequency** against a bet $b_t$ into pot $P_t$ is
+
+$$
+\mathrm{MDF}_t \;=\; \frac{P_t}{P_t+b_t}.
+$$
+
+If the defender folds more often than $1-\mathrm{MDF}_t$, then a bluff with (approximately) zero showdown equity becomes profitable on that street.
+
+Now suppose we use *constant fractional sizing*:
+
+$$
+b_t \;=\; rP_t.
+$$
+
+Then pot growth becomes geometric:
+
+$$
+P_{t+1} \;=\; P_t(1+2r)
+\quad\Longrightarrow\quad
+P_n \;=\; P(1+2r)^n,
+$$
+
+and MDF becomes constant across streets:
+
+$$
+\mathrm{MDF}_t
+=
+\frac{P_t}{P_t+rP_t}
+=
+\frac{1}{1+r}.
+$$
+
+So a single fraction $r$ simultaneously determines:
+
+- the multiplicative growth rate of the pot, and
+- the (constant) defensive threshold faced by the opponent.
+
+
+
+#### Solving for the Geometric Fraction
+
+Assume:
+
+- initial pot $P$,
+- effective stack $S$,
+- $n$ betting rounds remain,
+- bets are called whenever made.
+
+We want to commit the entire stack by the final street using a constant fraction $r$.
+
+Stack commitment implies final pot equals $P+S$:
+
+$$
+P(1+2r)^n = P+S.
+$$
+
+With $S = P\cdot\mathrm{SPR}$, this becomes
+
+$$
+(1+2r)^n = 1+\mathrm{SPR},
+$$
+
+so
+
+$$
+r = \frac{(1+\mathrm{SPR})^{1/n}-1}{2}.
+$$
+
+This $r$ is the **geometric bet size**.
+
+
+
+#### Example: Cumulative MDF Across Three Streets
+
+Take $\mathrm{SPR}=7$ and assume there are $n=3$ streets remaining.  
+For concreteness, scale so the initial pot is $P_1=1$ and the effective stack is $S=7$.
+
+
+
+##### (A) Geometric sizing
+
+The geometric fraction is
+
+$$
+r = \frac{(1+7)^{1/3}-1}{2}
+=
+\frac{2-1}{2}
+=
+\frac12.
+$$
+
+So we bet half-pot each street:
+
+- Street 1: $b_1 = \tfrac12 P_1 = \tfrac12$, so $P_2 = 1 + 2(\tfrac12)=2$.
+- Street 2: $b_2 = \tfrac12 P_2 = 1$, so $P_3 = 2 + 2(1)=4$.
+- Street 3: $b_3 = \tfrac12 P_3 = 2$, so $P_4 = 4 + 2(2)=8$.
+
+Total invested is $b_1+b_2+b_3 = \tfrac12+1+2 = \tfrac72$, and since both players invest symmetrically on calls, the pot reaches $8 = P+S$ as required.
+
+Each street has the same MDF:
+
+$$
+\mathrm{MDF}_1=\mathrm{MDF}_2=\mathrm{MDF}_3
+=
+\frac{1}{1+r}
+=
+\frac{1}{1+\tfrac12}
+=
+\frac{2}{3}.
+$$
+
+The **cumulative MDF** (the fraction of a defending range that must survive all three streets, in a simple “multiply the streetwise thresholds” approximation) is
+
+$$
+\mathrm{MDF}_{\text{cum}}
+=
+\mathrm{MDF}_1\mathrm{MDF}_2\mathrm{MDF}_3
+=
+\left(\frac{2}{3}\right)^3
+=
+\frac{8}{27}
+\approx 0.296.
+$$
+
+Interpretation: to avoid being exploited by a three-street bluffing strategy calibrated to MDF each street, a defender would need to continue with at least about $29.6\%$ of their initial range *through all three decisions* (ignoring blockers, discrete actions, and strategic adaptations).
+
+
+
+##### (B) Non-geometric sizing that still stacks off by the river: small–medium–huge
+
+Choose fractions:
+
+$$
+r_1=\frac14,\qquad r_2=\frac12,\qquad r_3\ \text{chosen to finish the stack.}
+$$
+
+Start again with $P_1=1$ and $S=7$.
+
+- Street 1: $b_1=\tfrac14 P_1=\tfrac14$, so $P_2=1+2(\tfrac14)=\tfrac32$ and remaining stack is $S_2 = 7-\tfrac14=\tfrac{27}{4}$.
+- Street 2: $b_2=\tfrac12 P_2=\tfrac34$, so $P_3=\tfrac32+2(\tfrac34)=3$ and remaining stack is $S_3=\tfrac{27}{4}-\tfrac34=6$.
+- Street 3: to get all-in, bet the remaining stack $b_3=6$, which is an overbet of
+  $$
+  r_3=\frac{b_3}{P_3}=\frac{6}{3}=2.
+  $$
+
+Now compute MDF street by street:
+
+$$
+\mathrm{MDF}_1=\frac{1}{1+\tfrac14}=\frac45,
+\qquad
+\mathrm{MDF}_2=\frac{1}{1+\tfrac12}=\frac23,
+\qquad
+\mathrm{MDF}_3=\frac{1}{1+2}=\frac13.
+$$
+
+The cumulative MDF is
+
+$$
+\mathrm{MDF}_{\text{cum}}
+=
+\frac45\cdot\frac23\cdot\frac13
+=
+\frac{8}{45}
+\approx 0.178.
+$$
+
+Compared to geometric sizing ($\approx 0.296$), this line imposes *much less cumulative defensive obligation early*, then demands a dramatic defense decision on the final street. The “pressure” is uneven.
+
+
+
+##### (C) Another non-geometric stack-off: huge–small–medium
+
+Choose $r_1=1$ (pot-sized bet) on the first street.
+
+- Street 1: $b_1 = 1\cdot P_1 = 1$, so $P_2 = 1+2(1)=3$ and remaining stack is $S_2=6$.
+- Street 2: choose $r_2=\tfrac14$, so $b_2=\tfrac14 P_2 = \tfrac34$, hence $P_3 = 3+2(\tfrac34)=\tfrac{9}{2}$ and remaining stack is $S_3=6-\tfrac34=\tfrac{21}{4}$.
+- Street 3: shove $b_3=\tfrac{21}{4}$, which corresponds to
+  $$
+  r_3 = \frac{b_3}{P_3}
+  =
+  \frac{\tfrac{21}{4}}{\tfrac{9}{2}}
+  =
+  \frac{21}{18}
+  =
+  \frac{7}{6}.
+  $$
+
+MDFs:
+
+$$
+\mathrm{MDF}_1=\frac{1}{1+1}=\frac12,
+\qquad
+\mathrm{MDF}_2=\frac{1}{1+\tfrac14}=\frac45,
+\qquad
+\mathrm{MDF}_3=\frac{1}{1+\tfrac76}=\frac{6}{13}.
+$$
+
+Cumulative MDF:
+
+$$
+\mathrm{MDF}_{\text{cum}}
+=
+\frac12\cdot\frac45\cdot\frac{6}{13}
+=
+\frac{12}{65}
+\approx 0.185.
+$$
+
+Again the pressure is uneven: the first street is “cheap to defend” for the bettor (MDF only $50\%$), and later streets carry the balancing adjustments.
+
+
+
+#### Theorem: Geometric Sizing Equalizes MDF
+
+**Theorem (Geometric sizing equalizes minimum defense frequency).**  
+Fix $\mathrm{SPR}>0$ and an integer $n\ge 1$. Consider $n$ streets of betting in which, on street $t$, the bettor chooses a fraction $r_t$ of the current pot and the opponent faces MDF
+
+$$
+\mathrm{MDF}_t = \frac{1}{1+r_t}.
+$$
+
+Among all sequences $(r_1,\dots,r_n)$ that commit the full stack by the final street (in the “always called” pot-growth model), the geometric sequence
+
+$$
+r_1=r_2=\cdots=r_n
+=
+\frac{(1+\mathrm{SPR})^{1/n}-1}{2}
+$$
+
+is the unique sequence for which
+
+$$
+\mathrm{MDF}_1=\mathrm{MDF}_2=\cdots=\mathrm{MDF}_n.
+$$
+
+*Proof.* If MDF is constant across streets, then $\frac{1}{1+r_t}$ is constant, hence $r_1=\cdots=r_n=:r$. The stack-off constraint forces $(1+2r)^n=1+\mathrm{SPR}$, which uniquely determines $r$. $\square$
+
+
+#### Theorem: Geometric Sizing Maximizes the Minimum Defense Frequency
+
+We now state the structural optimality of geometric sizing precisely.
+
+Let $\mathrm{SPR} > 0$ and fix an integer $n \ge 1$.  
+Consider sequences of nonnegative bet fractions
+
+$$
+(r_1,\dots,r_n), \qquad r_t \ge 0,
+$$
+
+satisfying the stack–off constraint
+
+$$
+\prod_{t=1}^{n} (1+2r_t) = 1+\mathrm{SPR}.
+$$
+
+For such a sequence, define the minimum defense frequency on street $t$ by
+
+$$
+\mathrm{MDF}_t = \frac{1}{1+r_t}.
+$$
+
+
+
+**Theorem (Max–min MDF property of geometric sizing).**  
+Among all sequences $(r_1,\dots,r_n)$ satisfying the stack–off constraint,
+
+$$
+\prod_{t=1}^{n} (1+2r_t) = 1+\mathrm{SPR},
+$$
+
+the geometric sequence
+
+$$
+r_1 = r_2 = \cdots = r_n 
+= 
+\frac{(1+\mathrm{SPR})^{1/n}-1}{2}
+$$
+
+uniquely maximizes
+
+$$
+\min_{1 \le t \le n} \mathrm{MDF}_t.
+$$
+
+Equivalently, it uniquely minimizes
+
+$$
+\max_{1 \le t \le n} r_t
+$$
+
+subject to the stack–off constraint.
+
+
+
+**Proof.**
+
+Observe first that
+
+$$
+\mathrm{MDF}_t = \frac{1}{1+r_t}
+$$
+
+is strictly decreasing in $r_t$. Therefore
+
+$$
+\min_t \mathrm{MDF}_t
+=
+\frac{1}{1+\max_t r_t}.
+$$
+
+Maximizing the minimum MDF is therefore equivalent to minimizing $\max_t r_t$.
+
+Now suppose $(r_1,\dots,r_n)$ satisfies the constraint
+
+$$
+\prod_{t=1}^{n} (1+2r_t) = 1+\mathrm{SPR}.
+$$
+
+If the $r_t$ are not all equal, then there exist indices $i,j$ with $r_i < r_j$.  
+
+Fixing all other $r_k$, we may adjust $r_i$ upward slightly and $r_j$ downward slightly while preserving the product constraint (by continuity and the implicit function theorem, or directly by solving locally for one variable in terms of the other).
+
+This adjustment decreases $\max_t r_t$ while maintaining feasibility. Hence any non-constant sequence cannot minimize $\max_t r_t$.
+
+Therefore the minimizing configuration must satisfy
+
+$$
+r_1 = \cdots = r_n = r.
+$$
+
+The stack–off constraint then becomes
+
+$$
+(1+2r)^n = 1+\mathrm{SPR},
+$$
+
+which uniquely determines
+
+$$
+r = \frac{(1+\mathrm{SPR})^{1/n}-1}{2}.
+$$
+
+This is precisely the geometric sizing fraction.  
+Uniqueness follows from strict monotonicity of the function $r \mapsto (1+2r)^n$.
+
+$\square$
+
+
+
+### Why Maximizing the Minimum MDF Matters
+
+The quantity
+
+$$
+\min_t \mathrm{MDF}_t
+$$
+
+measures the **weakest defensive threshold** imposed across the entire betting sequence.
+
+If one street has an exceptionally large $r_t$, then
+
+- $\mathrm{MDF}_t$ becomes small,
+- the defender is permitted to fold a large fraction of their range,
+- and much of the potential multi-street pressure collapses into a single high-variance decision.
+
+By contrast, maximizing the minimum MDF ensures that:
+
+- No single street allows excessive folding,
+- Defensive burden is distributed evenly,
+- Bluffing incentives remain stable across streets.
+
+In cumulative terms, when MDF is constant,
+
+$$
+\prod_{t=1}^{n} \mathrm{MDF}_t
+=
+\left(\frac{1}{1+r}\right)^n,
+$$
+
+which is larger than in any uneven stack–off sequence.  
+
+Thus geometric sizing forces the opponent to carry a larger fraction of their range through the entire betting sequence. Structurally, it preserves pressure at every stage rather than concentrating it at one point.
+
+Importantly, this is not yet a full equilibrium claim. It is a **max–min structural property**: among all stack–off plans, geometric sizing distributes defensive pressure most evenly and most conservatively across streets.
+
+---
+
+#### Table: Geometric Bet Fractions for Two and Three Streets
+
+For reference, the geometric fraction
+
+$$
+r = \frac{(1+\mathrm{SPR})^{1/n}-1}{2}
+$$
+
+yields the constant pot-fraction bet size that stacks off in $n$ streets (if called).
+#### Table: Geometric Bet Fractions for Two and Three Streets
+
+For reference, the geometric fraction
+
+$$
+r = \frac{(1+\mathrm{SPR})^{1/n}-1}{2}
+$$
+
+gives the constant pot-fraction bet size that stacks off in $n$ streets (if called).
+
+Values below are rounded to three decimals.
+
+| SPR | $r$ (2 streets) | $r$ (3 streets) |
+|-----:|----------------:|----------------:|
+| 1   | 0.207 | 0.130 |
+| 2   | 0.366 | 0.221 |
+| 3   | 0.500 | 0.294 |
+| 4   | 0.618 | 0.355 |
+| 5   | 0.725 | 0.409 |
+| 6   | 0.823 | 0.457 |
+| 7   | 0.914 | 0.500 |
+| 8   | 1.000 | 0.540 |
+| 9   | 1.081 | 0.577 |
+| 10  | 1.158 | 0.612 |
+| 20  | 1.791 | 0.879 |
+| 50  | 3.071 | 1.357 |
+| 100 | 4.525 | 1.827 |
+
+**Observations.**
+
+- As SPR increases, geometric bet fractions increase.
+- With three streets remaining, each street requires a smaller fraction than with two streets.
+- For large SPR, the two-street geometric fraction quickly exceeds pot-sized bets, while the three-street fraction grows more gradually.
+- The dependence on SPR is nonlinear: $r$ grows approximately like $\tfrac{1}{2}\mathrm{SPR}^{1/n}$ for large SPR.
+
+
+
+**Takeaway.**  
+Geometric sizing is not just “smooth pot growth.” It is the unique way to make *defensive pressure repeat itself* street after street, producing a constant MDF and a clean multiplicative structure for cumulative defense.
+
+### III. Single-Street Bet Size Optimization
+
+Geometric sizing answered a structural question:  
+*How should the pot grow if we intend to use the entire stack efficiently?*
+
+We now shift perspective.
+
+Instead of planning across multiple streets, suppose we focus on a single betting decision. The pot and stack are already fixed. We wish to determine:
+
+> For this street alone, what bet size maximizes expected value?
+
+This is a classical optimization problem.
+
+
+
+#### Expected Value as an Objective Function
+
+Let:
+
+- $P$ denote the current pot,
+- $b$ denote the bet size (with $0 \le b \le S$),
+- $e \in [0,1]$ denote equity when called,
+- $c(b)$ denote the probability that the opponent calls a bet of size $b$.
+
+We assume
+
+$$
+c'(b) < 0,
+$$
+
+that is, larger bets are called less frequently.
+
+If the opponent folds (probability $1-c(b)$), the bettor wins the pot $P$.
+
+If the opponent calls (probability $c(b)$), the bettor wins the showdown with probability $e$ and loses with probability $1-e$.
+
+Conditional on a call:
+
+- Gain = $P+b$ with probability $e$,
+- Loss = $b$ with probability $1-e$.
+
+Thus the expected value of betting $b$ is
+
+$$
+\mathrm{EV}(b)
+=
+(1-c(b))P
++
+c(b)\big(e(P+b)-(1-e)b\big).
+$$
+
+This expression decomposes naturally:
+
+- The first term reflects fold equity.
+- The second term reflects showdown equity when called.
+
+
+
+#### Simplifying the Expression
+
+It is often helpful to reorganize the expression.
+
+Inside the call term,
+
+$$
+e(P+b)-(1-e)b
+=
+eP + eb - b + eb
+=
+eP + (2e-1)b.
+$$
+
+Hence,
+
+$$
+\mathrm{EV}(b)
+=
+(1-c(b))P
++
+c(b)\big(eP + (2e-1)b\big).
+$$
+
+Expanding and regrouping yields
+
+$$
+\mathrm{EV}(b)
+=
+P
++
+c(b)\big(eP + (2e-1)b - P\big).
+$$
+
+Now the structure becomes clearer:
+
+- $P$ is the baseline value of checking and winning immediately.
+- The remaining term captures the marginal impact of betting.
+
+
+
+#### Interpreting the Coefficient $2e-1$
+
+The quantity
+
+$$
+2e - 1
+$$
+
+plays a central structural role.
+
+- If $e > \tfrac12$, then $2e-1 > 0$.
+  Increasing the bet size increases value conditional on a call.
+
+- If $e < \tfrac12$, then $2e-1 < 0$.
+  Increasing the bet size increases expected loss when called.
+
+Thus:
+
+- Strong hands benefit from larger pots.
+- Weak hands benefit from folds.
+- Exactly balanced hands ($e=\tfrac12$) are indifferent to pot growth when called.
+
+This coefficient separates value betting from bluffing in purely algebraic terms.
+
+
+
+#### The Optimization Problem
+
+We now view
+
+$$
+\mathrm{EV} : [0,S] \to \mathbb{R}
+$$
+
+as a real-valued function of one variable.
+
+Under mild assumptions (for example, continuity of $c(b)$), the Extreme Value Theorem guarantees that an optimal bet size exists.
+
+The mathematical question becomes:
+
+$$
+\max_{0 \le b \le S} \mathrm{EV}(b).
+$$
+
+The answer depends entirely on the shape of $c(b)$.
+
+We have reduced a strategic decision to a problem in calculus:
+
+- Identify the objective function.
+- Analyze its derivatives.
+- Compare interior critical points and boundary values.
+
+The psychological language of “small bet” or “large bet” disappears. What remains is a function of one real variable whose maximum we must locate.
+#### Existence of an Optimal Bet
+
+Before differentiating or solving first–order conditions, we pause to establish something more basic:
+
+> Does an optimal bet size even exist?
+
+We model bet size as a choice in the closed interval
+
+$$
+0 \le b \le S,
+$$
+
+where $S$ is the effective stack. This interval is compact: it is closed and bounded.
+
+Assume that the call function $c(b)$ is continuous on $[0,S]$.  
+Then the expected value function
+
+$$
+\mathrm{EV}(b)
+=
+(1-c(b))P
++
+c(b)\big(e(P+b)-(1-e)b\big)
+$$
+
+is also continuous on $[0,S]$, since it is constructed from sums and products of continuous functions.
+
+We may now invoke a foundational result from real analysis.
+
+
+
+**Theorem (Extreme Value Theorem).**  
+If a function $f$ is continuous on a compact interval $[a,b]$, then $f$ attains both a maximum and a minimum value on $[a,b]$.
+
+
+
+Applying the theorem to $\mathrm{EV}(b)$, we conclude:
+
+- There exists at least one bet size $b^* \in [0,S]$ such that  
+  $$
+  \mathrm{EV}(b^*) \ge \mathrm{EV}(b)
+  \quad
+  \text{for all } b \in [0,S].
+  $$
+
+In other words, an optimal bet size exists.
+
+
+
+Two remarks clarify the meaning of this result.
+
+1. **The optimum may occur at the boundary.**  
+   The maximizing bet may be $b^* = 0$ (check) or $b^* = S$ (all-in).  
+   Existence does not imply interiority.
+
+2. **Continuity is essential.**  
+   If $c(b)$ were discontinuous—if, for example, the opponent’s response jumped abruptly at some threshold—then $\mathrm{EV}(b)$ might fail to attain its supremum within the interval.
+
+The Extreme Value Theorem gives us a guarantee of well-posedness:  
+our optimization problem is not chasing a limit that cannot be reached.
+
+Only after establishing existence does it make sense to ask the sharper question:
+
+> Is the optimal bet interior or at the boundary, and how can we characterize it?
+#### First–Order Necessary Condition
+
+Having established that an optimal bet exists, we now ask how to locate it.
+
+Suppose that:
+
+- $c(b)$ is differentiable on $(0,S)$, and  
+- $b^* \in (0,S)$ is an interior maximizer of $\mathrm{EV}(b)$.
+
+Then a basic result from calculus applies.
+
+
+
+**Theorem (Fermat’s Necessary Condition).**  
+If $f$ is differentiable and attains a local maximum at an interior point $x^*$, then
+
+$$
+f'(x^*) = 0.
+$$
+
+
+
+Applying this to the expected value function, any interior optimal bet $b^*$ must satisfy
+
+$$
+\mathrm{EV}'(b^*) = 0.
+$$
+
+We now compute the derivative.
+
+Recall that
+
+$$
+\mathrm{EV}(b)
+=
+P
++
+c(b)\big(eP + (2e-1)b - P\big).
+$$
+
+Differentiating using the product rule yields
+
+$$
+\mathrm{EV}'(b)
+=
+c'(b)\big(eP + (2e-1)b - P\big)
++
+c(b)(2e-1).
+$$
+
+Thus an interior optimal bet satisfies
+
+$$
+c'(b^*)\big(eP + (2e-1)b^* - P\big)
++
+c(b^*)(2e-1)
+=
+0.
+$$
+
+
+
+### Structural Interpretation
+
+The derivative separates cleanly into two effects.
+
+1. **Marginal change in call frequency**
+
+   The term
+
+   $$
+   c'(b)\big(eP + (2e-1)b - P\big)
+   $$
+
+   reflects how increasing the bet changes the probability of being called.
+
+   Since $c'(b) < 0$, larger bets reduce call frequency.  
+   This reduction multiplies the payoff conditional on a call.
+
+2. **Marginal change in payoff size**
+
+   The term
+
+   $$
+   c(b)(2e-1)
+   $$
+
+   reflects how increasing the bet changes expected payoff *given* that a call occurs.
+
+   - If $e > \tfrac12$, then $2e-1 > 0$: larger bets increase value when called.
+   - If $e < \tfrac12$, then $2e-1 < 0$: larger bets increase losses when called.
+
+
+
+### The Marginal Tradeoff
+
+Setting $\mathrm{EV}'(b^*) = 0$ expresses a balance:
+
+> The marginal gain from enlarging the pot must equal the marginal loss from reducing the chance of being called.
+
+If the derivative is positive, increasing the bet increases expected value.  
+If the derivative is negative, increasing the bet decreases expected value.
+
+The optimal interior bet occurs precisely where these opposing forces cancel.
+
+This equation is the continuous analogue of an indifference condition in mixed strategy equilibrium.  
+Instead of equalizing payoffs across discrete actions, we equalize marginal gains and marginal costs along a continuum of bet sizes.
+#### Concavity, Uniqueness, and Range Elasticity
+
+The first–order condition identifies candidate interior optima.  
+To determine whether such a point is actually a maximum — and whether it is unique — we examine curvature.
+
+Consider again the **linear call model**
+
+$$
+c(b) = \alpha - \beta b,
+\qquad
+\beta > 0,
+$$
+
+on an interval where $0 \le c(b) \le 1$.
+
+Substituting into the expected value formula shows that $\mathrm{EV}(b)$ is quadratic in $b$:
+
+$$
+\mathrm{EV}(b) = A + Bb + Cb^2,
+$$
+
+with leading coefficient
+
+$$
+C = -\beta(2e-1).
+$$
+
+Thus:
+
+- If $e > \tfrac12$, then $C<0$ and EV is concave.
+- If $e < \tfrac12$, then $C>0$ and EV is convex.
+- If $e = \tfrac12$, EV is linear.
+
+A quadratic has at most one interior critical point.  
+Concavity guarantees that this point, if it exists, is the unique global maximum.
+
+
+
+### Boundary vs. Interior Solutions
+
+The curvature classification yields three structural regimes:
+
+1. **Strong hands ($e>\tfrac12$).**  
+   EV is concave. There may be a unique interior maximizer, or the maximum may occur at $b=S$.
+
+2. **Weak hands ($e<\tfrac12$).**  
+   EV is convex. Any interior critical point is a minimum, so the optimum lies at $b=0$ or $b=S$.
+
+3. **Balanced hands ($e=\tfrac12$).**  
+   EV is linear; the optimum occurs at the boundary unless the slope vanishes.
+
+Thus concavity determines whether optimal sizing is an interior compromise or an extreme.
+
+
+
+### A Poker Viewpoint: Elastic and Inelastic Folding Ranges
+
+The linear call model makes explicit the role of **range elasticity**.
+
+Recall
+
+$$
+c(b) = \alpha - \beta b.
+$$
+
+The parameter $\beta$ measures the sensitivity of calling frequency to bet size.
+
+- If $\beta$ is **large**, then $|c'(b)|$ is large: the opponent’s folding range is **elastic**. Small increases in bet size cause substantial increases in folding frequency.
+
+- If $\beta$ is **small**, then $|c'(b)|$ is small: the opponent’s folding range is **inelastic**. Call frequency changes only slightly as bet size increases.
+
+The curvature term
+
+$$
+C = -\beta(2e-1)
+$$
+
+shows that elasticity directly affects how sharply EV bends.
+
+
+
+#### Elastic Opponent (Large $\beta$)
+
+When folding behavior is elastic:
+
+- Increasing bet size dramatically reduces call frequency.
+- Bluffing gains leverage quickly.
+- Value hands must balance larger pots against rapidly shrinking call rates.
+
+Mathematically, EV curves more sharply. Interior optima, when they exist, tend to be smaller because marginal increases in $b$ rapidly reduce $c(b)$.
+
+In extreme cases, convexity for weak hands pushes the solution to pure polarization: $b=0$ or $b=S$.
+
+
+
+#### Inelastic Opponent (Small $\beta$)
+
+When folding behavior is inelastic:
+
+- Call frequency changes little with bet size.
+- Increasing $b$ primarily scales pot size rather than fold probability.
+
+Here the EV function bends more gently. For strong hands ($e>\tfrac12$), concavity remains but curvature is mild. Larger bet sizes are often optimal because calls persist even as $b$ grows.
+
+In the limit $\beta \to 0$, the opponent calls almost independently of bet size. Then EV becomes approximately linear in $b$:
+
+$$
+\mathrm{EV}(b) \approx P + c(eP + (2e-1)b - P),
+$$
+
+and the solution pushes toward an extreme depending only on the sign of $2e-1$.
+
+
+
+### Structural Insight
+
+Elastic and inelastic ranges alter the shape of the optimization landscape:
+
+- **Elastic ranges** amplify the marginal fold effect.
+- **Inelastic ranges** amplify the marginal pot-growth effect.
+
+Thus concavity analysis is not merely technical.  
+It encodes how the opponent’s distribution of marginal hands responds to price.
+
+In economic language, $c'(b)$ measures demand elasticity.  
+In poker language, it measures how quickly the opponent’s folding range expands as price increases.
+
+Optimal bet sizing is therefore a balance between:
+
+- The intrinsic strength of the hand (captured by $e$), and  
+- The elasticity of the opponent’s range (captured by $c'(b)$).
+
+Geometry meets behavior through curvature.
+
+### Alternative Calling Models and Optimal Bet Size
+
+In each model below, we keep the same single-street EV objective:
+
+- pot $P$,
+- bet $b \in [0,S]$,
+- equity when called $e$,
+- call probability $c(b)$ with $c'(b)<0$,
+
+and
+
+$$
+\mathrm{EV}(b)
+=
+(1-c(b))P
++
+c(b)\big(e(P+b)-(1-e)b\big)
+=
+P + c(b)\big(eP + (2e-1)b - P\big).
+$$
+
+The first-order condition for an interior optimum $b^*\in(0,S)$ is
+
+$$
+\mathrm{EV}'(b)
+=
+c'(b)\big(eP + (2e-1)b - P\big)
++
+c(b)(2e-1)
+=0.
+$$
+
+The models differ only in the functional form of $c(b)$.
+
+
+
+#### Logistic (sigmoid) calling model
+
+**Model.** A common smooth, bounded, “threshold-like” choice is logistic:
+
+$$
+c(b) = \frac{1}{1+\exp\big(k(b-b_0)\big)},
+\qquad k>0.
+$$
+
+Here $b_0$ is the mid-point (where $c(b_0)=1/2$) and $k$ controls steepness.
+
+**Poker interpretation.**  
+This models an opponent with a *soft threshold*:
+
+- for small bets ($b\ll b_0$), they call almost always,
+- for large bets ($b\gg b_0$), they fold almost always,
+- near $b_0$, small changes in sizing produce large changes in frequency.
+
+That is often the most realistic regime: most of the opponent’s range is “obvious” (always-call / always-fold), with a comparatively thin boundary region where sizing matters.
+
+**Optimal bet size calculation.**  
+Differentiate:
+
+$$
+c'(b)
+=
+-\frac{k\,\exp(k(b-b_0))}{(1+\exp(k(b-b_0)))^2}
+=
+-k\,c(b)\big(1-c(b)\big).
+$$
+
+Plug into the first-order condition:
+
+$$
+-k\,c(b)\big(1-c(b)\big)\big(eP + (2e-1)b - P\big)
++
+c(b)(2e-1)
+=0.
+$$
+
+If $c(b)>0$, we may divide by $c(b)$ to obtain an equivalent condition:
+
+$$
+(2e-1)
+=
+k\big(1-c(b)\big)\big(eP + (2e-1)b - P\big).
+$$
+
+This is an implicit equation for $b^*$; in general it has **no closed-form solution**.  
+In practice one solves it numerically (e.g., Newton’s method or bisection) and compares with boundary values $b=0$ and $b=S$.
+
+**Representative plot.**
+
+![](calling_logistic.png){fig-alt="Logistic call probability as a function of bet fraction." width=70%}
+
+
+
+#### Distribution-derived calling model
+
+**Model.** Rather than guessing a functional form, we can *derive* $c(b)$ from a distribution of opponent hand strengths.
+
+Let $E$ denote the opponent’s equity (or “call suitability”) as a random variable with CDF $F$ on $[0,1]$. Suppose the opponent calls exactly when their equity exceeds the break-even threshold for calling a bet $b$ into pot $P$:
+
+$$
+E \ge \tau(b),
+\qquad
+\tau(b) := \frac{b}{P+b}.
+$$
+
+Then the call probability is
+
+$$
+c(b) = \mathbb{P}(E \ge \tau(b)) = 1 - F(\tau(b)).
+$$
+
+**Poker interpretation.**  
+This is a clean “range model.”
+
+- The opponent has a distribution of hands (encoded in $F$).
+- A larger bet raises the price of calling, hence raises the threshold $\tau(b)$.
+- The frequency of calls is exactly the fraction of their range above that threshold.
+
+This connects directly to MDF-style thinking, but now with an explicit distribution of marginal hands rather than a single frequency rule.
+
+**Optimal bet size calculation.**  
+Assume $F$ is differentiable with density $f$ on $(0,1)$. Then
+
+$$
+c'(b) = - f(\tau(b))\,\tau'(b),
+\qquad
+\tau'(b)=\frac{P}{(P+b)^2}.
+$$
+
+Hence
+
+$$
+c'(b)
+=
+- f\!\left(\frac{b}{P+b}\right)\frac{P}{(P+b)^2}.
+$$
+
+Substitute into the first-order condition:
+
+$$
+- f\!\left(\frac{b}{P+b}\right)\frac{P}{(P+b)^2}\big(eP + (2e-1)b - P\big)
++
+\big(1 - F(\tfrac{b}{P+b})\big)(2e-1)
+=0.
+$$
+
+Equivalently,
+
+$$
+\big(1 - F(\tfrac{b}{P+b})\big)(2e-1)
+=
+f\!\left(\frac{b}{P+b}\right)\frac{P}{(P+b)^2}\big(eP + (2e-1)b - P\big).
+$$
+
+This is again typically an implicit equation for $b^*$, but it is **structurally informative**:
+
+- $1-F(\tau)$ is the mass of *strong-enough* hands,
+- $f(\tau)$ measures how much density sits near the calling threshold (how “thick” the marginal region is),
+- $\frac{P}{(P+b)^2}$ is the rate at which the threshold moves with price.
+
+**Representative plot (example).**  
+Below is a sample $c(b)$ produced by taking $E \sim \mathrm{Beta}(2,5)$ (many weak hands, fewer strong ones). This yields a smoothly decreasing call function with a long tail.
+
+![](calling_distribution.png){fig-alt="Distribution-derived call probability from a Beta equity model." width=70%}
+
+*(Any CDF $F$ produces a valid $c(b)$; the point is that the shape is now interpretable in terms of range composition.)*
+
+
+
+#### Threshold (step) calling model
+
+**Model.** The sharpest possible “range threshold” model is a step function:
+
+$$
+c(b)
+=
+\begin{cases}
+1, & b \le b^\star,\\[4pt]
+0, & b > b^\star.
+\end{cases}
+$$
+
+**Poker interpretation.**  
+This represents an opponent who has a hard pricing rule: below a certain price they always continue, above it they always fold. It is an idealization, but it is useful because it produces clear corner solutions and highlights the role of discontinuities.
+
+**Optimal bet size calculation.**  
+Because $c(b)$ is discontinuous, $\mathrm{EV}(b)$ is generally not differentiable at $b^\star$. The optimization is therefore **piecewise**.
+
+- If $b > b^\star$, then $c(b)=0$ and
+  $$
+  \mathrm{EV}(b) = P.
+  $$
+  (You win the pot immediately.)
+
+- If $b \le b^\star$, then $c(b)=1$ and
+  $$
+  \mathrm{EV}(b) = e(P+b)-(1-e)b = eP + (2e-1)b.
+  $$
+
+Thus, on $[0,b^\star]$, EV is linear in $b$:
+
+- If $e>\tfrac12$, EV increases with $b$, so the best bet in this region is $b=b^\star$.
+- If $e<\tfrac12$, EV decreases with $b$, so the best bet in this region is $b=0$.
+
+Finally we compare against any $b>b^\star$, which yields EV exactly $P$.
+
+So the candidate optima are always among
+
+$$
+b \in \{0,\ b^\star,\ S\},
+$$
+
+with the understanding that any $b>b^\star$ is equivalent (always folds) in this model.
+
+**Representative plot.**
+
+![](calling_threshold.png){fig-alt="Threshold call probability as a function of bet fraction." width=70%}
+
+
+
+#### Practical note on plotting and computation
+
+- The logistic and distribution-derived models typically require **numerical optimization** for $b^*$.
+- The threshold model reduces to **boundary comparisons**.
+- In all cases, after solving (or approximating) an interior condition, one should still compare $\mathrm{EV}(b)$ at $b=0$ and $b=S$.
+
+### Summary Table: Comparing Calling Models
+
+The choice of calling model determines the shape of the optimization problem.  
+Different functional forms encode different assumptions about how opponents respond to price.
+
+Below is a structural comparison of the models introduced.
+
+
+
+| Model | Functional Form | Smooth? | Bounded in $[0,1]$? | Interior Optimum Likely? | Mathematical Convenience | Poker Interpretation |
+|--------|-----------------|----------|----------------------|---------------------------|--------------------------|----------------------|
+| **Linear** | $c(b)=\alpha-\beta b$ | Yes | No (must restrict domain) | Yes (quadratic EV) | Closed-form algebra | Constant elasticity; no natural threshold |
+| **Logistic (Sigmoid)** | $c(b)=\dfrac{1}{1+e^{k(b-b_0)}}$ | Yes | Yes | Yes (solve numerically) | Smooth, stable curvature | Soft threshold; marginal region of indifference |
+| **Probit** | $c(b)=1-\Phi\!\left(\frac{b-\mu}{\sigma}\right)$ | Yes | Yes | Yes (numerical) | Econometric structure | Noisy decision threshold |
+| **Exponential** | $c(b)=e^{-\lambda b}$ | Yes | Yes | Often | Simple derivatives | Constant proportional decay in calls |
+| **Power Law** | $c(b)=\left(1+\frac{b}{K}\right)^{-\gamma}$ | Yes | Yes | Often | Heavy-tail behavior | Sticky strong hands; gradual shedding |
+| **Distribution-Derived** | $c(b)=1-F\!\left(\frac{b}{P+b}\right)$ | Yes (if $F$ smooth) | Yes | Yes (implicit solution) | Connects to probability theory | Calls determined by equity distribution |
+| **Threshold (Step)** | $c(b)=\mathbf{1}_{\{b\le b^\star\}}$ | No | Yes | No (boundary only) | Piecewise analysis | Hard price cutoff; sharp range boundary |
+
+
+
+### Structural Differences
+
+**Curvature**
+
+- Linear model produces quadratic EV.
+- Logistic and distribution-derived models generate richer curvature and inflection.
+- Threshold model eliminates smooth curvature entirely.
+
+**Elasticity**
+
+- Linear: constant marginal sensitivity.
+- Logistic: maximum sensitivity near midpoint.
+- Distribution-derived: sensitivity governed by density $f(\tau(b))$.
+- Threshold: infinite elasticity at cutoff.
+
+**Optimization Complexity**
+
+- Linear → closed-form interior solution.
+- Logistic / Distribution-derived → numerical root finding.
+- Threshold → compare boundary cases.
+
+
+
+### Conceptual Distinctions
+
+| Feature | Linear | Logistic | Distribution-Derived | Threshold |
+|----------|---------|-----------|----------------------|-----------|
+| Encodes marginal hands explicitly? | No | Implicitly | Yes | Yes (degenerate case) |
+| Derived from equity distribution? | No | No | Yes | Yes (limit case) |
+| Realistic near boundary? | Weak | Strong | Strong | Extreme |
+| Produces polar sizing naturally? | Sometimes | Yes | Yes | Yes (forced) |
+
+
+
+### A Structural Perspective
+
+- The **linear model** is pedagogically clean but behaviorally crude.
+- The **logistic model** captures smooth threshold behavior and is mathematically stable.
+- The **distribution-derived model** is the most structurally grounded: it connects bet sizing directly to the opponent’s range distribution.
+- The **threshold model** is analytically sharp but strategically brittle.
+
+Each model encodes a different assumption about how ranges respond to price.
+
+In the next section, we will return to multi-street considerations and examine how these single-street models interact with stack depth and geometric planning.
+
+### Comparative Table: Elasticity and Optimal Bet Size Across Calling Models
+
+Optimal bet size depends critically on how sensitive the opponent’s calling frequency is to changes in price.  
+This sensitivity is captured by the derivative $c'(b)$, or more structurally by elasticity.
+
+Recall that the first-order condition for an interior optimum is
+
+$$
+c'(b)\big(eP + (2e-1)b - P\big)
++
+c(b)(2e-1)
+=
+0.
+$$
+
+Thus optimal sizing depends on the balance between:
+
+- The **marginal fold effect** (through $c'(b)$), and  
+- The **marginal pot-growth effect** (through $2e-1$).
+
+The table below compares how elasticity behaves under each calling model and how that affects optimal bet size.
+
+
+
+| Model | Shape of $c'(b)$ | Elastic vs Inelastic Regions | Effect on Optimal $b^*$ (Strong Hands $e>\tfrac12$) | Effect on Optimal $b^*$ (Weak Hands $e<\tfrac12$) | Strategic Implication |
+|--------|------------------|------------------------------|---------------------------------|--------------------------------|----------------------|
+| **Linear** | Constant slope $-\beta$ | Uniform elasticity | Larger $\beta$ → smaller $b^*$ | Larger $\beta$ → more polarization | Simple tradeoff; curvature fixed |
+| **Logistic** | $-k\,c(1-c)$ (peaks at midpoint) | Most elastic near $b=b_0$ | If optimal region near midpoint → sensitive to $k$ | Bluff sizing reacts strongly near threshold | Mid-range hands determine sizing |
+| **Exponential** | $-\lambda e^{-\lambda b}$ | Proportional decay | Inelastic tail → large bets remain attractive | Bluff value decays smoothly | No sharp threshold behavior |
+| **Power Law** | Heavy-tail decay | Very inelastic at large $b$ | Large bets retain calls from strong range | Polarization encouraged | Sticky top of range |
+| **Distribution-Derived** | $-f(\tau(b))\tau'(b)$ | Elasticity tied to density at threshold | High density at margin → smaller $b^*$ | Thin margin → larger polar bets | Optimal sizing reflects range composition |
+| **Threshold** | Discontinuous | Infinite elasticity at cutoff | $b^*=b^\star$ or $S$ | $b^*=0$ or overbet | Pure boundary solutions |
+
+---
+
+### Structural Insights
+
+1. **Elastic ranges shrink optimal bet size.**  
+   When $|c'(b)|$ is large (calls drop rapidly as price increases), marginal fold equity dominates, and interior optima move toward smaller bets.
+
+2. **Inelastic ranges enlarge optimal bet size.**  
+   When calls decline slowly with price, increasing $b$ primarily scales the pot rather than reducing call frequency. Larger bets become optimal.
+
+3. **Density at the threshold matters most.**  
+   In the distribution-derived model, elasticity is proportional to $f(\tau(b))$.  
+   If many hands sit near the break-even threshold, small changes in price dramatically shift calling frequency.  
+   If few hands lie near the margin, sizing becomes less sensitive.
+
+4. **Polarization emerges from convexity.**  
+   When EV becomes convex (often for weak hands under elastic response), the maximum moves to the boundary: either minimal bet or maximal bet.
+
+
+### Conceptual Summary
+
+Optimal bet size increases when:
+
+- Equity advantage is large ($e \gg \tfrac12$), and  
+- Opponent response is inelastic.
+
+Optimal bet size decreases when:
+
+- Equity advantage is small, and  
+- Opponent response is highly elastic.
+
+Thus elasticity plays the same role here that demand elasticity plays in pricing theory:
+
+> Strong value hands behave like monopolists with inelastic demand.  
+> Bluffs behave like sellers facing elastic demand.
+
+This unifies poker bet sizing with classical optimization in economics.
+
+
+### IV. Multi-Street Optimization Perspective
+#### Dynamic Programming Formulation (Conceptual)
+
+So far, we have analyzed bet sizing in two distinct ways:
+
+- Structurally, through SPR and geometric growth;
+- Locally, through single-street expected value maximization.
+
+Both viewpoints treat a single decision in isolation.
+
+But real betting decisions are sequential.  
+A choice on the current street reshapes the pot and stack, which in turn reshapes every future decision.
+
+To capture this formally, we introduce a value function.
+
+
+### The Value Function
+
+Let
+
+- $t$ denote the street index (e.g., flop, turn, river),
+- $P$ denote the pot size at the beginning of street $t$,
+- $S$ denote the effective stack at that point.
+
+Define
+
+$$
+V_t(P,S)
+=
+\max_{b_t \in [0,S]}
+\mathbb{E}\big[V_{t+1}(P',S')\big],
+$$
+
+where
+
+$$
+P' = P + 2b_t
+\quad\text{and}\quad
+S' = S - b_t
+$$
+
+in the branch where the bet is called.
+
+This recursive definition expresses a simple idea:
+
+> The value of a decision today equals the best choice today plus the value of tomorrow's optimal decisions.
+
+
+### State Variables
+
+The optimization problem is governed by three state variables:
+
+- Pot size $P$  
+- Effective stack $S$  
+- Street index $t$  
+
+Every bet transforms the state $(P,S,t)$ into a new state $(P',S',t+1)$.
+
+Thus the bet size does not merely generate immediate expected value.  
+It moves the system to a different region of the decision space.
+
+
+### Backward Induction
+
+Dynamic programming proceeds from the final street backward.
+
+On the final street $T$, the value function reduces to the single-street problem:
+
+$$
+V_T(P,S) = \max_{b \in [0,S]} \mathrm{EV}_T(b;P,S).
+$$
+
+Having solved this terminal problem, one then determines $V_{T-1}$ by incorporating the optimal continuation value.
+
+This recursive structure formalizes a principle that experienced players articulate informally:
+
+> You should size today with tomorrow in mind.
+
+
+
+### Why Early Sizing Matters
+
+Because
+
+$$
+P' = P + 2b_t,
+\qquad
+S' = S - b_t,
+$$
+
+early bet sizes affect:
+
+- Future SPR,
+- Future leverage,
+- The curvature of subsequent EV functions.
+
+A bet that is locally optimal in isolation may distort the geometry of future streets.
+
+Dynamic programming reveals that optimal sizing is not merely about maximizing $\mathrm{EV}(b_t)$, but about maximizing the entire continuation value.
+
+
+
+### Connection to Geometric Sizing
+
+Under symmetry assumptions — for example,
+
+- identical call functions on each street,
+- no change in equity realization across streets,
+- and fixed SPR —
+
+the recursive problem often admits symmetric solutions.
+
+In such cases, equal fractional bet sizes solve the same first-order condition at each stage, producing geometric growth:
+
+$$
+P_{t+1} = (1+2r)P_t.
+$$
+
+Thus geometric sizing can emerge not only from stack-off constraints, but from recursive optimality.
+
+
+
+### Mathematical Themes
+
+This formulation introduces several central ideas:
+
+- **Recursive structure:** current value depends on future value.
+- **Backward induction:** solve from terminal condition backward.
+- **State-dependent optimization:** decisions depend on $(P,S,t)$, not just $P$.
+- **Dynamic consistency:** an optimal plan remains optimal at every stage.
+
+In full generality, solving $V_t$ requires specifying:
+
+- The opponent’s call function at each street,
+- Equity evolution across streets,
+- And terminal payoff structure.
+
+Even without solving the full recursion explicitly, the formulation clarifies an essential insight:
+
+> Bet sizing is a control problem in a dynamic system.
+
+Single-street calculus captures marginal tradeoffs.  
+Dynamic programming captures strategic time structure.
+
+### V. Board Texture and Equity Distributions
+
+Up to this point, we have treated equity $e$ as a fixed number.  
+That simplification is mathematically convenient — but strategically incomplete.
+
+On earlier streets, equity is rarely deterministic.  
+It evolves.
+
+Some boards create stable equity relationships.  
+Others create volatility.
+
+To model this properly, we must allow equity itself to be random.
+
+
+
+#### Equity as a Random Variable
+
+Let $E$ denote the bettor’s equity conditional on being called.  
+Rather than fixing $e$, assume
+
+$$
+E \sim f_{\text{board}}(e),
+$$
+
+where $f_{\text{board}}$ is a density determined by the board texture and range interaction.
+
+The expected value of betting $b$ is now
+
+$$
+\mathrm{EV}(b)
+=
+\mathbb{E}_E\big[\mathrm{EV}(b,E)\big].
+$$
+
+Explicitly,
+
+$$
+\mathrm{EV}(b)
+=
+\mathbb{E}_E\!\left[
+(1-c(b))P
++
+c(b)\big(E(P+b)-(1-E)b\big)
+\right].
+$$
+
+Since expectation is linear, this becomes
+
+$$
+\mathrm{EV}(b)
+=
+(1-c(b))P
++
+c(b)\,
+\mathbb{E}_E\!\left[E(P+b)-(1-E)b\right].
+$$
+
+Thus optimal bet sizing solves
+
+$$
+\max_{0 \le b \le S}
+\mathbb{E}_E[\mathrm{EV}(b,E)].
+$$
+
+The key change is conceptual:
+
+> Equity is no longer a number. It is a distribution.
+
+
+
+### Why This Matters
+
+When equity is random, two new features enter the analysis:
+
+1. **Equity realization risk** — future cards may drastically alter who is ahead.
+2. **Convexity effects** — the nonlinearity of EV interacts with the distribution of $E$.
+
+We are no longer maximizing $\mathrm{EV}(b,e)$ for a fixed $e$, but the average of $\mathrm{EV}(b,E)$ across possible equity states.
+
+
+
+#### Wet vs. Dry Boards as Variance Conditions
+
+We now formalize the notion of board texture.
+
+Let
+
+$$
+\mathrm{Var}(E)
+$$
+
+denote the variance of equity under the board-induced distribution.
+
+We use variance as a quantitative proxy for texture:
+
+- **Dry board:** $\mathrm{Var}(E)$ is small.  
+  Equity relationships are stable. Few cards dramatically change relative strength.
+
+- **Wet board:** $\mathrm{Var}(E)$ is large.  
+  Many future cards significantly alter relative equity.
+
+This interpretation aligns with poker language:
+
+- Dry boards (e.g., disconnected, rainbow) produce narrow equity distributions.
+- Wet boards (e.g., coordinated, flush or straight draws present) produce wide equity distributions.
+
+
+
+### Jensen-Type Effects
+
+Recall that expected value is nonlinear in $E$ through the term $(2E-1)b$.
+
+When a function $f$ is nonlinear,
+
+$$
+\mathbb{E}[f(E)] \neq f(\mathbb{E}[E]).
+$$
+
+This is the essence of Jensen’s inequality.
+
+Even if two boards have the same *mean* equity,
+
+$$
+\mathbb{E}[E] \text{ identical},
+$$
+
+they may produce different optimal bet sizes if their variances differ.
+
+Variance affects how the nonlinear payoff structure averages out.
+
+
+
+### Strategic Implications of Variance
+
+Consider two boards with the same average equity but different variance.
+
+
+
+#### Dry Board (Low Variance)
+
+- Most of the opponent’s range has similar equity.
+- Few future cards dramatically change relative strength.
+- Equity realization is predictable.
+
+Mathematically:
+
+- The distribution $f_{\text{board}}$ is concentrated.
+- Marginal changes in bet size affect a narrow band of hands.
+
+Strategic effect:
+
+- Smaller bets often suffice.
+- There is less urgency to deny equity.
+- EV behaves more like the fixed-$e$ model.
+
+
+
+#### Wet Board (High Variance)
+
+- Many hands have equity that can improve significantly.
+- Future cards can sharply alter the distribution.
+- Equity realization risk is substantial.
+
+Mathematically:
+
+- $f_{\text{board}}$ has wide spread.
+- A larger portion of mass lies near critical thresholds.
+
+Strategic effect:
+
+- Larger bets deny realization of future equity.
+- The marginal value of fold equity increases.
+- Optimal bet sizes tend to increase.
+
+In particular, if many opponent hands have equity near $50\%$, then small changes in price move substantial probability mass across the calling threshold. This increases the sensitivity of $c(b)$ to sizing and amplifies marginal fold effects.
+
+
+
+### Interaction with Earlier Sections
+
+Board texture influences:
+
+- The shape of $f_{\text{board}}(e)$,
+- The elasticity of $c(b)$,
+- The curvature of $\mathrm{EV}(b)$,
+- And ultimately the dynamic value function $V_t(P,S)$.
+
+In dynamic programming terms, texture affects not just immediate expected value but the continuation value on future streets.
+
+Thus bet sizing is not determined solely by current equity, but by the *distribution of possible future equities*.
+
+
+
+### Structural Summary
+
+Texture enters the mathematics through variance:
+
+- Dry board → narrow $E$ → stable optimization.
+- Wet board → wide $E$ → convexity effects matter.
+- Larger variance increases the value of denying realization.
+
+Optimal bet size is therefore a function not only of mean equity, but of the distribution of equity across the opponent’s range.
+
+Geometry (SPR), marginal calculus (first-order condition), and probability (equity distributions) now converge in a single framework.
+
+### Jensen Effects and the Role of Variance
+
+When equity is modeled as a random variable $E$, optimal bet sizing depends not only on the mean $\mathbb{E}[E]$, but also on the shape of the distribution.
+
+This dependence arises from nonlinearity.
+
+Recall that for fixed $b$,
+
+$$
+\mathrm{EV}(b,E)
+=
+(1-c(b))P
++
+c(b)\big(E(P+b)-(1-E)b\big).
+$$
+
+Inside the call term,
+
+$$
+E(P+b)-(1-E)b
+=
+EP + (2E-1)b.
+$$
+
+For fixed $b$, this expression is *linear* in $E$.  
+If the calling probability $c(b)$ were independent of $E$, then
+
+$$
+\mathbb{E}_E[\mathrm{EV}(b,E)]
+=
+\mathrm{EV}(b,\mathbb{E}[E]),
+$$
+
+and variance would not matter.
+
+But in realistic models, calling frequency depends on price relative to equity.  
+In the distribution-derived model, for example,
+
+$$
+c(b) = 1 - F\!\left(\tau(b)\right),
+\qquad
+\tau(b)=\frac{b}{P+b}.
+$$
+
+Here the call threshold $\tau(b)$ determines which equity realizations survive.
+
+Thus the effective payoff is not simply linear in $E$; it involves the truncated region $E \ge \tau(b)$.
+
+
+
+## Jensen’s Inequality
+
+Let $f$ be a convex function. Then Jensen’s inequality states
+
+$$
+f(\mathbb{E}[E]) \le \mathbb{E}[f(E)].
+$$
+
+If $f$ is concave, the inequality reverses.
+
+In our setting, nonlinearity arises because:
+
+- The set of hands that continue depends on $b$,
+- The threshold $\tau(b)$ depends nonlinearly on $b$,
+- The continuation value depends on which portion of the distribution survives.
+
+Thus even when $\mathbb{E}[E]$ is fixed, the distribution of $E$ affects expected value through truncation and threshold effects.
+
+
+
+## A Concrete Illustration
+
+Fix $P=1$ for simplicity. Let equity threshold be
+
+$$
+\tau(b) = \frac{b}{1+b}.
+$$
+
+Suppose two boards have the same mean equity:
+
+$$
+\mathbb{E}[E] = 0.5.
+$$
+
+Board A (dry):
+
+- $E$ is tightly concentrated near $0.5$.
+- For example, $E$ is uniform on $[0.45,0.55]$.
+
+Board B (wet):
+
+- $E$ is dispersed.
+- For example, $E$ is uniform on $[0.1,0.9]$.
+
+Both have mean $0.5$, but very different variance.
+
+Now consider a bet $b=1$ (pot-sized). Then
+
+$$
+\tau(1)=\frac{1}{2}.
+$$
+
+The opponent calls with equity at least $0.5$.
+
+On Board A:
+
+- Roughly half the distribution lies above $0.5$.
+- Calling mass $\approx 0.5$.
+
+On Board B:
+
+- Also half lies above $0.5$.
+- Calling mass $\approx 0.5$.
+
+So far, the same.
+
+Now increase to $b=2$:
+
+$$
+\tau(2)=\frac{2}{3}\approx 0.667.
+$$
+
+On Board A:
+
+- Almost no mass lies above $0.667$.
+- Calls collapse sharply.
+
+On Board B:
+
+- Substantial mass remains above $0.667$.
+- Strong hands continue.
+
+Thus increasing $b$ removes almost the entire continuing range on the dry board, but only the marginal portion on the wet board.
+
+The EV curve bends differently.
+
+
+
+## Convexity of Continuation Value
+
+Let
+
+$$
+G(b)
+=
+\mathbb{E}[E \mid E \ge \tau(b)].
+$$
+
+Then the call-term component of EV becomes
+
+$$
+c(b)\big(G(b)P + (2G(b)-1)b\big).
+$$
+
+The mapping $b \mapsto c(b)G(b)$ is nonlinear because:
+
+- $c(b)$ shrinks as $\tau(b)$ increases,
+- $G(b)$ increases as weaker hands are removed.
+
+This “selection effect” is convex in regions where density near the threshold is high.
+
+High variance distributions produce:
+
+- Thicker tails,
+- Slower decay in $c(b)$,
+- Larger conditional equity among callers.
+
+Thus wet boards create curvature that rewards larger bets.
+
+
+
+## Strategic Consequences
+
+Variance increases the value of *equity denial*.
+
+When variance is high:
+
+- Many opponent hands have moderate equity that could improve.
+- Increasing $b$ eliminates a significant portion of these realizations.
+- The nonlinear interaction between $c(b)$ and $G(b)$ increases marginal fold value.
+
+When variance is low:
+
+- Most hands are clustered near their realized strength.
+- Larger bets eliminate almost the entire calling region at once.
+- Additional sizing produces diminishing marginal benefit.
+
+Thus, even holding mean equity fixed,
+
+$$
+\mathrm{Var}(E) \uparrow
+\quad \Longrightarrow \quad
+\text{Optimal } b^* \text{ tends to increase.}
+$$
+
+
+
+## Conceptual Summary
+
+Jensen effects enter because:
+
+1. Bet size determines a nonlinear equity threshold.
+2. Equity distribution determines how much mass lies near that threshold.
+3. Truncation alters both calling frequency and conditional equity.
+
+Dry boards approximate the fixed-$e$ model.  
+Wet boards amplify nonlinearities.
+
+The difference between $\mathbb{E}[\mathrm{EV}(b,E)]$ and $\mathrm{EV}(b,\mathbb{E}[E])$ is not a technicality. It is the mathematical core of why board texture matters for bet sizing.
+### Strategic Implications of Variance
+
+Consider two boards with the same average equity but different variance.
+
+
+
+#### Dry Board (Low Variance)
+
+- Most of the opponent’s range has similar equity.
+- Few future cards dramatically change relative strength.
+- Equity realization is predictable.
+
+Mathematically:
+
+- The distribution $f_{\text{board}}$ is concentrated.
+- Marginal changes in bet size affect a narrow band of hands.
+
+Strategic effect:
+
+- Smaller bets often suffice.
+- There is less urgency to deny equity.
+- EV behaves more like the fixed-$e$ model.
+
+
+
+#### Wet Board (High Variance)
+
+- Many hands have equity that can improve significantly.
+- Future cards can sharply alter the distribution.
+- Equity realization risk is substantial.
+
+Mathematically:
+
+- $f_{\text{board}}$ has wide spread.
+- A larger portion of mass lies near critical thresholds.
+
+Strategic effect:
+
+- Larger bets deny realization of future equity.
+- The marginal value of fold equity increases.
+- Optimal bet sizes tend to increase.
+
+In particular, if many opponent hands have equity near $50\%$, then small changes in price move substantial probability mass across the calling threshold. This increases the sensitivity of $c(b)$ to sizing and amplifies marginal fold effects.
+
+
+
+### Interaction with Earlier Sections
+
+Board texture influences:
+
+- The shape of $f_{\text{board}}(e)$,
+- The elasticity of $c(b)$,
+- The curvature of $\mathrm{EV}(b)$,
+- And ultimately the dynamic value function $V_t(P,S)$.
+
+In dynamic programming terms, texture affects not just immediate expected value but the continuation value on future streets.
+
+Thus bet sizing is not determined solely by current equity, but by the *distribution of possible future equities*.
+
+
+
+### Structural Summary
+
+Texture enters the mathematics through variance:
+
+- Dry board → narrow $E$ → stable optimization.
+- Wet board → wide $E$ → convexity effects matter.
+- Larger variance increases the value of denying realization.
+
+Optimal bet size is therefore a function not only of mean equity, but of the distribution of equity across the opponent’s range.
+
+Geometry (SPR), marginal calculus (first-order condition), and probability (equity distributions) now converge in a single framework.
+### VI. Two Bet Sizes and Optimal Mixing
+
+So far, bet size has been treated as a continuous choice.  
+In practice, however, players often restrict themselves to a small set of candidate sizes: for example, half-pot or pot; one-third pot or overbet.
+
+Mathematically, this restriction produces a finite action set and reconnects us to mixed-strategy analysis.
+
+
+
+#### Discrete Approximation
+
+Suppose we restrict attention to two bet sizes
+
+$$
+b_1 < b_2.
+$$
+
+Let
+
+- $p$ denote the probability of choosing $b_1$,
+- $1-p$ denote the probability of choosing $b_2$.
+
+We now analyze whether randomizing between $b_1$ and $b_2$ can improve expected value.
+
+
+
+### Case 1: Opponent Response Independent of Mixing
+
+Assume the opponent’s calling behavior depends only on the realized bet size:
+
+$$
+c = c(b_i),
+\quad i=1,2,
+$$
+
+and not on how often each size is used.
+
+Then expected value under mixing is
+
+$$
+\mathrm{EV}(p)
+=
+p\,\mathrm{EV}(b_1)
++
+(1-p)\,\mathrm{EV}(b_2).
+$$
+
+This function is linear in $p$.
+
+Therefore:
+
+- If $\mathrm{EV}(b_1) > \mathrm{EV}(b_2)$, the maximum occurs at $p=1$.
+- If $\mathrm{EV}(b_2) > \mathrm{EV}(b_1)$, the maximum occurs at $p=0$.
+- If they are equal, any $p$ is optimal.
+
+There is no benefit to mixing.
+
+
+
+### Structural Interpretation
+
+When opponent response is independent of the distribution of bet sizes, mixing cannot improve value. A convex combination of two payoffs cannot exceed the larger payoff.
+
+This mirrors a familiar principle from zero-sum games:
+
+> Mixing is unnecessary unless it changes the opponent’s incentives.
+
+Thus, under fixed response functions, optimal play collapses to a pure strategy.
+
+
+
+### Case 2: Opponent Response Depends on Perceived Range
+
+In more realistic settings, opponent behavior depends not only on the bet size but on the *range* from which it is drawn.
+
+We model this as
+
+$$
+c = c(b_i, p).
+$$
+
+Here $p$ affects the opponent’s belief about the distribution of hands associated with each bet size.
+
+For example:
+
+- If $b_2$ is used only with very strong hands, it may induce more folds.
+- If $b_2$ is used with both strong hands and bluffs, call frequency may increase.
+
+Thus mixing changes the strategic environment.
+
+
+
+### Expected Value Under Strategic Mixing
+
+The expected value now becomes
+
+$$
+\mathrm{EV}(p)
+=
+p\,\mathrm{EV}(b_1; p)
++
+(1-p)\,\mathrm{EV}(b_2; p),
+$$
+
+where each $\mathrm{EV}(b_i; p)$ incorporates call probabilities that depend on $p$.
+
+This is generally nonlinear in $p$.
+
+Interior optima may exist when
+
+$$
+\frac{d}{dp}\mathrm{EV}(p)=0.
+$$
+
+
+
+### Indifference and Support
+
+In equilibrium settings, mixing often arises from indifference conditions.
+
+If both bet sizes are used with positive probability in equilibrium, then
+
+$$
+\mathrm{EV}(b_1; p^*)
+=
+\mathrm{EV}(b_2; p^*).
+$$
+
+Otherwise, the bettor would deviate to the strictly superior size.
+
+Thus mixing equalizes expected value across the support of the strategy.
+
+This is the discrete analogue of the continuous first-order condition:
+
+- In the continuous model, we equalize marginal effects.
+- In the discrete model, we equalize payoffs across actions.
+
+
+
+### Poker Interpretation
+
+Two-size strategies are common in practice:
+
+- Small bets with range-wide coverage.
+- Large bets with polarized ranges.
+
+Mixing determines:
+
+- Which portion of the range uses each size.
+- How the opponent must adjust their calling thresholds.
+
+If the opponent’s folding range is elastic with respect to perceived polarization, mixing can:
+
+- Increase fold equity on large bets,
+- Protect small bets from over-defense,
+- Maintain balance across sizes.
+
+Thus discrete mixing bridges:
+
+- Continuous bet size optimization, and
+- Game-theoretic equilibrium construction.
+
+
+
+### Conceptual Bridge
+
+The continuous model asked:
+
+> At what $b$ does marginal gain equal marginal cost?
+
+The discrete model asks:
+
+> At what mixture $p$ do two bet sizes yield equal value?
+
+In both cases, optimality arises from balancing competing incentives.
+
+Restricting to two bet sizes provides a tractable approximation of continuous sizing while preserving the strategic richness of equilibrium behavior.
+
+## 3. Beyond Poker  
+### Carbon Pricing as Dynamic Optimization
+
+Bet sizing in poker forces a decision-maker to balance two forces:
+
+- Increasing the magnitude of the intervention, and  
+- Anticipating how behavior changes in response to that magnitude.
+
+An almost identical mathematical structure appears in environmental economics — specifically, in carbon pricing.
+
+
+
+### The Basic Analogy
+
+In poker:
+
+- Bet size $b$ is the control variable.
+- Call probability $c(b)$ is the response function.
+- Elasticity $c'(b)$ measures sensitivity to price.
+- SPR constrains how aggressively pressure can be applied across time.
+
+In carbon policy:
+
+- Carbon price $p$ (tax per ton of CO₂) is the control variable.
+- Emissions response $E(p)$ is the behavioral reaction.
+- Elasticity of emissions with respect to price measures sensitivity.
+- The remaining carbon budget plays the role of a finite stack.
+
+The policymaker’s problem can be phrased as:
+
+> How should carbon price evolve over time in order to reduce emissions to a target level while minimizing economic disruption?
+
+
+
+### Single-Period Optimization
+
+Let
+
+- $p$ denote the carbon price,
+- $D(p)$ denote emissions demand (decreasing in $p$),
+- $S(p)$ denote social cost of emissions,
+- $C(p)$ denote economic cost of imposing price $p$.
+
+The policymaker chooses $p$ to minimize total cost:
+
+$$
+\text{Total Cost}(p)
+=
+S(D(p)) + C(p).
+$$
+
+The first-order condition balances:
+
+- Marginal reduction in emissions damage,
+- Marginal increase in economic burden.
+
+This mirrors the single-street condition
+
+$$
+\mathrm{EV}'(b)=0,
+$$
+
+where marginal pot growth balances marginal loss of calls.
+
+
+
+### Elastic and Inelastic Responses
+
+Just as poker players have elastic or inelastic folding ranges, economies have elastic or inelastic emissions responses.
+
+- If energy demand is **inelastic**, small price increases do little to reduce emissions.
+- If energy demand is **elastic**, modest price increases cause significant reductions.
+
+Optimal pricing depends critically on this elasticity.
+
+If response is inelastic, large price jumps may be necessary.  
+If response is elastic, smaller and more gradual adjustments suffice.
+
+The curvature of the response function determines whether optimal policy is gradual or abrupt.
+
+
+
+### Dynamic Carbon Pricing and the “Carbon Stack”
+
+Now consider a multi-period problem.
+
+Suppose:
+
+- The world has a remaining carbon budget $B$ consistent with a temperature target.
+- Emissions in year $t$ are $E_t$.
+- The cumulative constraint is
+
+$$
+\sum_{t=1}^{T} E_t \le B.
+$$
+
+This is structurally identical to a finite stack in poker:
+
+- The carbon budget $B$ is the stack.
+- Annual emissions are the chips placed into the pot.
+- Time periods are the streets.
+
+The policymaker must decide how aggressively to “spend” the carbon budget over time.
+
+
+
+### Geometric Paths and Even Pressure
+
+One policy approach is to increase carbon prices gradually over time:
+
+$$
+p_{t+1} = p_t (1+r).
+$$
+
+This resembles geometric bet sizing.
+
+If prices rise too slowly early on:
+
+- Emissions remain high.
+- The remaining carbon budget shrinks rapidly.
+- Later policy must become extremely aggressive.
+
+If prices rise too quickly early on:
+
+- Economic shock may occur.
+- Political support may collapse.
+
+An evenly escalating price path distributes adjustment pressure across time — analogous to equalizing minimum defense frequency across streets.
+
+
+
+### Variance and Jensen Effects
+
+Uncertainty in climate sensitivity, technological innovation, and economic growth introduces variance into emissions outcomes.
+
+Let $E_t$ be a random variable reflecting uncertain response to carbon price.
+
+If damage functions are convex in emissions — which many climate models assume — then Jensen’s inequality implies:
+
+$$
+\mathbb{E}[\text{Damage}(E_t)]
+>
+\text{Damage}(\mathbb{E}[E_t]).
+$$
+
+In other words:
+
+- Variability in emissions increases expected harm.
+- Stable reduction paths are preferable to volatile ones.
+
+This parallels wet-board dynamics in poker:
+
+- High variance in equity increases the value of denying realization.
+- High variance in emissions increases the value of early intervention.
+
+
+
+### A Structural Insight
+
+Carbon pricing, like bet sizing, is not simply about choosing a number.
+
+It is about:
+
+- Understanding response functions,
+- Managing finite resources,
+- Accounting for nonlinear damage,
+- Distributing pressure across time.
+
+The same mathematics governs:
+
+- A player planning to commit her stack across three streets,
+- A policymaker planning to allocate a finite carbon budget across decades.
+
+In both cases, the central question is:
+
+> How should magnitude evolve over time when response is nonlinear and resources are limited?
+
+Poker provides a stylized laboratory.  
+Climate policy confronts the real world.
+
+The mathematics is shared.
+## Liberal Arts Sidebar: The Seduction of Optimization
+
+There is a quiet thrill in writing
+
+\[
+\max_b \mathrm{EV}(b).
+\]
+
+The symbol “max” promises clarity.  
+It suggests that somewhere, hidden in the algebra, there is a best choice — a number that resolves uncertainty and dissolves doubt.  
+
+Optimization feels like power. It converts ambiguity into direction.
+
+But optimization is always conditional. It answers only the question we choose to ask. And the danger begins when we forget that we chose the question.
+
+Below are three modern settings in which the push toward optimization — precise, mathematical, and seemingly neutral — can produce outcomes that are efficient yet troubling.
+
+
+
+### 1. Social Media and the Optimization of Attention
+
+Most large social media platforms optimize a measurable objective:
+
+- Time spent on site  
+- Click-through rate  
+- Engagement  
+
+Engineers build systems that maximize these quantities. The algorithms adapt dynamically, much like the recursive value function in dynamic programming:
+
+\[
+V_{t+1} = \text{Expected future engagement}.
+\]
+
+The platform learns which content increases the probability that a user continues — which “bet size” keeps the user calling.
+
+From a purely mathematical standpoint, this is elegant.  
+The response function is estimated, updated, and exploited.
+
+But attention is not neutral currency.
+
+When engagement is optimized without incorporating long-term well-being, the system may learn that outrage spreads faster than nuance, that fear holds attention longer than reflection, and that polarization increases return visits.
+
+The optimization problem is solved — but perhaps the wrong objective was chosen.
+
+The system becomes exceptionally good at maximizing something that was easy to measure, while neglecting what was difficult to quantify: trust, mental health, civic discourse.
+
+Optimization did not fail.  
+The objective function did.
+
+
+
+### 2. College Admissions and Test Score Maximization
+
+Consider a university that seeks to improve its ranking. Rankings often depend heavily on quantifiable metrics:
+
+- Average standardized test scores  
+- Yield rates  
+- Graduation rates  
+
+The institution may begin optimizing these variables:
+
+- Admit more high-scoring applicants.
+- Invest in recruitment strategies that increase yield.
+- Encourage applications from students likely to enroll.
+
+The resulting system becomes mathematically efficient.
+
+But an unintended effect may follow:
+
+- Students from under-resourced backgrounds are filtered out.
+- Socioeconomic diversity declines.
+- Risk-taking in admissions decreases.
+
+A policy designed to maximize measurable indicators may narrow the educational mission.
+
+In this setting, elasticity matters.  
+If applicants respond strongly to small changes in policy, the system may become highly sensitive and self-reinforcing.
+
+Optimization shapes incentives. Incentives reshape the population. The objective function begins to determine the institution itself.
+
+
+
+### 3. Dynamic Pricing and Surge Algorithms
+
+Ride-share platforms use dynamic pricing algorithms that adjust fares in real time to balance supply and demand.
+
+When demand surges, prices increase. Drivers are incentivized to enter the market. Riders face a choice: pay more or wait.
+
+The mathematics mirrors the bet-sizing problem:
+
+- Price is the control variable.
+- Rider demand is the response function.
+- Elasticity determines optimal magnitude.
+
+From an efficiency perspective, surge pricing is defensible. It allocates scarce resources.
+
+But consider a concrete scenario:  
+A natural disaster strikes a city. Transportation becomes scarce. Demand spikes.
+
+The algorithm responds by raising prices.
+
+The objective function — balancing supply and demand — may be satisfied.  
+Yet the social meaning of that price increase changes under emergency conditions.
+
+Optimization that is appropriate in ordinary times can appear exploitative in crisis.
+
+The mathematics does not detect moral context.
+
+## What Optimization Leaves Out
+
+Each example shares a common structure:
+
+1. A measurable quantity is selected.
+2. Behavior adapts to maximize it.
+3. The system becomes highly efficient at producing that quantity.
+4. Unmeasured goods deteriorate.
+
+In mathematical terms, optimization requires:
+
+- An objective function,
+- A feasible set,
+- A model of response.
+
+But human systems are richer than their objective functions.
+
+They include:
+
+- Moral commitments,
+- Cultural norms,
+- Long-term trust,
+- Intergenerational consequences.
+
+When these are not incorporated into the model, optimization may amplify what is visible and erode what is not.
+
+
+### The Discipline and the Temptation
+
+There is nothing inherently dangerous about maximizing a function.  
+Indeed, careful optimization clarifies trade-offs and exposes hidden assumptions.
+
+The danger lies in forgetting that:
+
+- Every objective function encodes values.
+- Every constraint reflects a choice.
+- Every model excludes something.
+
+The seduction of optimization is the illusion that the answer is determined once the derivative is set to zero.
+
+In reality, the deeper question is prior:
+
+> What, exactly, are we trying to maximize?
+
+In poker, the objective is explicit: expected value in chips.
+
+Outside poker, the objective is rarely so clean.
+
+Mathematics sharpens decision-making.  
+But it does not absolve us from deciding what matters.
+
 
 ## Homework Problems
 
-Use these as problem prompts to develop a full set:
+## Homework Problems
 
-1. Compute with definitions and formulas
-2. Explain a concept in words
-3. Short proof or justification (when appropriate)
+Throughout these problems, assume:
 
-1. *[Problem to be written.]*
-2. *[Problem to be written.]*
-3. *[Problem to be written.]*
+- Pot size $P > 0$,
+- Effective stack $S > 0$,
+- Stack-to-pot ratio $\mathrm{SPR} = \dfrac{S}{P}$,
+- Bet size $b \in [0,S]$,
+- If a bet of size $b$ is called, the pot becomes $P + 2b$,
+- Minimum defense frequency (MDF) for a bet of size $b$ is  
+  \[
+  \mathrm{MDF}(b) = \frac{P}{P+b}.
+  \]
+
+
+
+1. Constructing Non-Geometric Stack-Off Sequences
+
+Suppose $\mathrm{SPR} = 9$ and there are three betting streets remaining.
+
+A sequence of fractional bet sizes $(r_1, r_2, r_3)$ means that on street $t$ the bet is
+
+\[
+b_t = r_t P_t.
+\]
+
+The stack-off constraint is
+
+\[
+\prod_{t=1}^3 (1 + 2r_t) = 1 + \mathrm{SPR}.
+\]
+
+(a) Construct two different non-constant triples $(r_1, r_2, r_3)$ satisfying this constraint.
+
+(b) Compute the MDF on each street for both sequences.
+
+(c) Compare the minimum MDF across the two sequences.
+
+(d) Give a poker scenario in which deliberately uneven pressure across streets might be strategically desirable.
+
+
+
+2. Early Decisions and Continuation SPR
+
+Suppose a player chooses flop bet size $b_1$.
+
+(a) Express the turn pot $P_2$ and remaining stack $S_2$ in terms of $P, S,$ and $b_1$.
+
+(b) Express the new stack-to-pot ratio $\mathrm{SPR}_2$ after a called flop bet.
+
+(c) Explain how $b_1$ influences future strategic flexibility.
+
+(d) Describe a situation where maximizing immediate flop EV could reduce total expected value across all streets.
+
+
+
+
+3. Comparative Statics in a Linear Call Model
+
+Suppose call probability is
+
+\[
+c(b) = \alpha - \beta b,
+\]
+
+where $\alpha > 0$ and $\beta > 0$.
+
+Assume:
+
+- Equity when called is $e$,
+- $e > \tfrac{1}{2}$,
+- An interior maximizer exists.
+
+(a) Solve for the optimal bet size $b^*$.
+
+(b) Compute $\dfrac{\partial b^*}{\partial \beta}$.
+
+(c) Interpret the sign of this derivative in terms of folding elasticity.
+
+
+
+4. Exponential Call Model and Overbetting
+
+Suppose
+
+\[
+c(b) = e^{-\lambda b},
+\quad \lambda > 0.
+\]
+
+(a) Compute the first-order condition for an interior optimum.
+
+(b) Show that as $\lambda \to 0$ (calls become less sensitive to price), the optimal $b^*$ approaches the boundary $S$ when $e > \tfrac12$.
+
+(c) Give a realistic poker example of a situation where $\lambda$ would be small.
+
+
+In the following problems, suppose equity when called is not fixed, but instead is a random variable $E$ supported on $[0,1]$.
+
+Assume the opponent calls if and only if
+
+\[
+E \ge \tau(b),
+\quad \text{where} \quad
+\tau(b) = \frac{b}{P+b}.
+\]
+
+Let $F$ be the cumulative distribution function (CDF) of $E$, and $f$ its density.
+
+
+
+5. Density at the Threshold
+
+(a) Show that call probability is
+
+\[
+c(b) = 1 - F(\tau(b)).
+\]
+
+(b) Compute $c'(b)$ in terms of $f(\tau(b))$.
+
+(c) Explain why high density near the threshold $\tau(b)$ makes optimal bet size more sensitive to changes in $b$.
+
+
+
+6. Mean-Preserving Spread
+
+A random variable $E_2$ is a *mean-preserving spread* of $E_1$ if:
+
+- $\mathbb{E}[E_1] = \mathbb{E}[E_2]$,
+- $\mathrm{Var}(E_2) > \mathrm{Var}(E_1)$.
+
+Suppose $E_2$ is a mean-preserving spread of $E_1$.
+
+(a) Explain why the two boards have the same average equity.
+
+(b) Give a poker interpretation of $E_2$ having larger variance.
+
+(c) Argue carefully why larger variance may increase optimal bet size — and describe one situation where it might not.
+
+
+7. Pure vs Mixed with Fixed Response
+
+Suppose you restrict yourself to two bet sizes $b_1 < b_2$.
+
+Let
+
+\[
+\mathrm{EV}(b_i)
+=
+(1-c(b_i))P
++
+c(b_i)\big(e(P+b_i)-(1-e)b_i\big).
+\]
+
+Suppose call probability depends only on realized bet size.
+
+(a) Show that if you mix with probability $p$ on $b_1$, then
+
+\[
+\mathrm{EV}(p)
+=
+p\,\mathrm{EV}(b_1)
++
+(1-p)\,\mathrm{EV}(b_2).
+\]
+
+(b) Prove that mixing cannot strictly improve EV in this case.
+
+(c) Interpret this result strategically.
+
+
+
+8. Belief-Dependent Response
+
+Suppose now that call probability for the larger bet depends on how often you use the smaller bet:
+
+\[
+c(b_2, p) = c_0 + \gamma p,
+\]
+
+where $\gamma > 0$.
+
+(a) Write the full expected value function $\mathrm{EV}(p)$.
+
+(b) Derive the condition under which both bet sizes must yield equal EV at equilibrium.
+
+(c) Explain how polarization of your range affects this equilibrium.
+
+
+
+9. Two-Street Dynamic Model
+
+Suppose there are two streets remaining.
+
+Let
+
+\[
+V_2(P,S)
+=
+\max_{b \in [0,S]} \mathrm{EV}(b;P,S)
+\]
+
+be the river value function.
+
+(a) Write the dynamic programming equation for the turn value function $V_1(P,S)$.
+
+(b) Explain how the choice of turn bet size affects river optimization.
+
+(c) Describe a scenario where a slightly smaller turn bet increases total two-street value.
+
+
+10. Designing a Value Line on a Wet Board
+
+Suppose:
+
+- $\mathrm{SPR} = 8$,
+- Equity distribution is high-variance,
+- Opponent response is elastic near the threshold.
+
+(a) Propose a three-street geometric sizing plan.
+
+(b) Propose a non-geometric alternative.
+
+(c) Compare the strategic tradeoffs of the two plans.
+
+(d) Justify which plan you prefer.
+
+
 
 ## Extension Activity
 
