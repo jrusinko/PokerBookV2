@@ -1348,7 +1348,7 @@ $$
 c(b)
 =
 \begin{cases}
-1, & b \le b^\star,\\[4pt]
+1, & b \le b^\star,\$$4pt]
 0, & b > b^\star.
 \end{cases}
 $$
@@ -2528,9 +2528,9 @@ The mathematics is shared.
 
 There is a quiet thrill in writing
 
-\[
+$$
 \max_b \mathrm{EV}(b).
-\]
+$$
 
 The symbol “max” promises clarity.  
 It suggests that somewhere, hidden in the algebra, there is a best choice — a number that resolves uncertainty and dissolves doubt.  
@@ -2553,9 +2553,9 @@ Most large social media platforms optimize a measurable objective:
 
 Engineers build systems that maximize these quantities. The algorithms adapt dynamically, much like the recursive value function in dynamic programming:
 
-\[
+$$
 V_{t+1} = \text{Expected future engagement}.
-\]
+$$
 
 The platform learns which content increases the probability that a user continues — which “bet size” keeps the user calling.
 
@@ -2696,27 +2696,27 @@ Throughout these problems, assume:
 - Bet size $b \in [0,S]$,
 - If a bet of size $b$ is called, the pot becomes $P + 2b$,
 - Minimum defense frequency (MDF) for a bet of size $b$ is  
-  \[
+$$
   \mathrm{MDF}(b) = \frac{P}{P+b}.
-  \]
+$$
 
 
 
-1. Constructing Non-Geometric Stack-Off Sequences
+1. **Constructing Non-Geometric Stack-Off Sequences**
 
 Suppose $\mathrm{SPR} = 9$ and there are three betting streets remaining.
 
 A sequence of fractional bet sizes $(r_1, r_2, r_3)$ means that on street $t$ the bet is
 
-\[
+$$
 b_t = r_t P_t.
-\]
+$$
 
 The stack-off constraint is
 
-\[
+$$
 \prod_{t=1}^3 (1 + 2r_t) = 1 + \mathrm{SPR}.
-\]
+$$
 
 (a) Construct two different non-constant triples $(r_1, r_2, r_3)$ satisfying this constraint.
 
@@ -2728,7 +2728,7 @@ The stack-off constraint is
 
 
 
-2. Early Decisions and Continuation SPR
+2. **Early Decisions and Continuation SPR**
 
 Suppose a player chooses flop bet size $b_1$.
 
@@ -2743,13 +2743,13 @@ Suppose a player chooses flop bet size $b_1$.
 
 
 
-3. Comparative Statics in a Linear Call Model
+3. **Comparative Statics in a Linear Call Model**
 
 Suppose call probability is
 
-\[
+$$
 c(b) = \alpha - \beta b,
-\]
+$$
 
 where $\alpha > 0$ and $\beta > 0$.
 
@@ -2767,14 +2767,14 @@ Assume:
 
 
 
-4. Exponential Call Model and Overbetting
+4. **Exponential Call Model and Overbetting**
 
 Suppose
 
-\[
+$$
 c(b) = e^{-\lambda b},
 \quad \lambda > 0.
-\]
+$$
 
 (a) Compute the first-order condition for an interior optimum.
 
@@ -2783,27 +2783,27 @@ c(b) = e^{-\lambda b},
 (c) Give a realistic poker example of a situation where $\lambda$ would be small.
 
 
-In the following problems, suppose equity when called is not fixed, but instead is a random variable $E$ supported on $[0,1]$.
+In the following problems (5 and 6), suppose equity when called is not fixed, but instead is a random variable $E$ supported on $[0,1]$.
 
 Assume the opponent calls if and only if
 
-\[
+$$
 E \ge \tau(b),
 \quad \text{where} \quad
 \tau(b) = \frac{b}{P+b}.
-\]
+$$
 
 Let $F$ be the cumulative distribution function (CDF) of $E$, and $f$ its density.
 
 
 
-5. Density at the Threshold
+5. **Density at the Threshold**
 
 (a) Show that call probability is
 
-\[
+$$
 c(b) = 1 - F(\tau(b)).
-\]
+$$
 
 (b) Compute $c'(b)$ in terms of $f(\tau(b))$.
 
@@ -2811,7 +2811,7 @@ c(b) = 1 - F(\tau(b)).
 
 
 
-6. Mean-Preserving Spread
+6. **Mean-Preserving Spread**
 
 A random variable $E_2$ is a *mean-preserving spread* of $E_1$ if:
 
@@ -2827,31 +2827,31 @@ Suppose $E_2$ is a mean-preserving spread of $E_1$.
 (c) Argue carefully why larger variance may increase optimal bet size — and describe one situation where it might not.
 
 
-7. Pure vs Mixed with Fixed Response
+7. **Pure vs Mixed with Fixed Response**
 
 Suppose you restrict yourself to two bet sizes $b_1 < b_2$.
 
 Let
 
-\[
+$$
 \mathrm{EV}(b_i)
 =
 (1-c(b_i))P
 +
 c(b_i)\big(e(P+b_i)-(1-e)b_i\big).
-\]
+$$
 
 Suppose call probability depends only on realized bet size.
 
 (a) Show that if you mix with probability $p$ on $b_1$, then
 
-\[
+$$
 \mathrm{EV}(p)
 =
 p\,\mathrm{EV}(b_1)
 +
 (1-p)\,\mathrm{EV}(b_2).
-\]
+$$
 
 (b) Prove that mixing cannot strictly improve EV in this case.
 
@@ -2859,13 +2859,13 @@ p\,\mathrm{EV}(b_1)
 
 
 
-8. Belief-Dependent Response
+8. **Belief-Dependent Response**
 
 Suppose now that call probability for the larger bet depends on how often you use the smaller bet:
 
-\[
+$$
 c(b_2, p) = c_0 + \gamma p,
-\]
+$$
 
 where $\gamma > 0$.
 
@@ -2877,17 +2877,17 @@ where $\gamma > 0$.
 
 
 
-9. Two-Street Dynamic Model
+9. **Two-Street Dynamic Model**
 
 Suppose there are two streets remaining.
 
 Let
 
-\[
+$$
 V_2(P,S)
 =
 \max_{b \in [0,S]} \mathrm{EV}(b;P,S)
-\]
+$$
 
 be the river value function.
 
@@ -2897,8 +2897,7 @@ be the river value function.
 
 (c) Describe a scenario where a slightly smaller turn bet increases total two-street value.
 
-
-10. Designing a Value Line on a Wet Board
+10. **Designing a Value Line on a Wet Board**
 
 Suppose:
 
