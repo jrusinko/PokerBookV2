@@ -1462,9 +1462,9 @@ The purpose is structural: to illustrate how a game tree generates a payoff matr
   ## The Game
   
   Let the deck consist of three cards
-\[
+$$
   Q<K<A.
-  \]
+  $$
 One card is dealt uniformly at random to each player without replacement.  
 Each player antes 1 chip, so the pot begins at 2.
 
@@ -1490,9 +1490,9 @@ If both players check, or if a bet is called, the higher card wins at showdown.
   
   ## Payoffs (net chips to Player 1)
   
-  - **Check–check:** pot = 2; winner nets \(+1\), loser nets \(-1\).
-- **Bet–fold:** pot = 4; bettor nets \(+1\), folder nets \(-1\).
-- **Bet–call:** pot = 6; winner nets \(+3\), loser nets \(-3\).
+  - **Check–check:** pot = 2; winner nets $+1$, loser nets $-1$.
+- **Bet–fold:** pot = 4; bettor nets $+1$, folder nets $-1$.
+- **Bet–call:** pot = 6; winner nets $+3$, loser nets $-3$.
 
 The game is finite and zero–sum.
 
@@ -1503,34 +1503,34 @@ The game is finite and zero–sum.
   To convert the sequential game to a simultaneous (normal-form) game, we replace moves by complete contingent plans.
 
 For **Player 1**, a reduced pure strategy is a function
-\[
+$$
   s_1:\{Q,K,A\}\to\{B,C,F\},
-  \]
+  $$
 where:
   
-  - \(B\): bet immediately;
-- \(C\): check, then call if facing a bet;
-- \(F\): check, then fold if facing a bet.
+  - $B$: bet immediately;
+- $C$: check, then call if facing a bet;
+- $F$: check, then fold if facing a bet.
 
 This reduction is valid because if Player 1 bets initially, no later call/fold decision occurs. Hence Player 1 has
-\[
+$$
   3^3=27
-  \]
+  $$
 pure strategies.
 
 For **Player 2**, a pure strategy consists of two maps:
-  \[
+  $$
     r_2:\{Q,K,A\}\to\{\text{Call},\text{Fold}\}
-    \]
+    $$
 (when facing a bet from Player 1), and
-\[
+$$
   a_2:\{Q,K,A\}\to\{\text{Bet},\text{Check}\}
-  \]
+  $$
 (after Player 1 checks).
 
-Thus Player 2 has \(2^3\cdot 2^3=64\) pure strategies.
+Thus Player 2 has $2^3\cdot 2^3=64$ pure strategies.
 
-The full normal-form payoff matrix is therefore \(27\times 64\).
+The full normal-form payoff matrix is therefore $27\times 64$.
 
 
   
@@ -1540,76 +1540,76 @@ The full normal-form payoff matrix is therefore \(27\times 64\).
 
 ### Player 1
 
-1. **Never fold \(A\).**  
-  Calling with \(A\) guarantees winning any called pot; folding yields \(-1\).  
-Hence \(s_1(A)=F\) is strictly dominated by \(s_1(A)=C\).
+1. **Never fold $A$.**  
+  Calling with $A$ guarantees winning any called pot; folding yields $-1$.  
+Hence $s_1(A)=F$ is strictly dominated by $s_1(A)=C$.
 
-2. **Never call with \(Q\).**  
-  Calling with \(Q\) always loses a called pot (net \(-3\)), while folding loses only \(-1\).  
-Hence \(s_1(Q)=C\) is strictly dominated by \(s_1(Q)=F\).
+2. **Never call with $Q$.**  
+  Calling with $Q$ always loses a called pot (net $-3$), while folding loses only $-1$.  
+Hence $s_1(Q)=C$ is strictly dominated by $s_1(Q)=F$.
 
 After these eliminations:
-  \[
+  $$
     s_1(Q)\in\{B,F\},\qquad
     s_1(K)\in\{B,C,F\},\qquad
     s_1(A)\in\{B,C\}.
-    \]
+    $$
 Player 1 now has
-\[
+$$
   2\cdot 3\cdot 2 = 12
-  \]
+  $$
 remaining strategies.
 
 
   
   ### Player 2
   
-  1. **Never call with \(Q\).**  
+  1. **Never call with $Q$.**  
   Calling always loses the called pot; folding dominates.
 
-2. **Never check with \(A\) after a check.**  
+2. **Never check with $A$ after a check.**  
   Betting weakly increases payoff in all contingencies and strictly increases it whenever called.
 
-3. **Never bet with \(K\) after a check.**  
-  Betting \(K\) risks being called only by \(A\) while failing to fold out \(A\); checking weakly dominates betting.
+3. **Never bet with $K$ after a check.**  
+  Betting $K$ risks being called only by $A$ while failing to fold out $A$; checking weakly dominates betting.
 
 After these eliminations, Player 2’s remaining freedom is:
   
-  - \(r_2(K)\in\{\text{Call},\text{Fold}\}\),
-- \(a_2(Q)\in\{\text{Bet},\text{Check}\}\),
+  - $r_2(K)\in\{\text{Call},\text{Fold}\}$,
+- $a_2(Q)\in\{\text{Bet},\text{Check}\}$,
 
 while the remaining components are fixed:
-  \[
+  $$
     r_2(Q)=\text{Fold},\qquad
     a_2(A)=\text{Bet},\qquad
     a_2(K)=\text{Check}.
-    \]
+    $$
 
-Thus Player 2 has \(2\cdot 2=4\) remaining strategies.
+Thus Player 2 has $2\cdot 2=4$ remaining strategies.
 
-The payoff matrix has been reduced from \(27\times 64\) to
-\[
+The payoff matrix has been reduced from $27\times 64$ to
+$$
   12\times 4.
-  \]
+  $$
 
 
   
   ## Step 3. Further elimination
   
-  Computing the resulting \(12\times 4\) payoff matrix and comparing rows reveals that only four Player 1 strategies are undominated:
+  Computing the resulting $12\times 4$ payoff matrix and comparing rows reveals that only four Player 1 strategies are undominated:
   
-  \[
+  $$
     (F,C,B),\quad
     (F,C,C),\quad
     (F,F,B),\quad
     (F,F,C).
-    \]
+    $$
 
-Restricting to these rows and re-evaluating the columns shows that “call with \(K\)” is dominated by “fold with \(K\).”  
+Restricting to these rows and re-evaluating the columns shows that “call with $K$” is dominated by “fold with $K$.”  
 
-The game therefore reduces to the following \(4\times 2\) payoff matrix:
+The game therefore reduces to the following $4\times 2$ payoff matrix:
   
-  \[
+  $$
     \begin{array}{c|cc}
     & (r_K=\text{Fold},\,a_Q=\text{Bet})
     & (r_K=\text{Fold},\,a_Q=\text{Check}) \\ \hline
@@ -1618,7 +1618,7 @@ The game therefore reduces to the following \(4\times 2\) payoff matrix:
     (F,F,B) & -\tfrac13 & 0 \\
     (F,F,C) & 0 & 0
     \end{array}
-    \]
+    $$
 
 All entries are expected net payoffs to Player 1.
 
@@ -1626,7 +1626,7 @@ All entries are expected net payoffs to Player 1.
   
   ## Interpretation
   
-  A sequential game that initially generated a \(27\times 64\) normal form has, through systematic dominance elimination, collapsed to a \(4\times 2\) matrix.
+  A sequential game that initially generated a $27\times 64$ normal form has, through systematic dominance elimination, collapsed to a $4\times 2$ matrix.
 
 This reduction reveals structure:
   
@@ -1638,9 +1638,9 @@ At this point, the minimax analysis becomes transparent. The next subsection det
 
 ### 3.X+1  Minimax Analysis of the Reduced Game
 
-After dominance elimination, the sequential game has been reduced to the following \(4\times 2\) normal-form matrix. Entries are expected net payoffs to Player 1.
+After dominance elimination, the sequential game has been reduced to the following $4\times 2$ normal-form matrix. Entries are expected net payoffs to Player 1.
 
-\[
+$$
   \begin{array}{c|cc}
   & (r_K=\text{Fold},\,a_Q=\text{Bet})
   & (r_K=\text{Fold},\,a_Q=\text{Check}) \\ \hline
@@ -1649,20 +1649,20 @@ After dominance elimination, the sequential game has been reduced to the followi
   (F,F,B) & -\tfrac13 & 0 \\
   (F,F,C) & 0 & 0
   \end{array}
-  \]
+  $$
 
 Here the rows are Player 1 strategies:
   
-  - \(F\) = check–fold,
-- \(C\) = check–call,
-- \(B\) = bet,
+  - $F$ = check–fold,
+- $C$ = check–call,
+- $B$ = bet,
 
-listed in the order \((Q,K,A)\).
+listed in the order $(Q,K,A)$.
 
 The two remaining Player 2 strategies are:
   
-  - Column 1: fold with \(K\), bet with \(Q\);
-- Column 2: fold with \(K\), check with \(Q\).
+  - Column 1: fold with $K$, bet with $Q$;
+- Column 2: fold with $K$, check with $Q$.
 
 All other components of Player 2’s strategy were fixed by dominance.
 
@@ -1672,49 +1672,49 @@ All other components of Player 2’s strategy were fixed by dominance.
   
   We compute the row minima (Player 1’s worst-case payoffs):
   
-  \[
+  $$
     \begin{aligned}
     (F,C,B) &: \min\{0,-\tfrac13\}=-\tfrac13, \\
     (F,C,C) &: \min\{\tfrac13,-\tfrac13\}=-\tfrac13, \\
     (F,F,B) &: \min\{-\tfrac13,0\}=-\tfrac13, \\
     (F,F,C) &: \min\{0,0\}=0.
     \end{aligned}
-    \]
+    $$
 
 Hence Player 1’s **pure maximin value** is
-\[
+$$
   \underline v
   =\max\{-\tfrac13,-\tfrac13,-\tfrac13,0\}
   =0,
-  \]
+  $$
 achieved by the strategy
-\[
+$$
   (F,F,C).
-  \]
+  $$
 
 Next compute the column maxima (Player 2 anticipating Player 1’s best response):
   
-  \[
+  $$
     \begin{aligned}
     \text{Column 1} &: \max\{0,\tfrac13,-\tfrac13,0\}
     =\tfrac13, \\
     \text{Column 2} &: \max\{-\tfrac13,-\tfrac13,0,0\}
     =0.
     \end{aligned}
-    \]
+    $$
 
 Thus Player 2’s **pure minimax value** is
-\[
+$$
   \overline v
   =\min\{\tfrac13,0\}
   =0,
-  \]
+  $$
 achieved by Column 2.
 
 Since
-\[
+$$
   \underline v=\overline v=0,
-  \]
+  $$
 a pure-strategy saddle point exists.
 
 
@@ -1723,28 +1723,28 @@ a pure-strategy saddle point exists.
   
   The saddle point occurs at the entry
 
-\[
+$$
   \bigl((F,F,C),\ (r_K=\text{Fold},\,a_Q=\text{Check})\bigr),
-  \]
-with value \(0\).
+  $$
+with value $0$.
 
 ### Interpreting the equilibrium strategies
 
-**Player 1: \((F,F,C)\)**  
-  - With \(Q\): check–fold.  
-- With \(K\): check–fold.  
-- With \(A\): check–call.
+**Player 1: $(F,F,C)$**  
+  - With $Q$: check–fold.  
+- With $K$: check–fold.  
+- With $A$: check–call.
 
 **Player 2:**  
-  - After a check: bet with \(A\), check with \(K\), check with \(Q\).  
-- Facing a bet: fold with \(Q\), fold with \(K\), (call with \(A\), by symmetry of dominance).
+  - After a check: bet with $A$, check with $K$, check with $Q$.  
+- Facing a bet: fold with $Q$, fold with $K$, (call with $A$, by symmetry of dominance).
 
 Under this profile:
   
-  - Whenever Player 2 holds \(A\), they bet and Player 1 folds unless also holding \(A\), which is impossible.
+  - Whenever Player 2 holds $A$, they bet and Player 1 folds unless also holding $A$, which is impossible.
 - Otherwise the hand goes to showdown for a pot of 2.
 
-A direct enumeration of the six equally likely deals shows that Player 1 wins exactly half the time and loses half the time, so the expected payoff is \(0\).
+A direct enumeration of the six equally likely deals shows that Player 1 wins exactly half the time and loses half the time, so the expected payoff is $0$.
 
 
   
@@ -1756,7 +1756,7 @@ A direct enumeration of the six equally likely deals shows that Player 1 wins ex
   After dominance elimination, betting occurs only with the highest card.
 
 2. **The middle card becomes strategically passive.**  
-  Once dominated behaviors are removed, neither player benefits from escalating with \(K\).
+  Once dominated behaviors are removed, neither player benefits from escalating with $K$.
 
 3. **The value is zero without mixed strategies.**  
   Unlike many poker-style models, this extended sequential structure admits a pure saddle point after dominance reduction.
@@ -1853,39 +1853,140 @@ The power of mathematical modeling lies not only in what it reveals, but in what
 ## Homework Problems
 1. **Constant–Sum Games**
 
-   We say that two normal–form games are **strategically equivalent**
-   if, for every player, the relative payoff comparisons between that
-   player’s strategies are the same in both games, holding the other
-   players’ strategies fixed.
+   Consider a two-player normal–form game between **Hero (H)** and
+   **Villain (V)**.
 
-   More precisely, two games are strategically equivalent if, for each
-   player \(i\):
+   Let
 
-   - Fix any profile of opponents’ strategies \(s_{-i}\).
-   - Take any two of player \(i\)’s strategies, \(s_i\) and \(s_i'\).
-   - The payoff difference
-     \[
-     u_i(s_i,s_{-i}) - u_i(s_i',s_{-i})
-     \]
-     has the same sign and magnitude in both games.
+   \[
+   H
+   \]
 
-   In particular, best responses and equilibrium structure are preserved.
+   denote the set of strategies available to Hero and
 
-   (a) Prove that every constant–sum two–player game is strategically
-   equivalent to a zero–sum game.
+   \[
+   V
+   \]
 
-   (b) Show explicitly how to transform the payoff matrix
+   denote the set of strategies available to Villain.
+
+   The payoff functions are
+
+   \[
+   u_H : H \times V \to \mathbb{R}, 
+   \qquad
+   u_V : H \times V \to \mathbb{R}.
+   \]
+
+   Suppose a second game has payoff functions $u_H',u_V'$.
+
+   We say the two games are **strategically equivalent** if there exist
+   constants $a_H,a_V>0$ and functions
+
+   \[
+   c_H : V \to \mathbb{R},
+   \qquad
+   c_V : H \to \mathbb{R}
+   \]
+
+   such that for every pair of strategies $(h,v) \in H \times V$,
+
+   \[
+   u_H'(h,v) = a_H\,u_H(h,v) + c_H(v),
+   \]
+
+   \[
+   u_V'(h,v) = a_V\,u_V(h,v) + c_V(h).
+   \]
+
+   Intuitively:
+
+   - Hero’s payoffs may be multiplied by a positive constant and have a
+     constant added to each **column** (depending only on Villain’s
+     strategy).
+   - Villain’s payoffs may be multiplied by a positive constant and have
+     a constant added to each **row** (depending only on Hero’s
+     strategy).
+
+
+
+**(a) Preservation of strategy comparisons**
+
+1. Fix a Villain strategy $v \in V$ and two Hero strategies
+   $h,h' \in H$. Show that
+
+   \[
+   u_H'(h,v)-u_H'(h',v)
+   =
+   a_H\big(u_H(h,v)-u_H(h',v)\big).
+   \]
+
+   Conclude that Hero ranks $h$ and $h'$ the same way in both games.
+
+2. **Example.**
+
+   Suppose Hero’s payoff matrix is
+
    $$
-   A =
+   A=
    \begin{pmatrix}
    2 & 5 \\
    7 & 1
-   \end{pmatrix}
+   \end{pmatrix}.
    $$
-   into a zero–sum representation.
+
+   Construct a strategically equivalent matrix $A'$ by
+
+   - multiplying all entries by $2$,
+   - adding $+3$ to the first column,
+   - adding $-1$ to the second column.
+
+   Compute $A'$ and verify that Hero’s preferred row in each column
+   is unchanged.
+
+
+
+**(b) Constant–sum games**
+
+A two-player game is **constant–sum** if there exists a constant
+$c$ such that
+
+\[
+u_H(h,v)+u_V(h,v)=c
+\]
+
+for every $(h,v)\in H \times V$.
+
+Prove that every constant–sum two-player game is strategically
+equivalent to a **zero–sum game**.
+
+
+
+**(c) Explicit example**
+
+Consider the constant–sum game with payoff matrices
+
+$$
+A =
+\begin{pmatrix}
+2 & 5 \\
+7 & 1
+\end{pmatrix},
+\qquad
+B =
+\begin{pmatrix}
+8 & 5 \\
+3 & 9
+\end{pmatrix}.
+$$
+
+1. Verify that this game is constant–sum and determine the constant.
+
+2. Construct payoff matrices $(A^{(0)},B^{(0)})$ for a strategically
+equivalent **zero–sum game**.
 2. **Maximin Inequality (Pure Strategies)**
   
-  (a) Prove that for every real matrix \(A\),
+  (a) Prove that for every real matrix $A$,
 $$
   \max_i \min_j A_{ij}
 \;\le\;
@@ -1913,16 +2014,16 @@ $$
 
 4. **Crossed Saddle Points**
   
-  Let \(A\) be the payoff matrix of a finite two–player zero–sum game
+  Let $A$ be the payoff matrix of a finite two–player zero–sum game
 (payoff to the row player).
 
-Suppose that \((i_a, j_a)\) and \((i_b, j_b)\) are saddle points.
+Suppose that $(i_a, j_a)$ and $(i_b, j_b)$ are saddle points.
 Denote the saddle value by
 $$
   v_a = A_{i_a j_a}, v_b=A_{i_b j_b}.
 $$
   
-  Recall that \((i^*, j^*)\) is a saddle point if and only if
+  Recall that $(i^*, j^*)$ is a saddle point if and only if
 $$
   A_{i j^*} \le A_{i^* j^*} \le A_{i^* j}
 \quad \text{for all } i,j.
@@ -1933,14 +2034,14 @@ $$
 v_a=v_b
 $$
   
-  (b) Prove that both \((i_a, j_b)\) and \((i_b, j_a)\) are themselves saddle points.
+  (b) Prove that both $(i_a, j_b)$ and $(i_b, j_a)$ are themselves saddle points.
 
 Your proof must rely only on the defining inequalities of a saddle point and should
 explicitly indicate where each inequality is used.
 
 5. **Rectangular Structure of Pure Equilibria**
   
-  Let \(A\) be the payoff matrix of a finite two–player zero–sum game.
+  Let $A$ be the payoff matrix of a finite two–player zero–sum game.
 Suppose the game has at least two distinct saddle points.
 
 Define
@@ -1950,14 +2051,14 @@ $$
 C^* = \{\, j : \exists i \text{ such that } (i,j) \text{ is a saddle point} \,\}.
 $$
   
-  Let \(v\) denote the value of the game.
+  Let $v$ denote the value of the game.
 
-(a) Prove that for every \(i \in R^*\) and every \(j \in C^*\),
+(a) Prove that for every $i \in R^*$ and every $j \in C^*$,
 $$
   A_{ij} = v.
 $$
   
-  (b) Conclude that every pair in \(R^*\times C^*\) is a saddle point.
+  (b) Conclude that every pair in $R^*\times C^*$ is a saddle point.
 
 (c) In complete sentences, explain why this result implies that whenever
 a zero–sum game has more than one pure–strategy equilibrium, the set of equilibria
@@ -1980,7 +2081,7 @@ $$
 \end{pmatrix}.
 $$
   
-  (a) Compute \(\max_i \min_j A_{ij}\) and \(\min_j \max_i A_{ij}\).  
+  (a) Compute $\max_i \min_j A_{ij}$ and $\min_j \max_i A_{ij}$.  
 (b) Determine whether a saddle point exists. If so, identify *all* saddle points.  
 (c) Give a short interpretation: which row is “safe,” and why?
   
@@ -1988,7 +2089,7 @@ $$
   
   A student claims: “If the row player loses a hand, then their strategy was bad.”
 
-(a) Give a concrete counterexample using a \(2\times 2\) zero–sum game in which
+(a) Give a concrete counterexample using a $2\times 2$ zero–sum game in which
 an optimal pure strategy can still lose in a single play.
 
 (b) In complete sentences, explain the difference between an optimal strategy
