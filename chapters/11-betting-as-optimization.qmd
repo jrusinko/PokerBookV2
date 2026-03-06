@@ -866,6 +866,7 @@ We have reduced a strategic decision to a problem in calculus:
 - Compare interior critical points and boundary values.
 
 The psychological language of “small bet” or “large bet” disappears. What remains is a function of one real variable whose maximum we must locate.
+
 #### Existence of an Optimal Bet
 
 Before differentiating or solving first–order conditions, we pause to establish something more basic:
@@ -1037,12 +1038,23 @@ The optimal interior bet occurs precisely where these opposing forces cancel.
 
 This equation is the continuous analogue of an indifference condition in mixed strategy equilibrium.  
 Instead of equalizing payoffs across discrete actions, we equalize marginal gains and marginal costs along a continuum of bet sizes.
+
 #### Concavity, Uniqueness, and Range Elasticity
 
 The first–order condition identifies candidate interior optima.  
-To determine whether such a point is actually a maximum — and whether it is unique — we examine curvature.
+To determine whether such a point is actually a maximum — and whether it is unique — we examine the **concavity or convexity** of the expected value function.
 
-Consider again the **linear call model**
+Recall the expected value expression for a bet of size $b$:
+
+$$
+\mathrm{EV}(b)
+=
+(1-c(b))P
++
+c(b)\big(e(P+b)-(1-e)b\big).
+$$
+
+Consider the **linear call model**
 
 $$
 c(b) = \alpha - \beta b,
@@ -1052,32 +1064,127 @@ $$
 
 on an interval where $0 \le c(b) \le 1$.
 
-Substituting into the expected value formula shows that $\mathrm{EV}(b)$ is quadratic in $b$:
+Substituting into EV gives
+
+$$
+\mathrm{EV}(b)
+=
+(1-\alpha+\beta b)P
++
+(\alpha-\beta b)\big(e(P+b)-(1-e)b\big).
+$$
+
+Since
+
+$$
+e(P+b)-(1-e)b
+=
+eP+(2e-1)b,
+$$
+
+we obtain
+
+$$
+\mathrm{EV}(b)
+=
+(1-\alpha+\beta b)P
++
+(\alpha-\beta b)(eP+(2e-1)b).
+$$
+
+Expanding and collecting terms yields a quadratic polynomial:
+
+$$
+\mathrm{EV}(b)
+=
+P(1-\alpha+\alpha e)
++
+\big(\beta P+\alpha(2e-1)-\beta eP\big)b
+-
+\beta(2e-1)b^2.
+$$
+
+So
 
 $$
 \mathrm{EV}(b) = A + Bb + Cb^2,
+\qquad
+C=-\beta(2e-1).
 $$
 
-with leading coefficient
+---
+
+### Derivative and the Interior Optimum
+
+Differentiate:
 
 $$
-C = -\beta(2e-1).
+\mathrm{EV}'(b)
+=
+\big(\beta P+\alpha(2e-1)-\beta eP\big)
+-
+2\beta(2e-1)b.
+$$
+
+If an interior maximizer $b^*$ exists (so $0<b^*<S$ and $\mathrm{EV}$ is differentiable), then it must satisfy
+
+$$
+\mathrm{EV}'(b^*)=0.
+$$
+
+Solving,
+
+$$
+2\beta(2e-1)b^*
+=
+\beta P+\alpha(2e-1)-\beta eP,
+$$
+
+hence
+
+$$
+b^*
+=
+\frac{\beta P(1-e)+\alpha(2e-1)}{2\beta(2e-1)}.
+$$
+
+Equivalently, separating the two contributions,
+
+$$
+b^*
+=
+\frac{\alpha}{2\beta}
++
+\frac{P(1-e)}{2(2e-1)}.
+$$
+
+This expression is valid when $e\neq \tfrac12$ and the solution lies in the feasible interval.
+
+---
+
+### Concavity, Uniqueness, and Boundary Checking
+
+The second derivative is constant:
+
+$$
+\mathrm{EV}''(b)= -2\beta(2e-1).
 $$
 
 Thus:
 
-- If $e > \tfrac12$, then $C<0$ and EV is concave.
-- If $e < \tfrac12$, then $C>0$ and EV is convex.
-- If $e = \tfrac12$, EV is linear.
+- If $e>\tfrac12$, then $\mathrm{EV}''(b)<0$, so EV is **concave** and the interior critical point (if it lies in $[0,S]$) is the **unique global maximum**.
+- If $e<\tfrac12$, then $\mathrm{EV}''(b)>0$, so EV is **convex** and any interior critical point is a **minimum**; the maximum must occur at $b=0$ or $b=S$.
+- If $e=\tfrac12$, then EV is linear in $b$, so the optimum occurs at the boundary unless the slope is zero.
 
-A quadratic has at most one interior critical point.  
-Concavity guarantees that this point, if it exists, is the unique global maximum.
+In all cases, the true optimal bet size is obtained by comparing:
 
-
+$$
+\mathrm{EV}(0),\quad \mathrm{EV}(S),\quad \text{and (when applicable) } \mathrm{EV}(b^*).
+$$
 
 ### Boundary vs. Interior Solutions
 
-The curvature classification yields three structural regimes:
+The concavity classification yields three structural regimes:
 
 1. **Strong hands ($e>\tfrac12$).**  
    EV is concave. There may be a unique interior maximizer, or the maximum may occur at $b=S$.
@@ -1088,9 +1195,62 @@ The curvature classification yields three structural regimes:
 3. **Balanced hands ($e=\tfrac12$).**  
    EV is linear; the optimum occurs at the boundary unless the slope vanishes.
 
-Thus concavity determines whether optimal sizing is an interior compromise or an extreme.
+Thus the concavity or convexity of EV determines whether optimal sizing is an interior compromise or an extreme.
 
+#### Table: Determining the Optimal Bet Size in the Linear Call Model
 
+Assume the **linear call model**
+$$
+c(b)=\alpha-\beta b,\qquad \beta>0,
+$$
+on a feasible interval $b\in[0,S]$ where $0\le c(b)\le 1$.
+
+From the chapter, the expected value is quadratic and its derivative is
+$$
+\mathrm{EV}'(b)=B+2Cb,
+\qquad
+C=-\beta(2e-1),
+$$
+with the (formal) interior critical point (when $e\neq \tfrac12$)
+$$
+b^*=\frac{\alpha}{2\beta}+\frac{P(1-e)}{2(2e-1)}.
+$$
+
+Define the **feasible call-probability interval**:
+$$
+\mathcal{I}:=\{b\in[0,S]: 0\le \alpha-\beta b\le 1\}
+=
+\left[\,\max\!\left(0,\frac{\alpha-1}{\beta}\right),\ \min\!\left(S,\frac{\alpha}{\beta}\right)\right].
+$$
+
+All maximizers must lie in $\mathcal{I}$, since outside $\mathcal{I}$ the linear model would predict invalid probabilities.
+
+---
+
+| Equity regime | Shape of $\mathrm{EV}(b)$ on $\mathcal{I}$ | Interior critical point? | Candidate maximizers | Decision rule for optimal bet |
+|---|---|---|---|---|
+| $e>\tfrac12$ | **Concave** ($C<0$) | Yes (at most one), at $b^*$ | $b^*$ (if $b^*\in\mathcal{I}$), otherwise endpoints of $\mathcal{I}$ | If $b^*\in\mathcal{I}$, then $b_{\text{opt}}=b^*$. If not, $b_{\text{opt}}$ is the endpoint of $\mathcal{I}$ with larger EV. |
+| $e=\tfrac12$ | **Linear** ($C=0$) | No (unless slope $=0$ gives indifference) | Endpoints of $\mathcal{I}$ (or all $b$ if slope $=0$) | Compute slope $\mathrm{EV}'(b)=B=\beta P/2$ (after simplification). If $B>0$, choose the largest $b\in\mathcal{I}$; if $B<0$, choose the smallest $b\in\mathcal{I}$; if $B=0$, any $b\in\mathcal{I}$ is optimal. |
+| $e<\tfrac12$ | **Convex** ($C>0$) | Yes, but it is a **minimum** | Endpoints of $\mathcal{I}$ only | The maximum is attained at an endpoint of $\mathcal{I}$. Compare $\mathrm{EV}$ at the two endpoints and take the better one. |
+
+---
+
+#### Practical “Recipe” for Solving the Linear Model
+
+1. **Compute the feasible interval**  
+   $$
+   \mathcal{I}=\left[\,\max\!\left(0,\frac{\alpha-1}{\beta}\right),\ \min\!\left(S,\frac{\alpha}{\beta}\right)\right].
+   $$
+
+2. **Classify by equity $e$**
+   - If $e>\tfrac12$: concave; compute $b^*$ and project to $\mathcal{I}$ if necessary.
+   - If $e=\tfrac12$: linear; choose the endpoint of $\mathcal{I}$ favored by the slope.
+   - If $e<\tfrac12$: convex; compare endpoints of $\mathcal{I}$.
+
+3. **Return the best candidate**
+   - Evaluate $\mathrm{EV}$ at the candidate points and choose the largest value.
+
+This table emphasizes a general lesson: under a linear response model, optimal bet sizing is driven as much by **feasibility** (valid calling probabilities and stack constraints) and **concavity** as by the first-order condition.
 
 ### A Poker Viewpoint: Elastic and Inelastic Folding Ranges
 
@@ -1102,21 +1262,45 @@ $$
 c(b) = \alpha - \beta b.
 $$
 
-The parameter $\beta$ measures the sensitivity of calling frequency to bet size.
+The parameter $\beta$ measures how sensitive the opponent’s calling frequency is to changes in bet size:
+
+$$
+c'(b) = -\beta.
+$$
+
+Thus:
 
 - If $\beta$ is **large**, then $|c'(b)|$ is large: the opponent’s folding range is **elastic**. Small increases in bet size cause substantial increases in folding frequency.
 
 - If $\beta$ is **small**, then $|c'(b)|$ is small: the opponent’s folding range is **inelastic**. Call frequency changes only slightly as bet size increases.
 
-The curvature term
+Under the linear model the expected value function is quadratic,
 
 $$
-C = -\beta(2e-1)
+\mathrm{EV}(b) = A + Bb + Cb^2,
 $$
 
-shows that elasticity directly affects how sharply EV bends.
+with
 
+$$
+C = -\beta(2e-1).
+$$
 
+Thus the concavity or convexity of EV is determined by the sign of $2e-1$, while the **magnitude of $\beta$ determines how strongly the function bends**.
+
+When $e>\tfrac12$, EV is concave and the interior optimal bet (when it lies in the feasible interval) is
+
+$$
+b^*
+=
+\frac{\alpha}{2\beta}
++
+\frac{P(1-e)}{2(2e-1)}.
+$$
+
+This formula reveals directly how elasticity influences optimal sizing.
+
+---
 
 #### Elastic Opponent (Large $\beta$)
 
@@ -1126,50 +1310,96 @@ When folding behavior is elastic:
 - Bluffing gains leverage quickly.
 - Value hands must balance larger pots against rapidly shrinking call rates.
 
-Mathematically, EV curves more sharply. Interior optima, when they exist, tend to be smaller because marginal increases in $b$ rapidly reduce $c(b)$.
+Mathematically, increasing $\beta$ makes EV **more sharply concave** when $e>\tfrac12$ because
 
-In extreme cases, convexity for weak hands pushes the solution to pure polarization: $b=0$ or $b=S$.
+$$
+\mathrm{EV}''(b) = -2\beta(2e-1).
+$$
 
+The optimal bet size
 
+$$
+b^*
+=
+\frac{\alpha}{2\beta}
++
+\frac{P(1-e)}{2(2e-1)}
+$$
+
+therefore **decreases as $\beta$ grows**, since the first term shrinks with larger $\beta$.
+
+In poker terms:
+
+- When the opponent folds easily to larger bets,
+- very large bets quickly eliminate the part of the range we want to extract value from.
+
+Optimal value bets therefore become **smaller**, preserving calls from marginal hands.
+
+For weak hands ($e<\tfrac12$), EV is convex, so the maximum occurs at the boundary ($b=0$ or $b=S$). Elasticity then determines **how quickly bluffing becomes profitable as bet size grows**.
+
+---
 
 #### Inelastic Opponent (Small $\beta$)
 
 When folding behavior is inelastic:
 
 - Call frequency changes little with bet size.
-- Increasing $b$ primarily scales pot size rather than fold probability.
+- Increasing $b$ primarily increases the pot size rather than the fold probability.
 
-Here the EV function bends more gently. For strong hands ($e>\tfrac12$), concavity remains but curvature is mild. Larger bet sizes are often optimal because calls persist even as $b$ grows.
+In the EV function this appears as **weaker concavity**, since
 
-In the limit $\beta \to 0$, the opponent calls almost independently of bet size. Then EV becomes approximately linear in $b$:
+$$
+\mathrm{EV}''(b) = -2\beta(2e-1)
+$$
+
+becomes closer to zero as $\beta$ decreases.
+
+The optimal bet size formula again shows the effect:
+
+$$
+b^*
+=
+\frac{\alpha}{2\beta}
++
+\frac{P(1-e)}{2(2e-1)}.
+$$
+
+As $\beta$ becomes small, the first term grows large. In other words:
+
+- When opponents keep calling regardless of bet size,
+- the model pushes optimal bets **larger and larger**.
+
+In the extreme limit $\beta \to 0$, the opponent calls almost independently of bet size. The EV function becomes approximately linear in $b$,
 
 $$
 \mathrm{EV}(b) \approx P + c(eP + (2e-1)b - P),
 $$
 
-and the solution pushes toward an extreme depending only on the sign of $2e-1$.
+and the optimal decision collapses to a boundary:
 
+- bet as large as possible if $e>\tfrac12$,  
+- bet as little as possible if $e<\tfrac12$.
 
+---
 
 ### Structural Insight
 
-Elastic and inelastic ranges alter the shape of the optimization landscape:
+Elastic and inelastic ranges reshape the **optimization landscape**:
 
 - **Elastic ranges** amplify the marginal fold effect.
 - **Inelastic ranges** amplify the marginal pot-growth effect.
 
-Thus concavity analysis is not merely technical.  
-It encodes how the opponent’s distribution of marginal hands responds to price.
+Thus elasticity determines **how sensitive optimal sizing is to price changes**.
 
-In economic language, $c'(b)$ measures demand elasticity.  
+In economic language, $c'(b)$ measures **demand elasticity**.  
 In poker language, it measures how quickly the opponent’s folding range expands as price increases.
 
-Optimal bet sizing is therefore a balance between:
+Optimal bet sizing therefore balances two forces:
 
-- The intrinsic strength of the hand (captured by $e$), and  
-- The elasticity of the opponent’s range (captured by $c'(b)$).
+- **Hand strength** (captured by $e$), and  
+- **Range elasticity** (captured by $\beta$).
 
-Geometry meets behavior through curvature.
+Mathematically, these forces meet through the concavity of the expected value function and the location of the optimal bet size $b^*$.
 
 ### Alternative Calling Models and Optimal Bet Size
 
