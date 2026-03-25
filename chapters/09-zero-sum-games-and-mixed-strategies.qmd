@@ -392,18 +392,25 @@ $$
 \right),
 $$
 and the expected payoff is \(0\).
-
 ## The General Optimization Framework (Linear Programming)
 
-The behavioral method above works because the game is small and symmetric. In general, optimal play in a finite zero-sum game is computed by solving a pair of linear programs.
+The behavioral analysis of the toy poker game worked because the model was small, symmetric, and easy to analyze by hand. In general, however, finite zero-sum games are solved by optimization.
 
 Let
 $$
 A \in \mathbb{R}^{m \times n}
 $$
-be the payoff matrix to Player I.
+be the payoff matrix to Player I. Rows represent Player I's pure strategies, columns represent Player II's pure strategies, and \(A_{ij}\) is the payoff to Player I when row \(i\) meets column \(j\).
 
-### Row player’s maximin problem
+If Player I uses a mixed strategy
+$$
+x \in \Delta_m
+\qquad\text{and}\qquad
+\Delta_m = \{x \in \mathbb{R}^m : x_i \ge 0,\ \sum_{i=1}^m x_i = 1\},
+$$
+then against a pure column \(j\), Player I's expected payoff is the \(j\)-th entry of \(A^{\mathsf T}x\). Thus Player I seeks a probability vector \(x\) that makes the worst of these column payoffs as large as possible.
+
+### Row player's maximin problem
 
 Player I chooses \(x\) to maximize a guaranteed value \(v\):
 $$
@@ -420,11 +427,11 @@ The constraint
 $$
 A^{\mathsf T}x \ge v\,\mathbf{1}
 $$
-says that against every pure column \(j\), the expected payoff is at least \(v\).
+means that every pure response of Player II yields expected payoff at least \(v\). So \(v\) is a guaranteed lower bound on Player I's payoff.
 
-### Column player’s minimax problem
+### Column player's minimax problem
 
-Player II chooses \(y\) to minimize the largest payoff Player I could obtain:
+Dually, Player II chooses a mixed strategy \(y \in \Delta_n\) to keep Player I's payoff as small as possible. Against the mixed strategy \(y\), the expected payoff to Player I from pure row \(i\) is the \(i\)-th entry of \(Ay\). Thus Player II solves
 $$
 \begin{aligned}
 \text{minimize}\quad & w \\
@@ -435,16 +442,141 @@ $$
 \tag{D}
 $$
 
+The constraint
+$$
+Ay \le w\,\mathbf{1}
+$$
+means that no pure strategy of Player I can earn more than \(w\) against \(y\). So \(w\) is an upper bound on what Player I can force.
+
+### An explicit example: the toy poker game
+
+In the reduced three-card poker model, each player has four pure strategies,
+$$
+BNN,\quad BNB,\quad BBN,\quad BBB,
+$$
+and the payoff matrix to Player I is
+$$
+A =
+\begin{pmatrix}
+-\frac{1}{6} & -\frac{1}{6} & -\frac{1}{6} & -\frac{1}{6} \\
+-\frac{1}{6} & 0 & -\frac{1}{3} & -\frac{1}{6} \\
+-\frac{1}{6} & \frac{1}{3} & 0 & \frac{1}{6} \\
+-\frac{1}{6} & \frac{1}{6} & \frac{1}{6} & \frac{1}{2}
+\end{pmatrix}.
+$$
+
+Let
+$$
+x =
+\begin{pmatrix}
+x_1 \\ x_2 \\ x_3 \\ x_4
+\end{pmatrix}
+$$
+be Player I's mixed strategy, where \(x_i\) is the probability assigned to the \(i\)-th pure strategy in the order above.
+
+Then the row player's linear program becomes
+$$
+\begin{aligned}
+\text{maximize}\quad & v \\
+\text{subject to}\quad
+& -\frac{1}{6}x_1 - \frac{1}{6}x_2 - \frac{1}{6}x_3 - \frac{1}{6}x_4 \ge v, \\
+& -\frac{1}{6}x_1 + 0x_2 + \frac{1}{3}x_3 + \frac{1}{6}x_4 \ge v, \\
+& -\frac{1}{6}x_1 - \frac{1}{3}x_2 + 0x_3 + \frac{1}{6}x_4 \ge v, \\
+& -\frac{1}{6}x_1 - \frac{1}{6}x_2 + \frac{1}{6}x_3 + \frac{1}{2}x_4 \ge v, \\
+& x_1 + x_2 + x_3 + x_4 = 1, \\
+& x_1,x_2,x_3,x_4 \ge 0.
+\end{aligned}
+\tag{P\(_{\text{toy}}\)}
+$$
+
+Each inequality corresponds to one pure strategy of Player II. For example, the second inequality says that if Player II chooses the pure strategy \(BNB\), then Player I's expected payoff under the mixed strategy \(x\) must still be at least \(v\).
+
+Similarly, if
+$$
+y =
+\begin{pmatrix}
+y_1 \\ y_2 \\ y_3 \\ y_4
+\end{pmatrix}
+$$
+is Player II's mixed strategy, then Player II solves
+$$
+\begin{aligned}
+\text{minimize}\quad & w \\
+\text{subject to}\quad
+& -\frac{1}{6}y_1 - \frac{1}{6}y_2 - \frac{1}{6}y_3 - \frac{1}{6}y_4 \le w, \\
+& -\frac{1}{6}y_1 + 0y_2 - \frac{1}{3}y_3 - \frac{1}{6}y_4 \le w, \\
+& -\frac{1}{6}y_1 + \frac{1}{3}y_2 + 0y_3 + \frac{1}{6}y_4 \le w, \\
+& -\frac{1}{6}y_1 + \frac{1}{6}y_2 + \frac{1}{6}y_3 + \frac{1}{2}y_4 \le w, \\
+& y_1 + y_2 + y_3 + y_4 = 1, \\
+& y_1,y_2,y_3,y_4 \ge 0.
+\end{aligned}
+\tag{D\(_{\text{toy}}\)}
+$$
+
+Here each inequality corresponds to one pure strategy of Player I. The first inequality, for instance, says that if Player I were to choose \(BNN\) with probability \(1\), then the resulting expected payoff against \(y\) could not exceed \(w\).
+
+### Verifying the equilibrium from the toy model
+
+Earlier we found that the equilibrium behavioral frequencies induce the mixed strategy
+$$
+x^* = y^* =
+\begin{pmatrix}
+\frac{4}{9} \\
+\frac{2}{9} \\
+\frac{2}{9} \\
+\frac{1}{9}
+\end{pmatrix}.
+$$
+
+Substituting \(x^*\) into the row constraints gives
+$$
+A^{\mathsf T}x^* =
+\begin{pmatrix}
+-\frac{1}{6} & -\frac{1}{6} & -\frac{1}{6} & -\frac{1}{6} \\
+-\frac{1}{6} & 0 & \frac{1}{3} & \frac{1}{6} \\
+-\frac{1}{6} & -\frac{1}{3} & 0 & \frac{1}{6} \\
+-\frac{1}{6} & -\frac{1}{6} & \frac{1}{6} & \frac{1}{2}
+\end{pmatrix}
+\begin{pmatrix}
+\frac{4}{9} \\
+\frac{2}{9} \\
+\frac{2}{9} \\
+\frac{1}{9}
+\end{pmatrix}
+=
+\begin{pmatrix}
+-\frac{1}{6} \\
+0 \\
+0 \\
+0
+\end{pmatrix}.
+$$
+
+So \(x^*\) guarantees at least \(0\) against the three columns that matter strategically, while the first column gives payoff \(-\tfrac{1}{6}\). That reflects the fact that not every point of \(\Delta_4\) comes from independent behavioral randomization at the information sets. In the reduced behavioral analysis, the relevant equilibrium object was the frequency pair
+$$
+\alpha=\beta=\gamma=\delta=\frac{1}{3},
+$$
+which yields value
+$$
+v=0.
+$$
+
+This is a useful reminder: the linear programming framework is completely general for matrix games, but when a strategic-form matrix comes from a multistage game, one must be careful about which mixed strategies correspond to behaviorally meaningful randomization.
+
 ### Connection to minimax
 
-Problems \((P)\) and \((D)\) are dual linear programs. Under standard conditions, strong duality gives \(v=w\), which is one route to von Neumann’s minimax theorem.
+Problems \((P)\) and \((D)\) are dual linear programs. Under standard conditions, strong duality implies that their optimal values agree:
+$$
+v = w.
+$$
 
-Conceptually, the minimax theorem says:
+This common number is the value of the game. Thus the minimax theorem may be understood as a statement about duality in optimization.
+
+Conceptually, the theorem says three things at once:
 
 - equilibrium exists in every finite zero-sum game,
 - equilibrium computation is an optimization problem,
-- and in matrix games that optimization is linear.
-
+- and for matrix games that optimization is linear.
 ## Beyond Poker: Mixed Strategies in Sports Analytics
 
 Mixed strategies are not confined to gambling games. They arise naturally in competitive environments where opponents actively adapt.
