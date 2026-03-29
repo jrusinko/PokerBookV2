@@ -101,29 +101,82 @@ where:
 
 The players act **simultaneously**, so neither observes the other’s action before making their choice.
 
-#### Payoffs
+### Payoffs (Net Chip Changes)
 
-Each player antes 2 chips, so the pot begins at 4.
+We express all outcomes in terms of **net change in chips**, rather than total chips won from the pot.
 
-The payoff to Player 1, denoted
-$$
-u_1(t_1,t_2,a_1,a_2),
-$$
-depends on both players’ cards and actions.
+Each player antes 2 chips, so before any actions:
 
-The rules are:
+- Each player has invested 2 chips,
+- The pot contains 4 chips.
 
-- If both players check:
-  - the higher card wins 4.
-- If both players bet:
-  - the higher card wins 8.
-- If exactly one player bets:
-  - the bettor wins 4.
+A bet consists of **2 additional chips**.
 
-The game is zero-sum, so
-$$
-u_2 = -u_1.
-$$
+
+
+#### Case 1: Neither Player Bets
+
+- No additional chips are added,
+- The pot remains 4 chips,
+- The higher card wins the pot.
+
+Thus:
+
+- Winner: $4 - 2 = +2$
+- Loser: $-2$
+
+
+
+#### Case 2: Both Players Bet
+
+- Each player adds 2 chips,
+- Total investment per player: $4$ chips,
+- Pot size: $8$ chips.
+
+Thus:
+
+- Winner: $8 - 4 = +4$
+- Loser: $-4$
+
+
+
+#### Case 3: Exactly One Player Bets
+
+- The bettor adds 2 chips,
+- Total investment:
+  - Bettor: $4$
+  - Non-bettor: $2$
+- The non-bettor folds,
+- The bettor wins the pot of 6 chips.
+
+Thus:
+
+- Bettor: $6 - 4 = +2$
+- Non-bettor: $-2$
+
+
+
+#### Summary of Net Payoffs
+
+| Outcome               | Winner | Loser |
+|---------------------|--------|--------|
+| No bets             | $+2$   | $-2$   |
+| Both bet            | $+4$   | $-4$   |
+| One bets (no call)  | $+2$   | $-2$   |
+
+
+
+#### Interpretation
+
+Working with **net chip changes** makes the structure of the game clearer:
+
+- Betting only increases payoff magnitude when it is **called**,
+- Bluffing does **not** increase the size of the win—it only affects *how often* the pot is won,
+- The strategic tradeoff is therefore between:
+  - **frequency of winning** (bluffing),
+  - and **size of winnings** (value betting).
+
+This distinction will be central in analyzing optimal strategies.
 
 #### A Structural Observation
 
@@ -161,60 +214,12 @@ naturally becomes a collection of smaller questions:
 
 This decomposition will be central to counterfactual regret minimization. Rather than solving a single global optimization problem, we will evaluate and update decisions *locally*, one type at a time.
 
-#### Looking Ahead
-
 In the next section, we formalize how players specify behavior across types. From there, we will develop a method for evaluating actions at each type, and ultimately for adjusting strategies based on regret.
 
 Even in this one-step setting, the mathematics will reveal a striking idea:
 
 > Optimal play can emerge from repeatedly asking,  
 > “What would have happened if I had chosen differently?”
-
-#### Running Example (5-Card Single-Step Poker)
-
-- Deck:
-  $$
-  \{1,2,3,4,5\}
-  $$
-- Each player is dealt one card **without replacement**.
-- Each player antes **2 chips** (pot = 4).
-- Each player simultaneously chooses:
-  $$
-  A = \{C, B\}
-  $$
-  where $B$ is a bet of 2 chips.
-
-#### Payoff Rule
-
-- If both check: highest card wins 4.
-- If both bet: highest card wins 8.
-- If exactly one bets: bettor wins 4.
-
-#### Definition (Single-Step Bayesian Game)
-
-A single-step game consists of:
-
-- Type spaces:
-  $$
-  T_1 = T_2 = \{1,2,3,4,5\}
-  $$
-- Distribution:
-  $$
-  \mathbb{P}(t_1,t_2) = \frac{1}{20}, \quad t_1 \neq t_2
-  $$
-- Action set:
-  $$
-  A = \{C,B\}
-  $$
-- Payoff function:
-  $$
-  u_1(t_1,t_2,a_1,a_2)
-  $$
-
-The game is zero-sum:
-$$
-u_2 = -u_1.
-$$
 
 ### 2. Strategies
 
@@ -244,35 +249,13 @@ $$
 \tau : \{1,2,3,4,5\} \to [0,1].
 $$
 
-#### Deterministic and Mixed Behavior
 
-A strategy is called **pure** if, for every card $k$,
+It is often convenient to view a strategy as a vector:
 $$
-\sigma(k) \in \{0,1\}.
-$$
-
-In this case, the player takes a fixed action for each card.
-
-More generally, a strategy is **mixed** (or randomized) if some values satisfy
-$$
-0 < \sigma(k) < 1.
+\sigma = (\sigma(1),\sigma(2),\sigma(3),\sigma(4),\sigma(5)) \in [0,1]^5.
 $$
 
-In this case, the player deliberately randomizes between betting and checking.
-
-#### Why Randomization Appears
-
-At first glance, it may seem unnecessary to randomize: why not simply choose the better action for each card?
-
-The difficulty is that the value of an action depends on the opponent’s expectations. If a player’s behavior becomes predictable, the opponent can respond in a way that exploits it.
-
-Randomization allows a player to:
-
-- conceal information about their card,
-- balance strong and weak hands,
-- prevent the opponent from making profitable adjustments.
-
-Thus, randomness is not a defect of the model, but a necessary feature of optimal play.
+This representation emphasizes that a strategy is not a single decision, but a collection of decisions—one for each possible card.
 
 #### Example Interpretation
 
@@ -290,7 +273,6 @@ This means:
 - With card 4: bet with probability 0.8.
 - With card 5: always bet.
 
-#### Interpreting the Structure
 
 This strategy reflects three distinct roles that hands can play:
 
@@ -303,14 +285,6 @@ This strategy reflects three distinct roles that hands can play:
 - **Middle cards (e.g., 3, 4):**  
   These hands occupy a more delicate position. Betting can extract value from weaker hands but risks being called by stronger ones. As a result, these hands are often **mixed** between actions.
 
-#### A Vector Representation
-
-It is often convenient to view a strategy as a vector:
-$$
-\sigma = (\sigma(1),\sigma(2),\sigma(3),\sigma(4),\sigma(5)) \in [0,1]^5.
-$$
-
-This representation emphasizes that a strategy is not a single decision, but a collection of decisions—one for each possible card.
 
 #### Structural Observation
 
@@ -322,8 +296,6 @@ A key feature of this model is that strategies decompose across types:
 This independence will be essential when we introduce regret:
 
 > We will evaluate and update decisions **separately for each card**, rather than attempting to optimize the entire strategy at once.
-
-#### Looking Ahead
 
 With strategies defined, we can now ask:
 
@@ -352,17 +324,301 @@ $$
 $$
 and similarly for $\tau(j)$.
 
-#### Interpretation
+#### Example: Computing Expected Value for Specific Strategies
 
-This expression averages over three sources of randomness:
+To make the formula concrete, suppose Player 1 uses
 
-- The deal of the cards $(k,j)$,
-- Player 1’s randomized action,
-- Player 2’s randomized action.
+$$
+\sigma = (0.1,\,0.2,\,0.5,\,0.8,\,1.0),
+$$
 
-It answers the global question:
+so that
 
-> “If both players use these strategies, what is my average payoff per hand?”
+$$
+\sigma(1)=0.1,\quad
+\sigma(2)=0.2,\quad
+\sigma(3)=0.5,\quad
+\sigma(4)=0.8,\quad
+\sigma(5)=1,
+$$
+
+and Player 2 uses the uniform mixed strategy
+
+$$
+\tau(j)=0.5 \qquad \text{for all } j \in \{1,2,3,4,5\}.
+$$
+
+We compute the expected payoff to Player 1.
+
+
+
+##### Step 1: Conditional payoffs for a fixed card
+
+It is convenient to first compute the expected payoff conditional on Player 1 holding a particular card $k$.
+
+Since Player 2 mixes uniformly with probability $0.5$ between betting and checking, the expected payoff from each action can be computed directly.
+
+If Player 1 checks with card $k$, then against a fixed opponent card $j$:
+
+- if Player 2 checks, the payoff is $+2$ when $k>j$ and $-2$ when $k<j$,
+- if Player 2 bets, Player 1 loses $2$.
+
+Thus
+
+$$
+v(k,C)
+=
+\sum_{j \neq k} \frac{1}{4}
+\left[
+0.5 \cdot \text{SD}_2(k,j) + 0.5 \cdot (-2)
+\right],
+$$
+
+where
+
+$$
+\text{SD}_2(k,j)=
+\begin{cases}
+2 & k>j,\\
+-2 & k<j.
+\end{cases}
+$$
+
+Similarly, if Player 1 bets with card $k$, then against a fixed opponent card $j$:
+
+- if Player 2 checks, Player 1 wins $2$,
+- if Player 2 bets, the payoff is $+4$ when $k>j$ and $-4$ when $k<j$.
+
+Thus
+
+$$
+v(k,B)
+=
+\sum_{j \neq k} \frac{1}{4}
+\left[
+0.5 \cdot 2 + 0.5 \cdot \text{SD}_4(k,j)
+\right],
+$$
+
+where
+
+$$
+\text{SD}_4(k,j)=
+\begin{cases}
+4 & k>j,\\
+-4 & k<j.
+\end{cases}
+$$
+
+Finally,
+
+$$
+v(k)=\sigma(k)\,v(k,B)+(1-\sigma(k))\,v(k,C).
+$$
+
+
+
+##### Step 2: Compute the value of each card
+
+We now evaluate these quantities card by card.
+
+
+
+###### Card $k=1$
+
+Against any opponent card, Player 1 loses at showdown.
+
+So
+
+$$
+v(1,C)=\frac{1}{4}\cdot 4 \cdot \left[0.5(-2)+0.5(-2)\right] = -2
+$$
+
+and
+
+$$
+v(1,B)=\frac{1}{4}\cdot 4 \cdot \left[0.5(2)+0.5(-4)\right] = -1.
+$$
+
+Since $\sigma(1)=0.1$,
+
+$$
+v(1)=0.1(-1)+0.9(-2)=-1.9.
+$$
+
+
+
+###### Card $k=2$
+
+Now Player 1 beats only card $1$ and loses to $3,4,5$.
+
+For checking:
+
+- against $1$: $0.5(2)+0.5(-2)=0$,
+- against $3,4,5$: $0.5(-2)+0.5(-2)=-2$.
+
+Hence
+
+$$
+v(2,C)=\frac{1}{4}(0-2-2-2)=-\frac{6}{4}=-1.5.
+$$
+
+For betting:
+
+- against $1$: $0.5(2)+0.5(4)=3$,
+- against $3,4,5$: $0.5(2)+0.5(-4)=-1$.
+
+Hence
+
+$$
+v(2,B)=\frac{1}{4}(3-1-1-1)=0.
+$$
+
+Since $\sigma(2)=0.2$,
+
+$$
+v(2)=0.2(0)+0.8(-1.5)=-1.2.
+$$
+
+
+
+###### Card $k=3$
+
+Player 1 beats $1,2$ and loses to $4,5$.
+
+For checking:
+
+- against $1,2$: $0.5(2)+0.5(-2)=0$,
+- against $4,5$: $0.5(-2)+0.5(-2)=-2$.
+
+So
+
+$$
+v(3,C)=\frac{1}{4}(0+0-2-2)=-1.
+$$
+
+For betting:
+
+- against $1,2$: $0.5(2)+0.5(4)=3$,
+- against $4,5$: $0.5(2)+0.5(-4)=-1$.
+
+So
+
+$$
+v(3,B)=\frac{1}{4}(3+3-1-1)=1.
+$$
+
+Since $\sigma(3)=0.5$,
+
+$$
+v(3)=0.5(1)+0.5(-1)=0.
+$$
+
+
+
+###### Card $k=4$
+
+Player 1 beats $1,2,3$ and loses only to $5$.
+
+For checking:
+
+- against $1,2,3$: $0.5(2)+0.5(-2)=0$,
+- against $5$: $0.5(-2)+0.5(-2)=-2$.
+
+Thus
+
+$$
+v(4,C)=\frac{1}{4}(0+0+0-2)=-0.5.
+$$
+
+For betting:
+
+- against $1,2,3$: $0.5(2)+0.5(4)=3$,
+- against $5$: $0.5(2)+0.5(-4)=-1$.
+
+Thus
+
+$$
+v(4,B)=\frac{1}{4}(3+3+3-1)=2.
+$$
+
+Since $\sigma(4)=0.8$,
+
+$$
+v(4)=0.8(2)+0.2(-0.5)=1.6-0.1=1.5.
+$$
+
+
+
+###### Card $k=5$
+
+Player 1 always wins at showdown.
+
+So
+
+$$
+v(5,C)=\frac{1}{4}\cdot 4 \cdot \left[0.5(2)+0.5(-2)\right]=0
+$$
+
+and
+
+$$
+v(5,B)=\frac{1}{4}\cdot 4 \cdot \left[0.5(2)+0.5(4)\right]=3.
+$$
+
+Since $\sigma(5)=1$,
+
+$$
+v(5)=3.
+$$
+
+
+
+##### Step 3: Average over Player 1's cards
+
+Each card occurs with probability $\frac{1}{5}$, so
+
+$$
+u_1(\sigma,\tau)
+=
+\frac{1}{5}\bigl(v(1)+v(2)+v(3)+v(4)+v(5)\bigr).
+$$
+
+Substituting the values above gives
+
+$$
+u_1(\sigma,\tau)
+=
+\frac{1}{5}\bigl(-1.9-1.2+0+1.5+3\bigr).
+$$
+
+Thus
+
+$$
+u_1(\sigma,\tau)
+=
+\frac{1.4}{5}
+=
+0.28.
+$$
+
+
+
+##### Conclusion
+
+Against a uniformly mixing opponent, the strategy
+
+$$
+\sigma = (0.1,\,0.2,\,0.5,\,0.8,\,1.0)
+$$
+
+has expected value
+
+$$
+u_1(\sigma,\tau)=0.28.
+$$
+
+So Player 1 earns, on average, **0.28 chips per hand** against this opponent.
 
 #### A Structural Decomposition
 
@@ -430,8 +686,6 @@ This perspective is essential:
 - The overall performance of a strategy is built from its performance on each card,
 - Improvements to the strategy can therefore be made **locally**, one card at a time.
 
-#### Looking Ahead
-
 In the next section, we refine this idea further.
 
 Instead of evaluating the strategy as a whole at card $k$, we will ask:
@@ -439,6 +693,7 @@ Instead of evaluating the strategy as a whole at card $k$, we will ask:
 > “What would happen if I always chose a specific action at this card?”
 
 This leads to the notion of **counterfactual values**, which form the basis for defining regret.
+
 ### 5. Counterfactual Values
 
 #### Definition (Counterfactual Value)
@@ -475,6 +730,176 @@ This is why the term *counterfactual* is used:
 
 > We evaluate what would have happened under a hypothetical change in behavior.
 
+#### Example: Computing Counterfactual Values for a Specific Card
+
+Let Player 1 use
+
+$$
+\sigma = (0.1,\,0.2,\,0.5,\,0.8,\,1.0),
+$$
+
+and let Player 2 use the uniform mixed strategy
+
+$$
+\tau(j)=0.5
+\qquad
+\text{for all } j \in \{1,2,3,4,5\}.
+$$
+
+We compute the counterfactual values for Player 1 when holding card $3$.
+
+
+
+##### Counterfactual value of checking with 3
+
+By definition,
+
+$$
+v(3,C)
+=
+\sum_{j \neq 3} \frac{1}{4}
+\left[
+(1-\tau(j))\text{SD}_2(3,j)+\tau(j)(-2)
+\right],
+$$
+
+where
+
+$$
+\text{SD}_2(3,j)=
+\begin{cases}
+2 & 3>j,\\
+-2 & 3<j.
+\end{cases}
+$$
+
+Since $\tau(j)=0.5$ for every $j$, this becomes
+
+$$
+v(3,C)
+=
+\sum_{j \neq 3} \frac{1}{4}
+\left[
+0.5\,\text{SD}_2(3,j)+0.5(-2)
+\right].
+$$
+
+Now card $3$ beats cards $1$ and $2$, but loses to cards $4$ and $5$.
+
+- Against $j=1$:
+  $$
+  0.5(2)+0.5(-2)=0
+  $$
+- Against $j=2$:
+  $$
+  0.5(2)+0.5(-2)=0
+  $$
+- Against $j=4$:
+  $$
+  0.5(-2)+0.5(-2)=-2
+  $$
+- Against $j=5$:
+  $$
+  0.5(-2)+0.5(-2)=-2
+  $$
+
+Therefore,
+
+$$
+v(3,C)
+=
+\frac{1}{4}(0+0-2-2)
+=
+-1.
+$$
+
+
+
+##### Counterfactual value of betting with 3
+
+Now compute
+
+$$
+v(3,B)
+=
+\sum_{j \neq 3} \frac{1}{4}
+\left[
+(1-\tau(j))\cdot 2+\tau(j)\text{SD}_4(3,j)
+\right],
+$$
+
+where
+
+$$
+\text{SD}_4(3,j)=
+\begin{cases}
+4 & 3>j,\\
+-4 & 3<j.
+\end{cases}
+$$
+
+Again using $\tau(j)=0.5$, we obtain
+
+$$
+v(3,B)
+=
+\sum_{j \neq 3} \frac{1}{4}
+\left[
+0.5(2)+0.5\,\text{SD}_4(3,j)
+\right].
+$$
+
+Now evaluate each opponent card:
+
+- Against $j=1$:
+  $$
+  0.5(2)+0.5(4)=3
+  $$
+- Against $j=2$:
+  $$
+  0.5(2)+0.5(4)=3
+  $$
+- Against $j=4$:
+  $$
+  0.5(2)+0.5(-4)=-1
+  $$
+- Against $j=5$:
+  $$
+  0.5(2)+0.5(-4)=-1
+  $$
+
+Therefore,
+
+$$
+v(3,B)
+=
+\frac{1}{4}(3+3-1-1)
+=
+1.
+$$
+
+
+
+##### Interpretation
+
+So, when Player 1 holds card $3$,
+
+$$
+v(3,C)=-1,
+\qquad
+v(3,B)=1.
+$$
+
+This means:
+
+- If Player 1 were to **always check** with card $3$, the expected payoff would be $-1$ chip,
+- If Player 1 were to **always bet** with card $3$, the expected payoff would be $1$ chip.
+
+These are **counterfactual values** because they ask what would happen if Player 1 committed to one specific action at this card, while Player 2 continued using the strategy $\tau$.
+
+Notice that this calculation does **not** depend on Player 1’s current mixing probability $\sigma(3)=0.5$. Counterfactual values isolate the performance of the action itself. 
+
+The idea here is that for villians strategy $\tau$, Player 1 would have been better off betting in this situation.  The the following situation we try to capture this notion more formally and to use it to help Player 1 update their bettings strategy for future play.
 
 
 #### Relationship to Conditional Value
@@ -496,100 +921,6 @@ Thus:
 
 
 
-#### Example: Explicit Formulas
-
-Let $\tau(j)$ denote the probability that Player 2 bets with card $j$.
-Then
-
-$$
-\Pr(a_2 = B \mid j) = \tau(j),
-\quad
-\Pr(a_2 = C \mid j) = 1 - \tau(j).
-$$
-
-
-
-**Check ($a = C$)**
-
-If Player 1 checks:
-
-- If Player 2 checks: showdown for a pot of 4,
-- If Player 2 bets: Player 1 loses 4.
-
-Thus,
-
-$$
-v(k,C)
-=
-\sum_{j \neq k} \frac{1}{4}
-\left[
-(1-\tau(j)) \cdot \text{SD}_4(k,j)
-+
-\tau(j)\cdot (-4)
-\right].
-$$
-
-
-
-**Bet ($a = B$)**
-
-If Player 1 bets:
-
-- If Player 2 checks: Player 1 wins 4,
-- If Player 2 bets: showdown for a pot of 8.
-
-Thus,
-
-$$
-v(k,B)
-=
-\sum_{j \neq k} \frac{1}{4}
-\left[
-(1-\tau(j))\cdot 4
-+
-\tau(j)\cdot \text{SD}_8(k,j)
-\right].
-$$
-
-
-
-#### Showdown Payoffs
-
-$$
-\text{SD}_4(k,j) =
-\begin{cases}
-4 & k>j \\
--4 & k<j
-\end{cases}
-\qquad
-\text{SD}_8(k,j) =
-\begin{cases}
-8 & k>j \\
--8 & k<j
-\end{cases}
-$$
-
-
-
-### 6. Strategy Value as a Mixture
-
-The conditional value can be written as
-
-$$
-v(k)
-=
-\sigma(k)\,v(k,B)
-+
-(1-\sigma(k))\,v(k,C).
-$$
-
-
-
-#### Interpretation
-
-- A mixed strategy is a **weighted average of its actions**,
-- The weights are the probabilities assigned by the strategy.
-
 
 
 #### A Conceptual Shift
@@ -599,11 +930,6 @@ Instead of optimizing $\sigma(k)$ directly:
 - Compare $v(k,B)$ and $v(k,C)$,
 - Adjust $\sigma(k)$ accordingly.
 
-This is precisely what regret will measure.
-
-
-
-#### Looking Ahead
 
 We now ask:
 
@@ -616,8 +942,7 @@ This leads to **regret**.
 ### 7. Regret
 
 #### Definition (Instantaneous Regret)
-
-At iteration $t$,
+At iteration $t$, the **instantaneous regret** for taking action $a$ with card $k$ is
 
 $$
 r_t(k,a)
@@ -625,46 +950,394 @@ r_t(k,a)
 v_t(k,a) - v_t(k).
 $$
 
+This quantity compares two things:
+
+- $v_t(k,a)$: the payoff we would have received by **always choosing action $a$** with card $k$ at iteration $t$,
+- $v_t(k)$: the payoff we actually received under our **current mixed strategy**.
+
 
 
 #### Interpretation
 
-For each card $k$:
+For each card $k$, regret answers the question:
 
-> “How much better would action $a$ have been?”
+> “How much better (or worse) would action $a$ have been compared to what I actually did?”
+
+In this sense, regret is a **local comparison**:
+
+- It focuses on a single card $k$,
+- It evaluates a single alternative action $a$,
+- It holds the opponent’s strategy fixed.
+
+Rather than asking whether we won or lost the hand, regret asks:
+
+> “Was there a better decision available to me in this situation?”
 
 
 
 #### Sign of Regret
 
+The sign of $r_t(k,a)$ tells us how that alternative action performed:
+
 - If
   $$
   r_t(k,a) > 0,
   $$
-  then action $a$ would have been better.
+  then action $a$ would have produced a **higher payoff** than the strategy we used.  
+  In hindsight, we should have used action $a$ more often.
 
 - If
   $$
   r_t(k,a) < 0,
   $$
-  then action $a$ would have been worse.
+  then action $a$ would have performed **worse** than what we actually did.  
+  This suggests that action $a$ should be used less frequently.
+
+- If
+  $$
+  r_t(k,a) = 0,
+  $$
+  then action $a$ performs exactly the same as the current strategy at that card.
 
 
 
+#### Why This Matters
+
+Regret provides a **direction for improvement**.
+
+- Positive regret indicates a missed opportunity,
+- Negative regret indicates an overused or suboptimal action.
+
+By tracking these values over time, we build a record of which actions tend to outperform others.  
+This accumulated information will guide how strategies are updated in the next step of the algorithm.
 #### Example
 
-- For $k=5$:
-  $$
-  v_t(5,B) > v_t(5,C)
-  $$
-  → betting has positive regret.
+Using the counterfactual values computed earlier for card $k=3$,
 
-- For $k=1$:
-  excessive betting can give
+$$
+v_t(3,B)=1,
+\qquad
+v_t(3,C)=-1.
+$$
+
+Suppose Player 1 is currently mixing, so that
+
+$$
+v_t(3)
+=
+\sigma_t(3)\,v_t(3,B)
++
+(1-\sigma_t(3))\,v_t(3,C).
+$$
+
+For example, if $\sigma_t(3)=0.5$, then
+
+$$
+v_t(3)
+=
+0.5(1)+0.5(-1)
+=
+0.
+$$
+
+Now we compute regret:
+
+- For betting:
   $$
-  v_t(1,B) < v_t(1)
+  r_t(3,B)
+  =
+  v_t(3,B) - v_t(3)
+  =
+  1 - 0
+  =
+  1,
   $$
-  → negative regret.
+  so betting has **positive regret**.
+
+- For checking:
+  $$
+  r_t(3,C)
+  =
+  v_t(3,C) - v_t(3)
+  =
+  -1 - 0
+  =
+  -1,
+  $$
+  so checking has **negative regret**.
+
+
+
+#### Interpretation
+
+- Betting with card $3$ would have performed better than the current strategy,
+- Checking would have performed worse.
+
+Thus, regret indicates that we should **increase the probability of betting** and **decrease the probability of checking** with this card in future iterations.
+#### Example: Regret from Player 2's Perspective
+
+We continue with the same strategy profile:
+
+$$
+\sigma = (0.1,\,0.2,\,0.5,\,0.8,\,1.0),
+\qquad
+\tau(j)=0.5 \text{ for all } j.
+$$
+
+Previously, we computed counterfactual values for Player 1 with card $k=3$.  
+To see how both players update, we now compute regret from **Player 2's perspective** on a compatible hand, namely $j=2$.
+
+Since Player 2 holds card $2$, Player 1's possible cards are
+$$
+1,3,4,5.
+$$
+
+
+
+##### Counterfactual value of checking with 2
+
+If Player 2 checks:
+
+- if Player 1 checks, the hand goes to showdown for net payoff $\pm 2$,
+- if Player 1 bets, Player 2 loses $2$.
+
+Thus
+
+$$
+w_t(2,C)
+=
+\sum_{k \neq 2} \frac{1}{4}
+\left[
+(1-\sigma(k))\cdot \text{SD}_2^{(P2)}(2,k)
++
+\sigma(k)\cdot (-2)
+\right],
+$$
+
+where
+
+$$
+\text{SD}_2^{(P2)}(2,k)
+=
+\begin{cases}
+2 & 2>k,\\
+-2 & 2<k.
+\end{cases}
+$$
+
+Now evaluate term by term.
+
+- Against $k=1$:
+  $$
+  (1-\sigma(1))\cdot 2 + \sigma(1)\cdot (-2)
+  =
+  0.9(2)+0.1(-2)=1.6
+  $$
+
+- Against $k=3$:
+  $$
+  (1-\sigma(3))\cdot (-2) + \sigma(3)\cdot (-2)
+  =
+  0.5(-2)+0.5(-2)=-2
+  $$
+
+- Against $k=4$:
+  $$
+  (1-\sigma(4))\cdot (-2) + \sigma(4)\cdot (-2)
+  =
+  0.2(-2)+0.8(-2)=-2
+  $$
+
+- Against $k=5$:
+  $$
+  (1-\sigma(5))\cdot (-2) + \sigma(5)\cdot (-2)
+  =
+  0(-2)+1(-2)=-2
+  $$
+
+Therefore,
+
+$$
+w_t(2,C)
+=
+\frac{1}{4}(1.6-2-2-2)
+=
+\frac{-4.4}{4}
+=
+-1.1.
+$$
+
+
+
+##### Counterfactual value of betting with 2
+
+If Player 2 bets:
+
+- if Player 1 checks, Player 2 wins $2$,
+- if Player 1 bets, the hand goes to showdown for net payoff $\pm 4$.
+
+So
+
+$$
+w_t(2,B)
+=
+\sum_{k \neq 2} \frac{1}{4}
+\left[
+(1-\sigma(k))\cdot 2 + \sigma(k)\cdot \text{SD}_4^{(P2)}(2,k)
+\right],
+$$
+
+where
+
+$$
+\text{SD}_4^{(P2)}(2,k)
+=
+\begin{cases}
+4 & 2>k,\\
+-4 & 2<k.
+\end{cases}
+$$
+
+Again compute term by term.
+
+- Against $k=1$:
+  $$
+  (1-\sigma(1))\cdot 2 + \sigma(1)\cdot 4
+  =
+  0.9(2)+0.1(4)=2.2
+  $$
+
+- Against $k=3$:
+  $$
+  (1-\sigma(3))\cdot 2 + \sigma(3)\cdot (-4)
+  =
+  0.5(2)+0.5(-4)=-1
+  $$
+
+- Against $k=4$:
+  $$
+  (1-\sigma(4))\cdot 2 + \sigma(4)\cdot (-4)
+  =
+  0.2(2)+0.8(-4)=-2.8
+  $$
+
+- Against $k=5$:
+  $$
+  (1-\sigma(5))\cdot 2 + \sigma(5)\cdot (-4)
+  =
+  0(2)+1(-4)=-4
+  $$
+
+Therefore,
+
+$$
+w_t(2,B)
+=
+\frac{1}{4}(2.2-1-2.8-4)
+=
+\frac{-5.6}{4}
+=
+-1.4.
+$$
+
+
+
+##### Compute Player 2's current value
+
+Since $\tau(2)=0.5$, Player 2 is currently mixing evenly between checking and betting with card $2$. Thus
+
+$$
+w_t(2)
+=
+0.5\,w_t(2,B)+0.5\,w_t(2,C)
+=
+0.5(-1.4)+0.5(-1.1)
+=
+-1.25.
+$$
+
+
+
+##### Compute regret
+
+Now compute the regrets for Player 2.
+
+For betting,
+
+$$
+r_t^{(2)}(2,B)
+=
+w_t(2,B)-w_t(2)
+=
+-1.4-(-1.25)
+=
+-0.15.
+$$
+
+For checking,
+
+$$
+r_t^{(2)}(2,C)
+=
+w_t(2,C)-w_t(2)
+=
+-1.1-(-1.25)
+=
+0.15.
+$$
+
+
+
+##### Interpretation
+
+So, when Player 2 holds card $2$,
+
+$$
+r_t^{(2)}(2,B)=-0.15,
+\qquad
+r_t^{(2)}(2,C)=0.15.
+$$
+
+This means:
+
+- checking has **positive regret**,
+- betting has **negative regret**.
+
+Thus, after this iteration, Player 2 should increase the probability of **checking** with card $2$ and decrease the probability of **betting** with card $2$.
+
+This complements the earlier Player 1 calculation: both players evaluate their own decisions, compute regret, and then update their strategies for the next iteration.
+
+
+Before defining cumulative regret, it is important to understand why we do not update strategies using only the instantaneous regret $r_t(k,a)$.
+
+
+
+#### Why Not Use Instantaneous Regret?
+
+At a single iteration $t$:
+
+- The opponent’s strategy $\tau_t$ may still be unstable,
+- Outcomes may reflect short-term fluctuations,
+- A single observation may be noisy or misleading.
+
+As a result:
+
+> Acting only on $r_t(k,a)$ would cause strategies to **overreact** to recent outcomes.
+
+For example:
+
+- An action may appear favorable in one iteration purely by chance,
+- But perform poorly on average over many iterations.
+
+
+
+#### The Key Idea
+
+Instead of reacting to a single iteration, we track performance **over time**.
+
+> We ask: *Has this action consistently performed better than what we actually did?*
+
+This leads to the notion of **cumulative regret**.
 
 
 
@@ -680,8 +1353,12 @@ $$
 
 #### Interpretation
 
-- Large positive → underused action  
-- Negative → overused action  
+Cumulative regret aggregates evidence across many iterations:
+
+- Large positive values indicate an action that has been **consistently underused**,
+- Negative values indicate an action that has been **overused** relative to alternatives.
+
+Thus, cumulative regret provides a more stable signal for updating strategies.
 
 
 
@@ -689,9 +1366,18 @@ $$
 
 Regret is computed **independently for each card $k$**.
 
+That is:
+
+- Each card has its own learning process,
+- The algorithm learns how to act separately with each hand.
+
 
 
 ### 8. Regret Matching
+
+Once cumulative regret has been computed, we use it to update strategies.
+
+
 
 #### Definition (Positive Regret)
 
@@ -707,8 +1393,8 @@ $$
 \sigma^{T+1}(k,a)
 =
 \begin{cases}
-\dfrac{R_T^+(k,a)}{\sum_{a'} R_T^+(k,a')} & \text{if positive regret exists} \\
-\dfrac{1}{2} & \text{otherwise}
+\dfrac{R_T^+(k,a)}{\sum_{a'} R_T^+(k,a')} & \text{if positive regret exists}, \\[10pt]
+\dfrac{1}{2} & \text{otherwise}.
 \end{cases}
 $$
 
@@ -716,8 +1402,166 @@ $$
 
 #### Interpretation
 
-- Positive regret → increase probability  
-- No positive regret → play uniformly  
+This rule converts regret into behavior:
+
+- Actions with **positive cumulative regret** are played more often,
+- Actions with **nonpositive regret** are suppressed,
+- If no action has positive regret, we revert to a **uniform strategy**.
+
+
+
+#### Why This Works
+
+Regret matching implements a simple principle:
+
+> Increase the probability of actions that have demonstrated consistent advantage over time.
+
+By basing updates on cumulative regret:
+
+- We avoid overreacting to noise,
+- We emphasize long-run performance,
+- Strategies evolve smoothly toward equilibrium.
+
+
+#### Example: Updating $\sigma(3)$ and $\tau(2)$
+
+We now use our previous calculations to perform an explicit strategy update.
+
+Recall the setting:
+
+$$
+\sigma = (0.1,\,0.2,\,0.5,\,0.8,\,1.0),
+\qquad
+\tau(j)=0.5 \text{ for all } j.
+$$
+
+
+
+### Step 1: Instantaneous Regret
+
+From earlier computations:
+
+- **Player 1 (card $k=3$):**
+  $$
+  r_t^{(1)}(3,B)=1,
+  \qquad
+  r_t^{(1)}(3,C)=-1.
+  $$
+
+- **Player 2 (card $j=2$):**
+  $$
+  r_t^{(2)}(2,B)=-0.15,
+  \qquad
+  r_t^{(2)}(2,C)=0.15.
+  $$
+
+
+
+### Step 2: Cumulative Regret
+
+Assume this is the **first iteration**, so cumulative regret equals instantaneous regret:
+
+$$
+R_1^{(1)}(3,B)=1, \quad R_1^{(1)}(3,C)=-1,
+$$
+
+$$
+R_1^{(2)}(2,B)=-0.15, \quad R_1^{(2)}(2,C)=0.15.
+$$
+
+
+
+### Step 3: Positive Regret
+
+Apply
+
+$$
+R_T^+(k,a)=\max\{R_T(k,a),0\}.
+$$
+
+- Player 1:
+  $$
+  R_1^+(3,B)=1,
+  \qquad
+  R_1^+(3,C)=0.
+  $$
+
+- Player 2:
+  $$
+  R_1^+(2,B)=0,
+  \qquad
+  R_1^+(2,C)=0.15.
+  $$
+
+
+
+### Step 4: Strategy Update
+
+Using regret matching:
+
+
+
+#### Player 1 (card $3$)
+
+$$
+\sigma_2(3,B)
+=
+\frac{1}{1+0}
+=
+1,
+\qquad
+\sigma_2(3,C)=0.
+$$
+
+So Player 1 moves from
+
+$$
+\sigma_1(3)=0.5
+\quad \longrightarrow \quad
+\sigma_2(3)=1.
+$$
+
+
+
+#### Player 2 (card $2$)
+
+$$
+\tau_2(2,C)
+=
+\frac{0.15}{0.15}
+=
+1,
+\qquad
+\tau_2(2,B)=0.
+$$
+
+So Player 2 moves from
+
+$$
+\tau_1(2)=0.5
+\quad \longrightarrow \quad
+\tau_2(2)=0.
+$$
+
+
+
+### Interpretation
+
+- Player 1 increases betting with card $3$ because betting had **positive regret**,
+- Player 2 increases checking with card $2$ because checking had **positive regret**.
+
+Both players adjust **simultaneously**, based on the same interaction.
+
+
+
+### Key Insight
+
+> Each player independently shifts toward actions that would have performed better.
+
+Even though both players treat the opponent’s strategy as fixed during evaluation,  
+the updates occur at the same time, causing the strategies to evolve together.
+
+
 
 
 
@@ -734,46 +1578,434 @@ $$
   $$
 
 
+#### Updating Strategies: One Hand or All Hands?
 
-### 9. Decomposition Across Cards
+Up to this point, we have updated each player’s strategy only for the **specific hand they held** in a given iteration.
 
-Each card updates independently.
+For example:
 
-We solve five local problems:
+- Player 1 updated $\sigma(3)$,
+- Player 2 updated $\tau(2)$.
 
-- What should I do with card 1?
-- What should I do with card 2?
-- $\dots$
-- What should I do with card 5?
+This raises an important question:
+
+> Should we update only the hand that was actually played, or all possible hands at each iteration?
 
 
 
-### 10. Example: First Iteration
+#### Option 1: Updating Only the Realized Hand
 
-Assume
+In this approach:
+
+- Each iteration corresponds to a single simulated deal,
+- Players update regret only for the cards they actually held,
+- All other entries of $\sigma$ and $\tau$ remain unchanged.
+
+
+
+##### Interpretation
+
+This mimics real experience:
+
+- You observe what happened with the hand you were dealt,
+- You adjust based on that specific outcome,
+- Learning occurs gradually over many repetitions.
+
+
+
+##### Advantages
+
+- Conceptually simple,
+- Easy to simulate,
+- Matches how humans naturally learn from experience.
+
+
+
+##### Limitation
+
+Each iteration provides **very limited information**:
+
+- Only one card per player is updated,
+- Many iterations are required before all hands are well understood.
+
+
+
+#### Option 2: Updating All Hands (Full Information Update)
+
+In this approach:
+
+- At each iteration, we compute counterfactual values for **every possible card $k$**,
+- We update regret for all actions at all cards,
+- Strategies are updated globally.
+
+
+
+##### Interpretation
+
+Instead of asking:
+
+> “What happened with the hand I was dealt?”
+
+we ask:
+
+> “What *would have happened* for every possible hand, given the opponent’s strategy?”
+
+
+
+##### Advantages
+
+- Much faster learning,
+- Every iteration updates the entire strategy,
+- Produces stable behavior more quickly.
+
+
+
+##### Key Idea
+
+This is the defining feature of **counterfactual regret minimization**:
+
+> Even though only one hand is played, we evaluate *all possible hands* using counterfactual reasoning.
+
+
+
+#### Conceptual Comparison
+
+| Approach | What is updated? | Speed | Interpretation |
+|----------|----------------|------|---------------|
+| Realized-hand update | Only observed card | Slow | Learning from experience |
+| Full CFR update | All cards | Fast | Learning from counterfactual reasoning |
+
+
+
+#### What We Will Use
+
+In this chapter, we adopt the **full update approach**:
+
+- At each iteration, we compute values for all cards,
+- We update regret for every $(k,a)$,
+- We then apply regret matching to update strategies.
+
+This allows us to focus on the structure of the algorithm, rather than waiting for learning to occur gradually.
+
+
+
+#### Key Insight
+
+> CFR does not rely only on what *did* happen.  
+> It learns from what *could have happened*.
+
+### 10. Example: First Four Iterations (Full CFR)
+
+We now illustrate the first four iterations of regret matching in the five-card game.
+
+We begin with
 
 $$
-\sigma(k) = \tau(k) = \tfrac{1}{2}.
+\sigma_1=(0.1,\,0.2,\,0.5,\,0.8,\,1.0),
+\qquad
+\tau_1=(0.5,\,0.5,\,0.5,\,0.5,\,0.5).
+$$
+
+At each iteration:
+
+1. compute counterfactual values for every card,
+2. compute instantaneous regret for every action,
+3. accumulate regret,
+4. update strategies using positive cumulative regret.
+
+Because we update **all cards at once**, this is a full CFR-style iteration rather than a realized-hand update.
+
+
+
+#### Iteration 1
+
+Using $\sigma_1$ and $\tau_1$, we compute the first regrets.
+
+For Player 1, the cumulative regrets after the first iteration are:
+
+$$
+R_1^{(1)}(k,B)=(0.9,\,1.2,\,1.0,\,0.5,\,0),
+$$
+
+$$
+R_1^{(1)}(k,C)=(-0.1,\,-0.3,\,-1.0,\,-2.0,\,-3.0).
+$$
+
+Thus the positive regrets are
+
+$$
+R_1^{(1)+}(k,B)=(0.9,\,1.2,\,1.0,\,0.5,\,0),
+\qquad
+R_1^{(1)+}(k,C)=(0,\,0,\,0,\,0,\,0),
+$$
+
+so Player 1 updates to
+
+$$
+\sigma_2=(1,\,1,\,1,\,1,\,0.5).
+$$
+
+For Player 2, the cumulative regrets after the first iteration are
+
+$$
+R_1^{(2)}(k,B)=(0.125,\,-0.15,\,-0.125,\,0.35,\,1.2),
+$$
+
+$$
+R_1^{(2)}(k,C)=(-0.125,\,0.15,\,0.125,\,-0.35,\,-1.2).
+$$
+
+Therefore Player 2 updates to
+
+$$
+\tau_2=(1,\,0,\,0,\,1,\,1).
+$$
+
+So after one iteration, the updated strategies are
+
+$$
+\sigma_2=(1,\,1,\,1,\,1,\,0.5),
+\qquad
+\tau_2=(1,\,0,\,0,\,1,\,1).
 $$
 
 
 
-#### Card $k=5$
+#### Iteration 2
 
-- Always wins,
-- Betting increases pot.
+Now we compute counterfactual values and regrets using $\sigma_2$ and $\tau_2$, and add them to the previous cumulative regrets.
+
+After the second iteration, Player 1's cumulative regrets become
 
 $$
-v(5,B) > v(5,C)
+R_2^{(1)}(k,B)=(0.9,\,1.2,\,1.0,\,0.5,\,1.5),
+$$
+
+$$
+R_2^{(1)}(k,C)=(-1.1,\,-1.8,\,-1.5,\,-3.0,\,-4.5).
+$$
+
+Hence Player 1 updates to
+
+$$
+\sigma_3=(1,\,1,\,1,\,1,\,1).
+$$
+
+For Player 2, the cumulative regrets become
+
+$$
+R_2^{(2)}(k,B)=(0.125,\,0.6,\,2.625,\,0.35,\,1.2),
+$$
+
+$$
+R_2^{(2)}(k,C)=(1.125,\,0.15,\,0.125,\,-5.1,\,-7.2).
+$$
+
+Applying regret matching card by card gives
+
+$$
+\tau_3=
+\left(
+\frac{0.125}{0.125+1.125},
+\frac{0.6}{0.6+0.15},
+\frac{2.625}{2.625+0.125},
+1,
+1
+\right),
+$$
+
+that is,
+
+$$
+\tau_3=(0.1,\,0.8,\,0.9545,\,1,\,1).
+$$
+
+So after two iterations,
+
+$$
+\sigma_3=(1,\,1,\,1,\,1,\,1),
+\qquad
+\tau_3=(0.1,\,0.8,\,0.9545,\,1,\,1).
 $$
 
 
 
-#### Card $k=1$
+#### Iteration 3
 
-- Always loses,
-- Betting only wins via folds.
+Using $\sigma_3$ and $\tau_3$, we compute another full round of regrets.
 
+For Player 1, the cumulative regrets become
+
+$$
+R_3^{(1)}(k,B)=(0.9,\,1.2,\,1.0,\,0.5,\,1.5),
+$$
+
+$$
+R_3^{(1)}(k,C)=(0.5318,\,-0.5182,\,-1.85,\,-5.2818,\,-8.7818).
+$$
+
+Now card $1$ has positive cumulative regret for both betting and checking, so Player 1 mixes there:
+
+$$
+\sigma_4(1)
+=
+\frac{0.9}{0.9+0.5318}
+\approx 0.6286.
+$$
+
+For the other cards:
+
+- card $2$: only betting has positive regret,
+- card $3$: only betting has positive regret,
+- card $4$: only betting has positive regret,
+- card $5$: only betting has positive regret.
+
+Thus
+
+$$
+\sigma_4=(0.6286,\,1,\,1,\,1,\,1).
+$$
+
+For Player 2, the cumulative regrets become
+
+$$
+R_3^{(2)}(k,B)=(-1.675,\,0.6,\,2.7159,\,0.35,\,1.2),
+$$
+
+$$
+R_3^{(2)}(k,C)=(1.325,\,0.15,\,-1.7841,\,-9.1,\,-13.2).
+$$
+
+So Player 2 updates to
+
+$$
+\tau_4=(0,\,0.8,\,1,\,1,\,1).
+$$
+
+After three iterations,
+
+$$
+\sigma_4=(0.6286,\,1,\,1,\,1,\,1),
+\qquad
+\tau_4=(0,\,0.8,\,1,\,1,\,1).
+$$
+
+
+
+#### Iteration 4
+
+Using $\sigma_4$ and $\tau_4$, we repeat the process.
+
+Player 1's cumulative regrets become
+
+$$
+R_4^{(1)}(k,B)=(0.2686,\,1.2,\,1.0,\,0.5,\,1.5),
+$$
+
+$$
+R_4^{(1)}(k,C)=(1.6004,\,0.9818,\,-2.05,\,-7.4818,\,-12.9818).
+$$
+
+Now both actions have positive cumulative regret for cards $1$ and $2$, so Player 1 mixes on both:
+
+$$
+\sigma_5(1)
+=
+\frac{0.2686}{0.2686+1.6004}
+\approx 0.1437,
+$$
+
+$$
+\sigma_5(2)
+=
+\frac{1.2}{1.2+0.9818}
+\approx 0.55.
+$$
+
+For cards $3,4,5$, only betting has positive regret, so they remain pure bets. Therefore
+
+$$
+\sigma_5=(0.1437,\,0.55,\,1,\,1,\,1).
+$$
+
+For Player 2, the cumulative regrets become
+
+$$
+R_4^{(2)}(k,B)=(-3.675,\,0.4886,\,2.7159,\,0.35,\,1.2),
+$$
+
+$$
+R_4^{(2)}(k,C)=(1.325,\,0.5957,\,-3.2269,\,-12.5429,\,-18.6429).
+$$
+
+Thus Player 2 updates to
+
+$$
+\tau_5=
+\left(
+0,\,
+\frac{0.4886}{0.4886+0.5957},\,
+1,\,
+1,\,
+1
+\right),
+$$
+
+so
+
+$$
+\tau_5=(0,\,0.4506,\,1,\,1,\,1).
+$$
+
+After four iterations,
+
+$$
+\sigma_5=(0.1437,\,0.55,\,1,\,1,\,1),
+\qquad
+\tau_5=(0,\,0.4506,\,1,\,1,\,1).
+$$
+
+
+
+#### Summary Table
+
+For convenience, here are the strategy vectors after each update:
+
+$$
+\begin{aligned}
+\sigma_1 &= (0.1,\,0.2,\,0.5,\,0.8,\,1.0), \\
+\sigma_2 &= (1,\,1,\,1,\,1,\,0.5), \\
+\sigma_3 &= (1,\,1,\,1,\,1,\,1), \\
+\sigma_4 &= (0.6286,\,1,\,1,\,1,\,1), \\
+\sigma_5 &= (0.1437,\,0.55,\,1,\,1,\,1),
+\end{aligned}
+$$
+
+and
+
+$$
+\begin{aligned}
+\tau_1 &= (0.5,\,0.5,\,0.5,\,0.5,\,0.5), \\
+\tau_2 &= (1,\,0,\,0,\,1,\,1), \\
+\tau_3 &= (0.1,\,0.8,\,0.9545,\,1,\,1), \\
+\tau_4 &= (0,\,0.8,\,1,\,1,\,1), \\
+\tau_5 &= (0,\,0.4506,\,1,\,1,\,1).
+\end{aligned}
+$$
+
+
+
+#### Interpretation
+
+Several features are already visible:
+
+- The raw strategies can move sharply in early iterations,
+- Different cards update independently,
+- Mixed strategies arise when both actions accumulate positive regret,
+- The process is highly dynamic because each player is responding to an opponent who is also learning.
+
+
+This example also illustrates why we focus on the **average strategy** rather than the strategy at a single iteration: the instantaneous strategies can fluctuate substantially before the process settles into equilibrium behavior.
 
 ### 11. Average Strategy
 
@@ -798,18 +2030,191 @@ the average strategy records the **long-run behavior** of the learning process.
 
 
 
-#### Why Averaging Is Necessary
+### Example: Average Strategy over the First Five Iterations
 
-The sequence $\{\sigma^t\}$ need not converge pointwise:
+Recall that the **average strategy** for Player 1 after $T$ iterations is
 
-- Strategies may oscillate,
-- Actions may alternate between overuse and underuse,
-- Regret matching responds dynamically to recent outcomes.
+$$
+\bar{\sigma}_T(k)
+=
+\frac{1}{T}
+\sum_{t=1}^T \sigma_t(k),
+$$
 
-However, these fluctuations tend to balance out over time.
+and similarly for Player 2:
 
-The average strategy smooths this behavior and captures the stable structure that emerges from repeated play.
+$$
+\bar{\tau}_T(j)
+=
+\frac{1}{T}
+\sum_{t=1}^T \tau_t(j).
+$$
 
+We now compute these averages using the first five iterations.
+
+
+
+#### Strategies by Iteration
+
+From the previous section, we have:
+
+$$
+\begin{aligned}
+\sigma_1 &= (0.1,\,0.2,\,0.5,\,0.8,\,1.0), \\
+\sigma_2 &= (1,\,1,\,1,\,1,\,0.5), \\
+\sigma_3 &= (1,\,1,\,1,\,1,\,1), \\
+\sigma_4 &= (0.6286,\,1,\,1,\,1,\,1), \\
+\sigma_5 &= (0.1437,\,0.55,\,1,\,1,\,1),
+\end{aligned}
+$$
+
+and
+
+$$
+\begin{aligned}
+\tau_1 &= (0.5,\,0.5,\,0.5,\,0.5,\,0.5), \\
+\tau_2 &= (1,\,0,\,0,\,1,\,1), \\
+\tau_3 &= (0.1,\,0.8,\,0.9545,\,1,\,1), \\
+\tau_4 &= (0,\,0.8,\,1,\,1,\,1), \\
+\tau_5 &= (0,\,0.4506,\,1,\,1,\,1).
+\end{aligned}
+$$
+
+
+
+#### Average Strategy for Player 1
+
+We compute componentwise averages:
+
+- Card $1$:
+  $$
+  \bar{\sigma}_5(1)
+  =
+  \frac{0.1 + 1 + 1 + 0.6286 + 0.1437}{5}
+  \approx 0.5745
+  $$
+
+- Card $2$:
+  $$
+  \bar{\sigma}_5(2)
+  =
+  \frac{0.2 + 1 + 1 + 1 + 0.55}{5}
+  = 0.75
+  $$
+
+- Card $3$:
+  $$
+  \bar{\sigma}_5(3)
+  =
+  \frac{0.5 + 1 + 1 + 1 + 1}{5}
+  = 0.9
+  $$
+
+- Card $4$:
+  $$
+  \bar{\sigma}_5(4)
+  =
+  \frac{0.8 + 1 + 1 + 1 + 1}{5}
+  = 0.96
+  $$
+
+- Card $5$:
+  $$
+  \bar{\sigma}_5(5)
+  =
+  \frac{1 + 0.5 + 1 + 1 + 1}{5}
+  = 0.9
+  $$
+
+Thus,
+
+$$
+\bar{\sigma}_5
+=
+(0.5745,\,0.75,\,0.9,\,0.96,\,0.9).
+$$
+
+
+
+#### Average Strategy for Player 2
+
+- Card $1$:
+  $$
+  \bar{\tau}_5(1)
+  =
+  \frac{0.5 + 1 + 0.1 + 0 + 0}{5}
+  = 0.32
+  $$
+
+- Card $2$:
+  $$
+  \bar{\tau}_5(2)
+  =
+  \frac{0.5 + 0 + 0.8 + 0.8 + 0.4506}{5}
+  \approx 0.5101
+  $$
+
+- Card $3$:
+  $$
+  \bar{\tau}_5(3)
+  =
+  \frac{0.5 + 0 + 0.9545 + 1 + 1}{5}
+  \approx 0.6909
+  $$
+
+- Card $4$:
+  $$
+  \bar{\tau}_5(4)
+  =
+  \frac{0.5 + 1 + 1 + 1 + 1}{5}
+  = 0.9
+  $$
+
+- Card $5$:
+  $$
+  \bar{\tau}_5(5)
+  =
+  \frac{0.5 + 1 + 1 + 1 + 1}{5}
+  = 0.9
+  $$
+
+Thus,
+
+$$
+\bar{\tau}_5
+=
+(0.32,\,0.5101,\,0.6909,\,0.9,\,0.9).
+$$
+
+
+
+#### Summary Table
+
+$$
+\begin{array}{c|ccccc}
+\text{Card} & 1 & 2 & 3 & 4 & 5 \\
+\hline
+\bar{\sigma}_5 & 0.5745 & 0.75 & 0.9 & 0.96 & 0.9 \\
+\bar{\tau}_5   & 0.32   & 0.5101 & 0.6909 & 0.9 & 0.9
+\end{array}
+$$
+
+
+
+#### Interpretation
+
+Even after just five iterations:
+
+- The **average strategies are much smoother** than the individual $\sigma_t$ and $\tau_t$,
+- Extreme early behavior (e.g., always betting) is moderated,
+- A meaningful structure begins to emerge:
+  - strong hands bet frequently,
+  - weak hands mix,
+  - mid-strength hands begin to differentiate.
+
+This illustrates a central principle of CFR:
+
+> The *average strategy* converges to equilibrium, even when individual iterations fluctuate significantly.
 
 
 #### A Card-by-Card Perspective
@@ -933,7 +2338,140 @@ The result is a strategy in which:
 
 > No action has accumulated systematic advantage over the ones being played.
 
+### From Known Strategies to Learning from Data
 
+Up to this point, we have assumed that each player has access to the opponent’s full strategy. This allowed us to compute counterfactual values exactly:
+
+$$
+v_t(k,a)
+=
+\mathbb{E}\big[u_1(k,j,a,a_2)\big],
+$$
+
+where the expectation is taken over both the opponent’s possible cards and their mixed strategy.
+
+
+
+#### What if the opponent’s strategy is unknown?
+
+In practice, players do **not** have access to an opponent’s full strategy. Instead, they observe only:
+
+- the opponent’s realized action,
+- the resulting payoff.
+
+Thus, at iteration $t$, we observe a single outcome:
+$$
+(j_t, a_{2,t}),
+$$
+rather than the full distribution.
+
+
+
+#### Estimating Counterfactual Values
+
+Without access to the opponent’s strategy, we replace exact expectations with **sample-based estimates**.
+
+For example, we approximate:
+$$
+v_t(k,a)
+\approx
+\hat{v}_t(k,a)
+=
+u_1\big(k, j_t, a, a_{2,t}\big).
+$$
+
+This answers the question:
+
+> “What would have happened this round if I had taken action $a$?”
+
+
+
+#### A Subtle Issue: Bias
+
+This estimate is based on a single observed outcome, so it does not directly represent the full expectation over all possibilities. As a result:
+
+- regret updates become **noisy**,
+- learning becomes **stochastic** rather than deterministic.
+
+More refined methods introduce weighting schemes to correct this bias, but the core idea remains the same: learning from samples.
+
+
+
+#### Updated Regret Computation
+
+We now define sampled regret:
+$$
+\hat{r}_t(k,a)
+=
+\hat{v}_t(k,a) - \hat{v}_t(k),
+$$
+
+and accumulate:
+$$
+R_T(k,a)
+=
+\sum_{t=1}^T \hat{r}_t(k,a).
+$$
+
+The regret matching update rule is unchanged.
+
+
+
+#### Interpretation
+
+This shift changes the nature of the algorithm:
+
+- Previously, we computed what would happen **in expectation**,
+- Now, we learn from what **actually happens**.
+
+In other words:
+
+> CFR becomes a method for learning optimal play from experience, not just from a known model.
+
+
+
+### Connection to Modern Poker Solvers
+
+There are several variants of CFR, depending on how much information is used at each iteration:
+
+- **Full CFR** (what we have used so far):
+  - Computes exact expectations using the full game tree,
+  - Conceptually clean, but computationally expensive.
+
+- **Monte Carlo CFR (MCCFR)**:
+  - Samples parts of the game tree (such as card deals),
+  - Reduces computational cost while maintaining convergence.
+
+- **Outcome Sampling CFR**:
+  - Samples both chance events and opponent actions,
+  - Closest to learning from observed play.
+
+
+
+#### Which approach do modern solvers use?
+
+Most modern poker solvers (such as those used in practice for large no-limit games) rely on:
+
+> **Monte Carlo CFR with full knowledge of strategies**
+
+In particular:
+
+- They **do not learn from observed opponent play**,  
+- Instead, they simulate self-play where both strategies are known,
+- They use sampling only to reduce computation, not to handle uncertainty about the opponent.
+
+
+
+#### Key Takeaway
+
+> The version of CFR we study—where strategies are known and expectations are computed—is not unrealistic.  
+> It is the foundation of how modern poker solvers compute equilibrium strategies.
+
+At the same time, the sample-based version provides a bridge to:
+
+- real-world learning,
+- reinforcement learning,
+- and adaptive play against unknown opponents.
 
 #### Looking Ahead
 
