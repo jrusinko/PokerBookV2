@@ -31,46 +31,855 @@ Near the bubble, someone folds a strong hand—absurd in cash games. Why do ince
 
 - Situation: Near the bubble, someone folds a strong hand—absurd in cash games. Why do incentives flip in tournaments?
 - Why it matters: this introduces 19 Tournament vs Cash Incentives, 20 ICM and Nonlinear Utility.
+## Mathematical Framework and Poker Theory: The Independent Chip Model
+## Mathematical Framework and Poker Theory: The Independent Chip Model
 
-## Mathematical Framework and Poker Theory
+### 1. Modeling Tournament Equity
+### 1. Modeling Tournament Equity
 
-### Roadmap
+In a tournament setting, chips do not carry intrinsic value. Their significance arises only through their relationship to the eventual prize distribution. The central modeling task is therefore to translate chip stacks into expected monetary outcomes.
 
-- Why chip EV differs from money EV
-- Utility and payout ladders
-- ICM mechanics (conceptual + calculations)
-- Bubble/ladder implications for decisions
+**Definition (Tournament Payout Structure).**  
+Let
+$$
+\mathbf{p} = (p_1, p_2, \dots, p_n)
+$$
+be the payout vector, where $p_k$ is the prize awarded for finishing in position $k$, with
+$$
+p_1 \ge p_2 \ge \cdots \ge p_n \ge 0.
+$$
 
-### Definitions
+The ordering reflects the hierarchical nature of tournament rewards: higher finishing positions receive weakly larger payouts. In many tournaments, the sequence is strictly decreasing at the top and flattens toward the bottom, often assigning identical payouts to several of the lowest finishing positions.
 
-**utility function.** *[Definition.]*
+**Definition (Chip Stacks).**  
+Let
+$$
+\mathbf{s} = (s_1, s_2, \dots, s_n)
+$$
+be the vector of chip stacks, and let
+$$
+S = \sum_{i=1}^n s_i
+$$
+denote the total number of chips in play.
 
-**expected utility.** *[Definition.]*
+Each quantity $s_i$ represents the current resources available to player $i$. The total $S$ is constant over time (ignoring small effects such as antes or rake), so the vector $\mathbf{s}$ describes how the total pool of chips is distributed among the players.
 
-**Independent Chip Model (ICM).** *[Definition.]*
+It is often convenient to normalize chip stacks and work with **chip fractions**
+$$
+x_i = \frac{s_i}{S}, \qquad i = 1, \dots, n,
+$$
+which satisfy
+$$
+\sum_{i=1}^n x_i = 1.
+$$
 
-**payoff structure (payout ladder).** *[Definition.]*
+These fractions admit a probabilistic interpretation: they represent each player’s share of the total chips in the system.
 
-### Core concepts
 
-- nonlinear payoffs
-- marginal chip value
-- risk sensitivity / bubble pressure
-- chip EV vs $EV
 
-### Core results
+The objects $\mathbf{p}$ and $\mathbf{s}$ define two distinct structures:
 
-**expected utility maximization (decision criterion).** *[Statement / proof placeholder.]*
+- The vector $\mathbf{p}$ encodes **external rewards**, determined by the rules of the tournament.
+- The vector $\mathbf{s}$ encodes **internal state**, determined by the history of play.
 
-**chip EV ≠ dollar EV (formal statement under nonlinear utility).** *[Statement / proof placeholder.]*
+The Independent Chip Model provides a mechanism for combining these two structures into a single quantity—expected payout—by assigning probabilities to finishing positions based on chip stacks.
 
-### Worked example ideas
+This separation is essential. The payout structure is fixed and known in advance, while the chip distribution evolves dynamically. Any mathematical model of tournament decision-making must therefore bridge these two domains: state and reward.
+### 2. Core Assumption of ICM
 
-- Compute ICM equity in a small payout example and compare two shove/call lines
+The Independent Chip Model begins with a striking simplification: it treats chip stacks as if they directly determine probabilities of future outcomes, independent of strategic interaction.
 
-### Computation notes
+**Assumption (Independence of Future Outcomes).**  
+Each player’s probability of finishing first is proportional to their current chip fraction:
+$$
+\mathbb{P}(\text{player } i \text{ finishes 1st}) = \frac{s_i}{S}.
+$$
 
-['Optional: simulate finish orders to estimate ICM equity (simple)']
+Equivalently, in terms of normalized stacks $x_i = s_i / S$, we have
+$$
+\mathbb{P}(\text{player } i \text{ finishes 1st}) = x_i.
+$$
+
+This assumption replaces the complex dynamics of future play with a probabilistic rule: chips behave like “lottery tickets,” and the chance of winning the tournament is proportional to the number of tickets held.
+
+The key modeling step is recursive. Once a player is assigned a finishing position, that player is removed from consideration, and the same rule is applied to the remaining players with the remaining chips.
+
+Thus, ICM constructs a probability distribution over all possible finishing orders by repeatedly applying proportional selection without replacement.
+
+
+
+### 3. Recursive Definition of Finish Probabilities
+
+**Definition (ICM Finish Probabilities).**  
+
+For each player $i$, define:
+
+- Probability of 1st place:
+$$
+\pi_i^{(1)} = \frac{s_i}{S}.
+$$
+
+- Probability of 2nd place:
+$$
+\pi_i^{(2)} = \sum_{j \ne i} \frac{s_j}{S} \cdot \frac{s_i}{S - s_j}.
+$$
+
+This expression can be interpreted as follows: player $j$ finishes first, and then player $i$ finishes first among the remaining players.
+
+- More generally, for position $k$:
+$$
+\pi_i^{(k)} = \sum_{\substack{j_1, \dots, j_{k-1} \\ \text{distinct}, \ne i}}
+\left(
+\frac{s_{j_1}}{S}
+\cdot
+\frac{s_{j_2}}{S - s_{j_1}}
+\cdots
+\frac{s_i}{S - \sum_{\ell=1}^{k-1} s_{j_\ell}}
+\right).
+$$
+
+This expression represents the probability that a sequence of players $j_1, \dots, j_{k-1}$ finishes ahead of $i$, followed by player $i$.
+
+
+
+### Worked Example: Four Players, Three Paid Positions
+
+Consider a tournament with four players remaining, labeled $A, B, C, D$, with chip stacks
+$$
+\mathbf{s} = (40, 30, 20, 10),
+$$
+so that
+$$
+S = 100.
+$$
+
+Assume the payout structure is
+$$
+\mathbf{p} = (100, 60, 40, 0),
+$$
+so only the top three positions are paid.
+
+
+
+#### Step 1: First-place probabilities
+
+Using the ICM assumption,
+$$
+\pi_A^{(1)} = \frac{40}{100} = 0.4, \quad
+\pi_B^{(1)} = 0.3, \quad
+\pi_C^{(1)} = 0.2, \quad
+\pi_D^{(1)} = 0.1.
+$$
+
+
+
+#### Step 2: Second-place probability for Player A
+
+We compute $\pi_A^{(2)}$ by conditioning on who finishes first.
+
+- If $B$ finishes first:
+$$
+\frac{30}{100} \cdot \frac{40}{70}
+$$
+
+- If $C$ finishes first:
+$$
+\frac{20}{100} \cdot \frac{40}{80}
+$$
+
+- If $D$ finishes first:
+$$
+\frac{10}{100} \cdot \frac{40}{90}
+$$
+
+Thus,
+$$
+\pi_A^{(2)} =
+\frac{30}{100} \cdot \frac{40}{70}
++
+\frac{20}{100} \cdot \frac{40}{80}
++
+\frac{10}{100} \cdot \frac{40}{90}.
+$$
+
+
+
+#### Step 3: Third-place probability for Player A
+
+Now we consider all ordered pairs of players finishing ahead of $A$.
+
+For example:
+
+- $B$ first, $C$ second:
+$$
+\frac{30}{100} \cdot \frac{20}{70} \cdot \frac{40}{50}
+$$
+
+- $C$ first, $B$ second:
+$$
+\frac{20}{100} \cdot \frac{30}{80} \cdot \frac{40}{50}
+$$
+
+- $B$ first, $D$ second:
+$$
+\frac{30}{100} \cdot \frac{10}{70} \cdot \frac{40}{60}
+$$
+
+- $D$ first, $B$ second:
+$$
+\frac{10}{100} \cdot \frac{30}{90} \cdot \frac{40}{60}
+$$
+
+- $C$ first, $D$ second:
+$$
+\frac{20}{100} \cdot \frac{10}{80} \cdot \frac{40}{70}
+$$
+
+- $D$ first, $C$ second:
+$$
+\frac{10}{100} \cdot \frac{20}{90} \cdot \frac{40}{70}
+$$
+
+Summing all such terms gives $\pi_A^{(3)}$.
+
+
+
+#### Step 4: Interpretation
+
+Several structural features emerge from this computation:
+
+- The probabilities depend only on chip stacks, not on position, skill, or strategy.
+- Larger stacks appear more frequently in earlier positions in the recursive expansion.
+- The number of terms grows rapidly with the number of players and finishing positions.
+
+Even in this four-player example, computing all finishing probabilities requires organizing many conditional scenarios. The complexity of these expressions motivates both computational tools and the search for structural simplifications.
+
+
+
+This example illustrates how ICM transforms chip stacks into a full probability distribution over finishing positions. In the next section, we use these probabilities to compute expected payouts and study how the value of chips depends on tournament structure.
+
+### 4. Tournament Equity
+
+**Definition (ICM Equity).**  
+The expected payout (equity) of player $i$ is
+$$
+\mathrm{EV}_i = \sum_{k=1}^n p_k \, \pi_i^{(k)}.
+$$
+
+This converts chip stacks into monetary value.
+
+
+### 5. Structural Properties of ICM
+
+The Independent Chip Model induces a transformation from chip stacks to monetary value. This transformation has several important structural properties that distinguish tournament play from chip-based reasoning.
+
+**Proposition (Monotonicity).**  
+If $s_i > s_j$, then typically
+$$
+\mathrm{EV}_i \ge \mathrm{EV}_j,
+$$
+with strict inequality unless stacks are equal.
+
+This reflects the intuitive idea that holding more chips should not reduce a player’s expected payout. However, the word “typically” is important: the relationship depends on the payout structure, and edge cases can arise when payouts are highly compressed.
+
+
+
+**Observation (Nonlinearity).**  
+ICM equity is not linear in chip counts:
+$$
+\mathrm{EV}_i \neq \frac{s_i}{S} \cdot \left(\sum_{k=1}^n p_k\right).
+$$
+
+In the running example, the total prize pool is
+$$
+100 + 60 + 40 = 200.
+$$
+
+Player $A$ holds $40\%$ of the chips, which would correspond to $80$ under a linear model. However, we computed
+$$
+\mathrm{EV}_A \approx 68.17,
+$$
+which is strictly smaller.
+
+This discrepancy reflects a fundamental feature of tournaments: chips have **diminishing marginal value**. Losing chips is more costly than gaining the same number of chips is beneficial.
+
+
+
+### 6. Marginal Value of Chips
+
+To make this idea precise, we study how equity changes when a player’s chip stack changes slightly.
+
+**Definition (Marginal Chip Value).**  
+The marginal value of chips for player $i$ is
+$$
+\frac{\partial \mathrm{EV}_i}{\partial s_i}.
+$$
+
+This derivative measures how much a small increase in $s_i$ affects the player’s expected payout.
+
+Because the ICM formulas are combinatorial and nonlinear, computing this derivative analytically is cumbersome. Instead, we approximate marginal value using small perturbations.
+
+
+
+### Worked Approximation: Marginal Value of a Chip
+
+We return to the four-player example:
+$$
+\mathbf{s} = (40, 30, 20, 10), \qquad \mathbf{p} = (100, 60, 40, 0).
+$$
+
+To estimate the marginal value for each player, we increase their stack by 1 chip and recompute their equity, adjusting the total accordingly.
+
+
+
+#### Player $A$
+
+Original:
+$$
+\mathrm{EV}_A \approx 68.17.
+$$
+
+Perturb stack:
+$$
+(41, 30, 20, 10), \quad S = 101.
+$$
+
+Recomputing (following the same ICM procedure) gives approximately:
+$$
+\mathrm{EV}_A \approx 68.9.
+$$
+
+Thus, the marginal value is approximately
+$$
+\frac{\partial \mathrm{EV}_A}{\partial s_A} \approx 0.73.
+$$
+
+
+
+#### Player $B$
+
+Original stack: $30$.
+
+Perturb:
+$$
+(40, 31, 20, 10).
+$$
+
+Recomputing gives approximately:
+$$
+\mathrm{EV}_B \approx 57.5 \quad \text{(from about } 56.7 \text{)}.
+$$
+
+Thus,
+$$
+\frac{\partial \mathrm{EV}_B}{\partial s_B} \approx 0.8.
+$$
+
+
+
+#### Player $C$
+
+Perturb:
+$$
+(40, 30, 21, 10).
+$$
+
+Equity increases from approximately $44.5$ to $45.4$, giving
+$$
+\frac{\partial \mathrm{EV}_C}{\partial s_C} \approx 0.9.
+$$
+
+
+
+#### Player $D$
+
+Perturb:
+$$
+(40, 30, 20, 11).
+$$
+
+Equity increases from approximately $30.6$ to $31.7$, giving
+$$
+\frac{\partial \mathrm{EV}_D}{\partial s_D} \approx 1.1.
+$$
+
+
+
+### Interpretation
+
+A clear pattern emerges:
+
+- The **shortest stack ($D$)** has the highest marginal chip value.
+- The **largest stack ($A$)** has the lowest marginal chip value.
+- Marginal value increases as stack size decreases.
+
+This reflects the asymmetric role of risk in tournaments:
+
+- A short stack is close to elimination, so each additional chip significantly improves survival probability.
+- A large stack is already likely to finish in the money, so additional chips provide smaller incremental gains.
+
+
+
+### Structural Insight
+
+The function
+$$
+s_i \mapsto \mathrm{EV}_i
+$$
+is typically **concave** in $s_i$. As a result:
+
+- Gains exhibit diminishing returns,
+- Losses are disproportionately costly.
+
+This asymmetry is the mathematical foundation for:
+
+- risk premiums,
+- tighter calling ranges near the bubble,
+- and deviations from chip-EV optimal play.
+
+In tournament settings, decisions must therefore be evaluated in terms of **equity**, not chips.
+### 7. Two-Player Reduction
+
+The structure of ICM simplifies dramatically in the case of two remaining players. In this setting, there are only two possible finishing positions, and the recursive structure collapses to a single step.
+
+Let $n=2$, with chip stacks $(s_1, s_2)$ and total $S = s_1 + s_2$. Then
+$$
+\pi_1^{(1)} = \frac{s_1}{S}, \qquad \pi_1^{(2)} = \frac{s_2}{S}.
+$$
+
+Thus, for payouts $(p_1, p_2)$, the equity of Player $1$ is
+$$
+\mathrm{EV}_1 = p_1 \cdot \frac{s_1}{S} + p_2 \cdot \frac{s_2}{S}.
+$$
+
+Rewriting,
+$$
+\mathrm{EV}_1 = p_2 + (p_1 - p_2)\frac{s_1}{S}.
+$$
+
+An identical expression holds for Player $2$.
+
+
+
+#### Interpretation
+
+This expression is **linear in $s_1$**. Each additional chip contributes a constant amount to expected payout:
+$$
+\frac{\partial \mathrm{EV}_1}{\partial s_1} = \frac{p_1 - p_2}{S}.
+$$
+
+Thus, in the two-player case:
+
+- Chip value is constant,
+- There are no diminishing returns,
+- Maximizing expected chips is equivalent to maximizing expected payout.
+
+
+
+#### Structural Contrast
+
+The two-player case is exceptional. As soon as a third player is introduced:
+
+- The recursive structure becomes nontrivial,
+- The mapping from chips to equity becomes nonlinear,
+- Marginal chip values diverge across players.
+
+This explains why tournament effects such as risk premiums and bubble pressure do not arise in heads-up play.
+
+
+
+### 8. ICM and Decision Making
+
+ICM provides a framework for evaluating decisions by translating outcomes into expected monetary value.
+
+**Definition (ICM Decision Rule).**  
+Given two actions $A$ and $B$, choose $A$ if
+$$
+\mathbb{E}[\mathrm{EV}_i \mid A] \ge \mathbb{E}[\mathrm{EV}_i \mid B].
+$$
+
+Here, the expectation is taken over all possible outcomes of the action, with each outcome evaluated using ICM equity.
+
+
+
+#### Example of Interpretation
+
+Suppose a player faces an all-in decision. Two possible actions are:
+
+- Fold: resulting in a deterministic stack,
+- Call: resulting in a random outcome (win or loss of chips).
+
+Under ICM, the comparison becomes:
+$$
+\mathrm{EV}_{\text{fold}} \quad \text{vs.} \quad
+\mathbb{P}(\text{win}) \cdot \mathrm{EV}_{\text{win}} + \mathbb{P}(\text{lose}) \cdot \mathrm{EV}_{\text{lose}}.
+$$
+
+The key feature is that the quantities $\mathrm{EV}_{\text{win}}$ and $\mathrm{EV}_{\text{lose}}$ are computed using the nonlinear ICM transformation.
+
+
+
+#### Key Contrast
+
+- **Cash games:** maximize expected chips  
+- **Tournaments:** maximize expected payout under ICM  
+
+Because ICM is nonlinear, these objectives are not equivalent. In particular:
+
+- A play that increases expected chips may decrease expected payout,
+- Risk must be evaluated asymmetrically,
+- Survival carries intrinsic value beyond chip count.
+
+
+
+### 9. Limitations of the Model
+
+The Independent Chip Model is mathematically elegant, but its assumptions impose important limitations.
+
+
+
+**Assumption Limitations.**
+
+- **No skill differentiation:** All players are treated as equally likely to convert chips into future wins.  
+- **Independence of future play:** Outcomes are modeled as if chips alone determine finishing order, ignoring strategic interaction.  
+- **Equal contestability of chips:** The model assumes that all chips are equally “in play,” regardless of position or stack configuration.  
+
+
+
+**Mathematical Consequence.**  
+
+ICM is a **static model**: it maps chip stacks to expected payouts without modeling the process by which those stacks evolve.
+
+As a result:
+
+- It does not capture positional advantages,
+- It ignores dynamic incentives across betting rounds,
+- It cannot represent strategic adaptations between players.
+
+
+
+#### Interpretive Remark
+
+ICM should therefore be understood as a **valuation tool**, not a full model of play.
+
+It answers the question:
+$$
+\text{“What are my chips worth right now?”}
+$$
+
+but not:
+$$
+\text{“How should I play optimally in all future situations?”}
+$$
+
+This distinction mirrors a broader theme: mathematical models often isolate one aspect of a system in order to study it precisely. The power of ICM lies in its clarity, but that clarity depends on what it chooses to ignore.
+
+
+
+These limitations motivate extensions and refinements, including models that incorporate skill, dynamic play, or equilibrium reasoning. Nevertheless, ICM remains a foundational tool for understanding how tournament structure reshapes value.
+
+### Pot Odds in Chips versus Pot Odds in ICM
+
+One of the clearest consequences of ICM is that a call can be profitable in **chip expected value** while still being unprofitable in **tournament equity**.
+
+We continue with our running example. There are four players left, with stacks
+$$
+(A,B,C,D) = (40,30,20,10),
+$$
+and the payout structure is
+$$
+(100,60,40,0).
+$$
+
+Player $D$ is the short stack. We construct a situation in which $D$ faces an all-in decision against Player $A$.
+
+
+
+#### A hypothetical all-in spot
+
+Suppose some chips are already in the pot from earlier action, and Player $D$ must call **8 chips** to continue. If $D$ calls, the final pot will be **24 chips**.
+
+Thus the usual chip-EV pot-odds calculation gives the threshold
+$$
+\frac{8}{24} = \frac{1}{3}.
+$$
+
+So in pure chip terms, Player $D$ should call whenever their probability of winning is greater than
+$$
+33.3\%.
+$$
+
+For example, if $D$ believes they will win the showdown $40\%$ of the time, then the call is profitable in chip-EV, since
+$$
+0.40 > \frac{1}{3}.
+$$
+
+
+
+### Chip-EV Analysis
+
+If $D$ folds, they preserve their remaining stack.
+
+If $D$ calls:
+
+- with probability $e$, they win the pot,
+- with probability $1-e$, they are eliminated.
+
+Relative to folding, the chip-EV of calling is
+$$
+e \cdot 24 + (1-e)\cdot 0 - 8.
+$$
+
+Equivalently, the break-even condition is
+$$
+e \cdot 24 = 8,
+$$
+so
+$$
+e = \frac{8}{24} = \frac{1}{3}.
+$$
+
+Thus a hand with $40\%$ equity is a clear chip-EV call.
+
+
+
+### ICM Analysis
+
+Under ICM, we do not compare chips directly. Instead, we compare the **tournament equity** of the resulting stack configurations.
+
+We consider three outcomes.
+
+#### If $D$ folds
+
+Suppose the resulting stacks are
+$$
+(A,B,C,D) = (46,28,18,8).
+$$
+
+Using ICM, Player $D$'s equity is approximately
+$$
+\mathrm{EV}_D^{\text{fold}} \approx 23.19.
+$$
+
+
+
+#### If $D$ calls and wins
+
+Suppose the resulting stacks are
+$$
+(A,B,C,D) = (30,28,18,24).
+$$
+
+Using ICM, Player $D$'s equity is approximately
+$$
+\mathrm{EV}_D^{\text{win}} \approx 49.32.
+$$
+
+
+
+#### If $D$ calls and loses
+
+Player $D$ is eliminated in fourth place, so
+$$
+\mathrm{EV}_D^{\text{lose}} = 0.
+$$
+
+
+
+### ICM Break-Even Equity
+
+Under ICM, calling is correct only if
+$$
+e \cdot \mathrm{EV}_D^{\text{win}} + (1-e)\cdot \mathrm{EV}_D^{\text{lose}}
+\ge
+\mathrm{EV}_D^{\text{fold}}.
+$$
+
+Since $\mathrm{EV}_D^{\text{lose}} = 0$, this becomes
+$$
+e \cdot 49.32 \ge 23.19.
+$$
+
+So the break-even winning probability is
+$$
+e \ge \frac{23.19}{49.32} \approx 0.470.
+$$
+
+Thus under ICM, Player $D$ needs about
+$$
+47.0\%
+$$
+equity to justify the call.
+
+
+
+### Comparison
+
+We now have two thresholds:
+
+- **Chip-EV threshold:**  
+$$
+33.3\%
+$$
+
+- **ICM threshold:**  
+$$
+47.0\%
+$$
+
+So a hand with $40\%$ equity produces opposite conclusions:
+
+- In chip-EV, $40\% > 33.3\%$, so the call is profitable.
+- In ICM, $40\% < 47.0\%$, so the call is unprofitable.
+
+
+
+### Interpretation
+
+This gap is the mathematical expression of **tournament risk**.
+
+For the short stack, folding preserves a nonzero chance of laddering into the money. Calling and losing destroys that possibility completely. The gain from doubling up is real, but the cost of elimination is even more significant once payouts are taken into account.
+
+This is why tournament players often fold hands that would be clear calls in a cash game. The relevant question is not only
+
+$$
+\text{“Am I getting the right price in chips?”}
+$$
+
+but also
+
+$$
+\text{“What is the value of survival relative to the value of doubling?”}
+$$
+
+Under ICM, those are not the same question.
+
+
+
+### General Form of the ICM Pot-Odds Threshold
+
+More generally, if a player is comparing fold to call, and the call leads to outcomes with ICM equities
+$$
+\mathrm{EV}^{\text{win}}, \qquad \mathrm{EV}^{\text{lose}},
+$$
+while folding yields
+$$
+\mathrm{EV}^{\text{fold}},
+$$
+then the break-even win probability is determined by
+$$
+e \cdot \mathrm{EV}^{\text{win}} + (1-e)\cdot \mathrm{EV}^{\text{lose}} = \mathrm{EV}^{\text{fold}}.
+$$
+
+Solving for $e$ gives
+$$
+e
+=
+\frac{\mathrm{EV}^{\text{fold}}-\mathrm{EV}^{\text{lose}}}
+{\mathrm{EV}^{\text{win}}-\mathrm{EV}^{\text{lose}}}.
+$$
+
+This is the tournament analogue of pot odds. In general, it is strictly larger than the chip-EV threshold when elimination risk is substantial.
+### 10. Transition to Applications
+
+The Independent Chip Model provides a complete mapping from chip stacks to expected monetary outcomes. With this structure in place, we can begin to analyze decisions in a tournament through a mathematical lens.
+
+The key shift is conceptual. Rather than evaluating decisions in terms of chips alone, we now evaluate them in terms of expected payout:
+$$
+\mathrm{EV}_i = \sum_{k=1}^n p_k \, \pi_i^{(k)}.
+$$
+
+This transformation allows us to reinterpret familiar poker questions in a new mathematical framework.
+
+
+
+#### Evaluating All-In Decisions
+
+When a player faces an all-in decision, the outcomes are discrete:
+
+- win a pot and move to a new stack,
+- lose and move to a different stack (often elimination),
+- occasionally split or produce intermediate outcomes.
+
+Each of these outcomes corresponds to a new vector of chip stacks, and therefore a new ICM equity.
+
+The decision problem becomes:
+$$
+\mathbb{E}[\mathrm{EV}_i \mid \text{call}]
+\quad \text{versus} \quad
+\mathrm{EV}_i^{\text{fold}}.
+$$
+
+As we saw in the previous example, this comparison can lead to conclusions that differ from chip-based reasoning. In particular, the cost of elimination introduces an asymmetry between gains and losses.
+
+
+
+#### Bubble Pressure
+
+The nonlinearity of ICM becomes most pronounced near payout thresholds, often referred to as the **bubble**.
+
+At such points:
+
+- A short stack may benefit significantly from surviving even one additional elimination,
+- A medium stack may avoid risk in order to secure a guaranteed payout,
+- A large stack may be incentivized to apply pressure, since opponents face increased downside risk.
+
+Mathematically, bubble pressure arises from differences in marginal chip values across players. When the marginal value of losing chips exceeds the marginal value of gaining chips, players become risk-averse in a precise, quantifiable sense.
+
+
+
+#### Quantifying Risk Premiums
+
+The concept of a **risk premium** formalizes how much additional equity a player must have to justify taking a gamble.
+
+In chip terms, a decision is often evaluated by comparing equity to pot odds. Under ICM, the relevant threshold is determined by:
+$$
+e
+=
+\frac{\mathrm{EV}^{\text{fold}}-\mathrm{EV}^{\text{lose}}}
+{\mathrm{EV}^{\text{win}}-\mathrm{EV}^{\text{lose}}}.
+$$
+
+This threshold is typically higher than the chip-EV threshold, reflecting the increased cost of losing.
+
+The difference between these thresholds is the risk premium. It depends on:
+
+- the payout structure,
+- the relative stack sizes,
+- and the player’s position within the distribution of stacks.
+
+
+
+#### Comparing Chip EV and Tournament EV
+
+One of the central insights of this chapter is that two distinct objective functions govern decision-making:
+
+- **Chip EV:** maximize expected chips,
+- **Tournament EV:** maximize expected payout.
+
+These objectives coincide in the two-player case, but diverge as soon as multiple players remain. The divergence is driven by the nonlinear mapping from chips to equity.
+
+As a result:
+
+- Some chip-profitable actions become tournament mistakes,
+- Some conservative plays become mathematically justified,
+- Strategic behavior depends not only on probabilities, but on the structure of rewards.
+
+
+
+#### Looking Ahead
+
+The tools developed in this section allow us to move from description to analysis. In the sections that follow, we will:
+
+- derive explicit formulas for risk premiums,
+- analyze how bubble pressure varies across stack configurations,
+- and study how optimal decisions emerge from the interaction between probability and payout structure.
+
+At each step, the central question remains the same:
+
+$$
+\text{How does the structure of rewards reshape rational decision-making under uncertainty?}
+$$
 
 ## Beyond Poker
 

@@ -15,10 +15,11 @@ book:
   - chapters/09-zero-sum-games-and-mixed-strategies.qmd
   - chapters/11-betting-as-optimization.qmd
   - chapters/15-learning-equilibria-regret-minimization-and-solvers.qmd
+  - chapters/13-tournament-poker-and-icm-optimization-with-nonlinear-utility.qmd
   - chapters/09-nash-equilibrium-and-indifference-conditions.qmd
   - chapters/10-exploitative-play-vs-equilibrium-thinking.qmd
   - chapters/12-the-value-of-information.qmd
-  - chapters/13-tournament-poker-and-icm-optimization-with-nonlinear-utility.qmd
+
   - chapters/14-game-trees-and-abstraction.qmd
   - chapters/16-alternative-solver-perspectives-lp-qre-and-regularization.qmd
   - chapters/17-variance-bankroll-and-risk-of-ruin.qmd
