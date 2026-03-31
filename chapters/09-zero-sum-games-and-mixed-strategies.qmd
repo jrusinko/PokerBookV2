@@ -76,16 +76,16 @@ The betting is a single round:
 - if called, the higher card wins the pot,
 - if folded to, the bettor wins immediately.
 
-After eliminating dominated choices in the betting subtrees, each player’s relevant behavior can be summarized by whether they bet with \(K\) and whether they bet with \(Q\). Betting with \(A\) is fixed.
+After eliminating dominated choices in the betting subtrees, each player’s relevant behavior can be summarized by whether they bet with $K$ and whether they bet with $Q$. Betting with $A$ is fixed.
 
 Thus each player has four reduced pure strategies:
 $$
 BNN, \quad BNB, \quad BBN, \quad BBB,
 $$
-where the letters indicate actions with \((A,K,Q)\), respectively, and
+where the letters indicate actions with $(A,K,Q)$, respectively, and
 
-- \(B\) = bet,
-- \(N\) = do not bet.
+- $B$ = bet,
+- $N$ = do not bet.
 
 Ordering strategies this way for both players, the payoff matrix (payoff to Player I) is
 $$
@@ -98,7 +98,7 @@ A =
 \end{pmatrix}.
 $$
 
-Each entry \(A_{ij}\) is an *expectation* over the six equally likely card deals, under the deterministic betting plans \(i\) and \(j\).
+Each entry $A_{ij}$ is an *expectation* over the six equally likely card deals, under the deterministic betting plans $i$ and $j$.
 
 ### No pure saddle point
 
@@ -137,7 +137,7 @@ $$
 
 ### Expected payoff
 
-If Player I plays \(x \in \Delta_m\) and Player II plays \(y \in \Delta_n\), the expected payoff to Player I is
+If Player I plays $x \in \Delta_m$ and Player II plays $y \in \Delta_n$, the expected payoff to Player I is
 $$
 u(x,y) = x^{\mathsf T}Ay
 = \sum_{i=1}^m \sum_{j=1}^n x_i A_{ij} y_j.
@@ -189,7 +189,7 @@ $$
 \min_{y \in \Delta_n} \max_{x \in \Delta_m} x^{\mathsf T}Ay.
 $$
 
-The common value \(v\) is called the **value of the game**. Moreover, there exist mixed strategies
+The common value $v$ is called the **value of the game**. Moreover, there exist mixed strategies
 $$
 x^* \in \Delta_m,
 \qquad
@@ -202,13 +202,13 @@ u(x,y^*) \le u(x^*,y^*) \le u(x^*,y)
 \text{for all } x \in \Delta_m,\ y \in \Delta_n.
 $$
 
-Such a pair \((x^*,y^*)\) is a **mixed-strategy equilibrium**.
+Such a pair $(x^*,y^*)$ is a **mixed-strategy equilibrium**.
 
 ::: {.callout-note}
 ## Structural toolkit (why the theorem fits this setting)
 
-- The strategy spaces \(\Delta_m\) and \(\Delta_n\) are convex and compact.
-- The payoff function \(u(x,y)=x^{\mathsf T}Ay\) is bilinear, hence affine in each variable separately.
+- The strategy spaces $\Delta_m$ and $\Delta_n$ are convex and compact.
+- The payoff function $u(x,y)=x^{\mathsf T}Ay$ is bilinear, hence affine in each variable separately.
 - Therefore equilibrium can be framed as an optimization problem, and in fact as a linear program.
 :::
 
@@ -218,7 +218,7 @@ We now compute an equilibrium for the three-card model. We do this first in beha
 
 ### Behavioral coordinates
 
-Because betting with \(A\) is fixed in all nondominated strategies, each player’s strategic freedom is two-dimensional.
+Because betting with $A$ is fixed in all nondominated strategies, each player’s strategic freedom is two-dimensional.
 
 For Player I define
 $$
@@ -252,11 +252,11 @@ u(\alpha,\beta;\gamma,\delta)
 + \frac{1}{2}\beta\delta.
 $$
 
-This function is affine linear in \((\alpha,\beta)\) when \((\gamma,\delta)\) is fixed, and affine linear in \((\gamma,\delta)\) when \((\alpha,\beta)\) is fixed.
+This function is affine linear in $(\alpha,\beta)$ when $(\gamma,\delta)$ is fixed, and affine linear in $(\gamma,\delta)$ when $(\alpha,\beta)$ is fixed.
 
 ### Best responses and indifference
 
-Fix \((\gamma,\delta)\) and rewrite \(u\) as a function of \((\alpha,\beta)\):
+Fix $(\gamma,\delta)$ and rewrite $u$ as a function of $(\alpha,\beta)$:
 $$
 u(\alpha,\beta;\gamma,\delta)
 =
@@ -280,17 +280,17 @@ $$
 
 From this expression:
 
-- If \(\delta > \frac{1}{3}\), then \(\frac{1}{2}\delta - \frac{1}{6} > 0\), so Player I sets \(\alpha = 1\).
-- If \(\delta < \frac{1}{3}\), Player I sets \(\alpha = 0\).
-- If \(\delta = \frac{1}{3}\), Player I is indifferent in \(\alpha\).
+- If $\delta > \frac{1}{3}$, then $\frac{1}{2}\delta - \frac{1}{6} > 0$, so Player I sets $\alpha = 1$.
+- If $\delta < \frac{1}{3}$, Player I sets $\alpha = 0$.
+- If $\delta = \frac{1}{3}$, Player I is indifferent in $\alpha$.
 
 Similarly:
 
-- If \(\gamma < \frac{1}{3}\), then \(\frac{1}{6} - \frac{1}{2}\gamma > 0\), so Player I sets \(\beta = 1\).
-- If \(\gamma > \frac{1}{3}\), Player I sets \(\beta = 0\).
-- If \(\gamma = \frac{1}{3}\), Player I is indifferent in \(\beta\).
+- If $\gamma < \frac{1}{3}$, then $\frac{1}{6} - \frac{1}{2}\gamma > 0$, so Player I sets $\beta = 1$.
+- If $\gamma > \frac{1}{3}$, Player I sets $\beta = 0$.
+- If $\gamma = \frac{1}{3}$, Player I is indifferent in $\beta$.
 
-Now fix \((\alpha,\beta)\) and rewrite \(u\) as a function of \((\gamma,\delta)\):
+Now fix $(\alpha,\beta)$ and rewrite $u$ as a function of $(\gamma,\delta)$:
 $$
 u(\alpha,\beta;\gamma,\delta)
 =
@@ -303,15 +303,15 @@ $$
 
 Player II minimizes, so:
 
-- If \(\beta < \frac{1}{3}\), then \(\frac{1}{6} - \frac{1}{2}\beta > 0\), and Player II sets \(\gamma = 0\).
-- If \(\beta > \frac{1}{3}\), Player II sets \(\gamma = 1\).
-- If \(\beta = \frac{1}{3}\), Player II is indifferent in \(\gamma\).
+- If $\beta < \frac{1}{3}$, then $\frac{1}{6} - \frac{1}{2}\beta > 0$, and Player II sets $\gamma = 0$.
+- If $\beta > \frac{1}{3}$, Player II sets $\gamma = 1$.
+- If $\beta = \frac{1}{3}$, Player II is indifferent in $\gamma$.
 
 And:
 
-- If \(\alpha > \frac{1}{3}\), Player II sets \(\delta = 0\).
-- If \(\alpha < \frac{1}{3}\), Player II sets \(\delta = 1\).
-- If \(\alpha = \frac{1}{3}\), Player II is indifferent in \(\delta\).
+- If $\alpha > \frac{1}{3}$, Player II sets $\delta = 0$.
+- If $\alpha < \frac{1}{3}$, Player II sets $\delta = 1$.
+- If $\alpha = \frac{1}{3}$, Player II is indifferent in $\delta$.
 
 ### Equilibrium frequencies
 
@@ -339,13 +339,13 @@ $$
 
 Each player
 
-- bets with \(A\) always,
-- bets with \(K\) with probability \(\tfrac{1}{3}\),
-- bluffs with \(Q\) with probability \(\tfrac{1}{3}\).
+- bets with $A$ always,
+- bets with $K$ with probability $\tfrac{1}{3}$,
+- bluffs with $Q$ with probability $\tfrac{1}{3}$.
 
 ### Value of the game
 
-Substituting into \(u\),
+Substituting into $u$,
 $$
 u\!\left(\frac{1}{3},\frac{1}{3};\frac{1}{3},\frac{1}{3}\right)=0.
 $$
@@ -357,7 +357,7 @@ $$
 
 The toy model is fair under equilibrium play.
 
-### Translating to the simplex \(\Delta_4\)
+### Translating to the simplex $\Delta_4$
 
 The behavioral parameters determine the induced mixed strategy over the four reduced pure strategies:
 $$
@@ -369,7 +369,7 @@ x_4 &= \alpha\beta.
 \end{aligned}
 $$
 
-With \(\alpha=\beta=\tfrac{1}{3}\),
+With $\alpha=\beta=\tfrac{1}{3}$,
 $$
 x
 =
@@ -391,7 +391,7 @@ $$
 \frac{4}{9},\frac{2}{9},\frac{2}{9},\frac{1}{9}
 \right),
 $$
-and the expected payoff is \(0\).
+and the expected payoff is $0$.
 ## The General Optimization Framework (Linear Programming)
 
 The behavioral analysis of the toy poker game worked because the model was small, symmetric, and easy to analyze by hand. In general, however, finite zero-sum games are solved by optimization.
@@ -400,7 +400,7 @@ Let
 $$
 A \in \mathbb{R}^{m \times n}
 $$
-be the payoff matrix to Player I. Rows represent Player I's pure strategies, columns represent Player II's pure strategies, and \(A_{ij}\) is the payoff to Player I when row \(i\) meets column \(j\).
+be the payoff matrix to Player I. Rows represent Player I's pure strategies, columns represent Player II's pure strategies, and $A_{ij}$ is the payoff to Player I when row $i$ meets column $j$.
 
 If Player I uses a mixed strategy
 $$
@@ -408,11 +408,11 @@ x \in \Delta_m
 \qquad\text{and}\qquad
 \Delta_m = \{x \in \mathbb{R}^m : x_i \ge 0,\ \sum_{i=1}^m x_i = 1\},
 $$
-then against a pure column \(j\), Player I's expected payoff is the \(j\)-th entry of \(A^{\mathsf T}x\). Thus Player I seeks a probability vector \(x\) that makes the worst of these column payoffs as large as possible.
+then against a pure column $j$, Player I's expected payoff is the $j$-th entry of $A^{\mathsf T}x$. Thus Player I seeks a probability vector $x$ that makes the worst of these column payoffs as large as possible.
 
 ### Row player's maximin problem
 
-Player I chooses \(x\) to maximize a guaranteed value \(v\):
+Player I chooses $x$ to maximize a guaranteed value $v$:
 $$
 \begin{aligned}
 \text{maximize}\quad & v \\
@@ -427,11 +427,11 @@ The constraint
 $$
 A^{\mathsf T}x \ge v\,\mathbf{1}
 $$
-means that every pure response of Player II yields expected payoff at least \(v\). So \(v\) is a guaranteed lower bound on Player I's payoff.
+means that every pure response of Player II yields expected payoff at least $v$. So $v$ is a guaranteed lower bound on Player I's payoff.
 
 ### Column player's minimax problem
 
-Dually, Player II chooses a mixed strategy \(y \in \Delta_n\) to keep Player I's payoff as small as possible. Against the mixed strategy \(y\), the expected payoff to Player I from pure row \(i\) is the \(i\)-th entry of \(Ay\). Thus Player II solves
+Dually, Player II chooses a mixed strategy $y \in \Delta_n$ to keep Player I's payoff as small as possible. Against the mixed strategy $y$, the expected payoff to Player I from pure row $i$ is the $i$-th entry of $Ay$. Thus Player II solves
 $$
 \begin{aligned}
 \text{minimize}\quad & w \\
@@ -446,7 +446,7 @@ The constraint
 $$
 Ay \le w\,\mathbf{1}
 $$
-means that no pure strategy of Player I can earn more than \(w\) against \(y\). So \(w\) is an upper bound on what Player I can force.
+means that no pure strategy of Player I can earn more than $w$ against $y$. So $w$ is an upper bound on what Player I can force.
 
 ### An explicit example: the toy poker game
 
@@ -472,7 +472,7 @@ x =
 x_1 \\ x_2 \\ x_3 \\ x_4
 \end{pmatrix}
 $$
-be Player I's mixed strategy, where \(x_i\) is the probability assigned to the \(i\)-th pure strategy in the order above.
+be Player I's mixed strategy, where $x_i$ is the probability assigned to the $i$-th pure strategy in the order above.
 
 Then the row player's linear program becomes
 $$
@@ -486,10 +486,10 @@ $$
 & x_1 + x_2 + x_3 + x_4 = 1, \\
 & x_1,x_2,x_3,x_4 \ge 0.
 \end{aligned}
-\tag{P\(_{\text{toy}}\)}
+\tag{P$_{\text{toy}}$}
 $$
 
-Each inequality corresponds to one pure strategy of Player II. For example, the second inequality says that if Player II chooses the pure strategy \(BNB\), then Player I's expected payoff under the mixed strategy \(x\) must still be at least \(v\).
+Each inequality corresponds to one pure strategy of Player II. For example, the second inequality says that if Player II chooses the pure strategy $BNB$, then Player I's expected payoff under the mixed strategy $x$ must still be at least $v$.
 
 Similarly, if
 $$
@@ -510,10 +510,10 @@ $$
 & y_1 + y_2 + y_3 + y_4 = 1, \\
 & y_1,y_2,y_3,y_4 \ge 0.
 \end{aligned}
-\tag{D\(_{\text{toy}}\)}
+\tag{D$_{\text{toy}}$}
 $$
 
-Here each inequality corresponds to one pure strategy of Player I. The first inequality, for instance, says that if Player I were to choose \(BNN\) with probability \(1\), then the resulting expected payoff against \(y\) could not exceed \(w\).
+Here each inequality corresponds to one pure strategy of Player I. The first inequality, for instance, says that if Player I were to choose $BNN$ with probability $1$, then the resulting expected payoff against $y$ could not exceed $w$.
 
 ### Verifying the equilibrium from the toy model
 
@@ -528,7 +528,7 @@ x^* = y^* =
 \end{pmatrix}.
 $$
 
-Substituting \(x^*\) into the row constraints gives
+Substituting $x^*$ into the row constraints gives
 $$
 A^{\mathsf T}x^* =
 \begin{pmatrix}
@@ -552,7 +552,7 @@ A^{\mathsf T}x^* =
 \end{pmatrix}.
 $$
 
-So \(x^*\) guarantees at least \(0\) against the three columns that matter strategically, while the first column gives payoff \(-\tfrac{1}{6}\). That reflects the fact that not every point of \(\Delta_4\) comes from independent behavioral randomization at the information sets. In the reduced behavioral analysis, the relevant equilibrium object was the frequency pair
+So $x^*$ guarantees at least $0$ against the three columns that matter strategically, while the first column gives payoff $-\tfrac{1}{6}$. That reflects the fact that not every point of $\Delta_4$ comes from independent behavioral randomization at the information sets. In the reduced behavioral analysis, the relevant equilibrium object was the frequency pair
 $$
 \alpha=\beta=\gamma=\delta=\frac{1}{3},
 $$
@@ -565,7 +565,7 @@ This is a useful reminder: the linear programming framework is completely genera
 
 ### Connection to minimax
 
-Problems \((P)\) and \((D)\) are dual linear programs. Under standard conditions, strong duality implies that their optimal values agree:
+Problems $(P)$ and $(D)$ are dual linear programs. Under standard conditions, strong duality implies that their optimal values agree:
 $$
 v = w.
 $$
@@ -604,7 +604,7 @@ A =
 \end{pmatrix}.
 $$
 
-Rows correspond to the offense \((\text{Run}, \text{Pass})\). Columns correspond to the defense \((\text{Defend Run}, \text{Defend Pass})\).
+Rows correspond to the offense $(\text{Run}, \text{Pass})$. Columns correspond to the defense $(\text{Defend Run}, \text{Defend Pass})$.
 
 Interpretation:
 
@@ -623,12 +623,12 @@ Thus we look for mixed strategies.
 
 Let
 
-- \(p\) = probability the offense runs,
-- \(q\) = probability the defense defends run.
+- $p$ = probability the offense runs,
+- $q$ = probability the defense defends run.
 
 ### Indifference Conditions
 
-If the defense chooses \(q\), the offense’s expected payoff from running is
+If the defense chooses $q$, the offense’s expected payoff from running is
 $$
 EV_{\text{Run}} = 4q + 1(1-q) = 1 + 3q.
 $$
@@ -645,7 +645,7 @@ $$
 q = \frac{2}{3}.
 $$
 
-Now solve for the offense’s mixing probability. If the offense chooses \(p\), the defense’s expected loss from defending run is
+Now solve for the offense’s mixing probability. If the offense chooses $p$, the defense’s expected loss from defending run is
 $$
 L_{\text{Def Run}} = 4p + 2(1-p) = 2 + 2p,
 $$
@@ -665,8 +665,8 @@ $$
 
 The equilibrium mixed strategies are:
 
-- Offense runs with probability \(\tfrac{1}{2}\).
-- Defense defends run with probability \(\tfrac{2}{3}\).
+- Offense runs with probability $\tfrac{1}{2}$.
+- Defense defends run with probability $\tfrac{2}{3}$.
 
 Under these probabilities, neither side can improve by deviating. Mixed strategies emerge as a structural necessity of competition, not as indecision.
 
@@ -696,17 +696,17 @@ The power of mathematical modeling lies not only in what it reveals, but in what
 
 2. **Indifference Principle (Proof)**
 
-   Let \((x^*, y^*)\) be optimal mixed strategies in a finite zero-sum game with value \(v\). Prove that if \(x_i^* > 0\), then
+   Let $(x^*, y^*)$ be optimal mixed strategies in a finite zero-sum game with value $v$. Prove that if $x_i^* > 0$, then
    $$
    (Ay^*)_i = v.
    $$
-   *Hint:* If \((Ay^*)_i > v\), shift a small amount of probability mass toward row \(i\); if \((Ay^*)_i < v\), shift mass away.
+   *Hint:* If $(Ay^*)_i > v$, shift a small amount of probability mass toward row $i$; if $(Ay^*)_i < v$, shift mass away.
 
 3. **Uniqueness of the Game Value**
 
-   Prove that although optimal mixed strategies may not be unique, the value \(v\) of a finite zero-sum game is unique.
+   Prove that although optimal mixed strategies may not be unique, the value $v$ of a finite zero-sum game is unique.
 
-4. **A \(2\times 2\) Bluffing Game**
+4. **A $2\times 2$ Bluffing Game**
 
    Consider the payoff matrix
    $$
@@ -724,14 +724,14 @@ The power of mathematical modeling lies not only in what it reveals, but in what
 
 5. **Degenerate Equilibria**
 
-   Construct a \(2\times 2\) zero-sum matrix game with infinitely many mixed equilibria.
+   Construct a $2\times 2$ zero-sum matrix game with infinitely many mixed equilibria.
 
    (a) Exhibit a full interval of equilibrium strategies for one of the players.  
    (b) Explain why this does not contradict von Neumann’s minimax theorem.
 
 6. **When Is Randomization Necessary?**
 
-   Provide a precise mathematical condition on a payoff matrix \(A\) that guarantees the game has no pure-strategy equilibrium (saddle point), and hence requires mixed strategies for equilibrium.
+   Provide a precise mathematical condition on a payoff matrix $A$ that guarantees the game has no pure-strategy equilibrium (saddle point), and hence requires mixed strategies for equilibrium.
 
    Illustrate your answer with a poker-inspired matrix of your own design.
 
@@ -739,12 +739,12 @@ The power of mathematical modeling lies not only in what it reveals, but in what
 
    In this problem, refer to the simultaneous three-card poker model from the chapter:
 
-   - Deck \(\{A,K,Q\}\),
+   - Deck $\{A,K,Q\}$,
    - Both players simultaneously choose Bet or Not,
    - Payoffs:
-     - both check \(\rightarrow\) high card wins \(+1\),
-     - one bets \(\rightarrow\) bettor wins \(+1\),
-     - both bet \(\rightarrow\) high card wins \(+2\).
+     - both check $\rightarrow$ high card wins $+1$,
+     - one bets $\rightarrow$ bettor wins $+1$,
+     - both bet $\rightarrow$ high card wins $+2$.
 
    After eliminating dominated strategies, each player has four pure strategies
    $$
@@ -759,18 +759,18 @@ The power of mathematical modeling lies not only in what it reveals, but in what
    \delta=\Pr(\text{bet with }Q).
    $$
 
-   (a) Derive the expected payoff \(u(\alpha,\beta;\gamma,\delta)\).  
-   (b) Show explicitly that \(u\) is affine linear in \((\alpha,\beta)\) for fixed \((\gamma,\delta)\), and affine linear in \((\gamma,\delta)\) for fixed \((\alpha,\beta)\).  
+   (a) Derive the expected payoff $u(\alpha,\beta;\gamma,\delta)$.  
+   (b) Show explicitly that $u$ is affine linear in $(\alpha,\beta)$ for fixed $(\gamma,\delta)$, and affine linear in $(\gamma,\delta)$ for fixed $(\alpha,\beta)$.  
    (c) Use indifference to solve for the equilibrium frequencies.  
    (d) Compute the value of the game.
 
 8. **Stability Against Over-Bluffing**
 
-   Let \(\beta^*\) denote Player I’s equilibrium bluffing frequency with \(Q\) in the three-card model.
+   Let $\beta^*$ denote Player I’s equilibrium bluffing frequency with $Q$ in the three-card model.
 
-   (a) Suppose Player I bluffs with frequency \(\beta > \beta^*\). Explain, using best responses, how Player II can exploit this deviation.
+   (a) Suppose Player I bluffs with frequency $\beta > \beta^*$. Explain, using best responses, how Player II can exploit this deviation.
 
-   (b) Express Player I’s expected payoff against Player II’s best response as a function of \(\beta\), and simplify to a formula of the form
+   (b) Express Player I’s expected payoff against Player II’s best response as a function of $\beta$, and simplify to a formula of the form
    $$
    \text{payoff}(\beta)
    =
@@ -778,7 +778,7 @@ The power of mathematical modeling lies not only in what it reveals, but in what
    \qquad
    \text{for }\beta \ge \beta^*
    $$
-   for some constant \(c>0\). Identify \(c\).
+   for some constant $c>0$. Identify $c$.
 
 9. **Linear Programming Formulation**
 
@@ -809,7 +809,7 @@ The power of mathematical modeling lies not only in what it reveals, but in what
    \end{aligned}
    $$
 
-   (c) In complete sentences, explain why these constraints encode "guarantee at least \(v\)" and "hold the payoff to at most \(w\)."
+   (c) In complete sentences, explain why these constraints encode "guarantee at least $v$" and "hold the payoff to at most $w$."
 
 10. **Zero-Sum Modeling**
 
