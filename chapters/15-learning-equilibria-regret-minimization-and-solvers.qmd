@@ -2312,7 +2312,35 @@ In other words:
 
 This is precisely the defining property of equilibrium.
 
+#### Definition (Nash Equilibrium)
 
+A pair of strategies $(\sigma^*, \tau^*)$ is a **Nash equilibrium** if neither player can improve their expected payoff by unilaterally deviating. That is,
+
+$$
+u_1(\sigma^*, \tau^*) \ge u_1(\sigma, \tau^*)
+\quad \text{for all strategies } \sigma,
+$$
+
+and
+
+$$
+u_2(\sigma^*, \tau^*) \ge u_2(\sigma^*, \tau)
+\quad \text{for all strategies } \tau.
+$$
+
+#### Definition (Nash Equilibrium in a Zero-Sum Game)
+
+A pair of strategies $(\sigma^*, \tau^*)$ is a **Nash equilibrium** if
+
+$$
+u_1(\sigma^*, \tau^*)
+=
+\max_{\sigma} u_1(\sigma, \tau^*)
+=
+\min_{\tau} u_1(\sigma^*, \tau).
+$$
+
+That is, $\sigma^*$ is a best response to $\tau^*$, and $\tau^*$ is a best response to $\sigma^*$.
 
 #### Connection to the Poker Model
 
