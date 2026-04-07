@@ -19,7 +19,7 @@ book:
   - chapters/09-nash-equilibrium-and-indifference-conditions.qmd
   - chapters/10-exploitative-play-vs-equilibrium-thinking.qmd
   - chapters/12-the-value-of-information.qmd
-
+  - chapters/extension_chapter_template.qmd
   - chapters/14-game-trees-and-abstraction.qmd
   - chapters/16-alternative-solver-perspectives-lp-qre-and-regularization.qmd
   - chapters/17-variance-bankroll-and-risk-of-ruin.qmd

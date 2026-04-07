@@ -1,0 +1,308 @@
+---
+title: "[Chapter Title]"
+chapter-id: "[chapter-id]"
+part: "Part [X]: [Part Title]"
+format:
+  html: default
+  pdf: default
+---
+
+# Chapter Overview
+
+This file serves two purposes:
+
+1. It is the template for an extension chapter in *Mathematics of Poker*.
+2. It is the assignment guide for how your group should collaboratively build that chapter with the help of AI.
+
+Your task is not to ask AI to "write the chapter" all at once. Your task is to use AI as a mathematical drafting partner: to help you clarify definitions, test examples, strengthen proofs, organize exposition, and refine language while you remain responsible for the chapter's mathematical correctness, coherence, and voice.
+
+The finished chapter should read as a polished contribution to the book. It should develop one clear mathematical theme connected to poker, while also showing how that mathematics extends beyond poker.
+
+## Writing Mathematics in Quarto (LaTeX Guidelines)
+
+Mathematical writing in this text is done using LaTeX syntax embedded within Quarto. Clear and consistent formatting is essential for both readability and successful document compilation.
+
+### Core Conventions
+
+We adopt the following standards throughout the book:
+
+- **Inline mathematics** should be written using single dollar signs:
+
+  $x^2 + y^2 = 1$
+
+- **Displayed (centered) mathematics** should be written using double dollar signs:
+
+  $$
+  \mathbb{E}[X] = \sum_x x \, \mathbb{P}(X = x)
+  $$
+
+These are the *only* formats you should use for mathematical expressions in this project.
+
+### Avoid Alternative Syntax
+
+Although LaTeX supports other math delimiters, such as:
+
+- `\( ... \)` for inline math  
+- `\[ ... \]` for display math  
+
+**Do not use these forms.** In Quarto, they are more prone to rendering inconsistencies and compilation issues, especially when combined with Markdown and cross-format output (HTML/PDF).
+
+### Multi-Line Expressions
+
+For aligned or multi-line equations, use environments inside `$$ ... $$`:
+
+$$
+\begin{aligned}
+\mathrm{EV}(b)
+&= (1 - c(b))P \\
+&\quad + c(b)\big[e(P + b) - (1 - e)b\big]
+\end{aligned}
+$$
+
+Ensure:
+- Proper indentation for readability  
+- All environments are correctly opened and closed  
+
+### Common Pitfalls
+
+- Missing a closing `$` or `$$`  
+- Mixing math delimiters (e.g., starting with `$` and ending with `\)`)  
+- Using plain text where math mode is required (e.g., writing `E[X]` instead of $\mathbb{E}[X]$)  
+- Copying equations from external sources that use incompatible syntax  
+
+### Style Expectations
+
+Mathematics should be:
+
+- **Defined before use** (introduce variables clearly)  
+- **Consistently notated** across the chapter  
+- **Integrated into sentences**, not presented without explanation  
+
+For example:
+
+The expected value of the bet is given by
+$$
+\mathrm{EV}(b) = (1 - c(b))P + c(b)\big[e(P + b) - (1 - e)b\big].
+$$
+
+Avoid presenting equations without context.
+
+### Final Check
+
+Before submitting your chapter:
+
+- Render the `.qmd` file to ensure all math displays correctly  
+- Scan for formatting inconsistencies  
+- Verify that all symbols are defined and used consistently  
+
+Clear mathematical writing is not just about correctness—it is about communication.
+
+
+## How to Use This Template
+
+Work through the chapter in stages.
+
+### Stage 1: Define the chapter's scope
+
+Before drafting, your group should be able to answer the following questions.
+
+- What is the chapter's theme?
+- What is the central mathematical question?
+- Why does this topic belong in *Mathematics of Poker*?
+- What ideas from earlier chapters does it use?
+- What new definitions, results, or modeling tools will be needed?
+
+Write short answers here before you begin full drafting.
+
+**Chosen theme:** [Insert theme]
+
+**Central question:** [Insert the main mathematical question]
+
+**Connection to poker:** [Insert 2--4 sentences]
+
+**Connection to earlier chapters:** [Insert 2--4 sentences]
+
+**Core mathematical tools:**
+
+- [Tool / definition / theorem 1]
+- [Tool / definition / theorem 2]
+- [Tool / definition / theorem 3]
+
+### Stage 2: Use AI strategically
+
+AI should be used in ways that strengthen mathematical thinking rather than replace it. Productive uses include:
+
+- generating several candidate motivating examples;
+- proposing alternate chapter outlines;
+- drafting candidate definitions in precise mathematical language;
+- checking whether notation is consistent;
+- suggesting proof strategies;
+- identifying missing assumptions in an argument;
+- helping produce homework problems at different levels;
+- revising prose for clarity and flow.
+
+AI should not be treated as an unquestioned authority. Every claim, formula, proof step, and example must be checked by your group.
+
+### Stage 3: Draft section by section
+
+Do not draft the entire chapter in one prompt. Build it in pieces.
+
+A productive workflow is:
+
+1. Draft the motivating example.
+2. List the definitions that must come before any theorem or model.
+3. Draft the mathematical framework in subsections.
+4. Add one or two explicit poker connections.
+5. Draft the beyond-poker section.
+7. Create homework problems.
+9. Revise the whole chapter for consistency of notation and tone.
+
+### Stage 4: Revise with a checklist
+
+Before submission, verify the following.
+
+- Every term is defined before use.
+- Notation is consistent with the rest of the book.
+- The mathematics is correct and sufficiently justified.
+- The poker examples illuminate the mathematics rather than dominate it.
+- The chapter has one main intellectual arc.
+- The homework problems match the chapter's content.
+
+---
+
+## Suggested AI Collaboration Log
+
+Keep a brief record of how your group used AI. This does not need to be long, but it should be honest and specific.
+
+| Task | How AI Was Used | What the Group Revised or Verified |
+|---|---|---|
+| Example: definitions | Asked AI to draft 3 candidate definitions | Revised wording and checked against chapter notation |
+|  |  |  |
+|  |  |  |
+|  |  |  |
+
+---
+
+# Motivating Example
+
+[Write a concrete example that raises the central mathematical question of the chapter. This should be vivid, specific, and conceptually rich. It should not solve the chapter's main problem, but it should make the need for the mathematics feel necessary.]
+
+**Questions to guide drafting:**
+
+- What situation makes the chapter's mathematics unavoidable?
+- What is difficult or non-obvious here?
+- What would intuition alone get wrong?
+- What exact question will the rest of the chapter answer?
+
+**Possible AI uses for this section:**
+
+- Ask for 3--5 possible motivating examples tied to your theme.
+- Ask for help making the example more concrete without losing mathematical precision.
+- Ask for help identifying the precise mathematical question hidden inside the story.
+
+[Insert motivating example here.]
+
+# Mathematical Framework and Poker Theory
+
+[This is the core of the chapter. It should introduce definitions, notation, models, theorems, propositions, examples, and proofs in a mathematically coherent order. Poker should appear here as a modeling context, not as advice about how to play.]
+
+## Definitions and Setup
+
+[Insert the foundational definitions here. Every later claim should rest on material introduced in this section.]
+
+### Definition 1
+
+**Definition.** [Insert definition.]
+
+### Definition 2
+
+**Definition.** [Insert definition.]
+
+### Definition 3
+
+**Definition.** [Insert definition.]
+
+## Main Mathematical Development
+
+[Break the chapter into subsections that develop one primary theme. Use theorem-style statements when appropriate. Include proofs when they illuminate structure or reasoning.]
+
+### Subsection A: [Title]
+
+[Insert exposition, model, proposition, or worked example.]
+
+### Subsection B: [Title]
+
+[Insert exposition, theorem, derivation, or proof.]
+
+### Subsection C: [Title]
+
+[Insert exposition, theorem, derivation, or proof.]
+
+## Poker Connection
+
+[Explain clearly how the mathematics appears in poker. This may involve hand ranges, tournament decisions, solver methods, variants, simulation, game structure, or another mathematically meaningful connection.]
+
+**Questions to guide drafting:**
+
+- What does the model say in poker terms?
+- What assumptions are being made?
+- Which features of actual poker does the model capture well?
+- Which features does it ignore?
+
+**Possible AI uses for this section:**
+
+- Ask for multiple ways to explain the poker connection at an undergraduate level.
+- Ask AI to generate a toy example using your notation.
+- Ask AI to identify hidden assumptions in your model.
+
+[Insert poker connection here.]
+
+# Beyond Poker
+
+[Situate the mathematics outside of poker. This section should show that the ideas matter more broadly: in economics, biology, computer science, statistics, operations research, social choice, or another area. Do not introduce major new machinery here.]
+
+**Questions to guide drafting:**
+
+- Where else does this mathematics appear?
+- What changes when the context is no longer poker?
+- What broader lesson does the chapter's mathematics teach?
+
+[Insert beyond-poker discussion here.]
+
+
+
+# Homework Problems
+
+[Include a small, curated problem set. Aim for variety rather than volume. Problems should reinforce definitions, encourage interpretation, and invite reasoning.]
+
+1. **Conceptual problem.** [Insert question.]
+2. **Computational problem.** [Insert question.]
+3. **Proof or derivation problem.** [Insert question.]
+4. **Modeling or interpretation problem.** [Insert question.]
+5. **Optional challenge problem.** [Insert question.]
+
+**Possible AI uses for this section:**
+
+- Ask for several candidate problems at different levels of difficulty.
+- Ask AI to check whether each problem can actually be solved using the chapter's content.
+- Ask AI to generate one or two extensions, then revise them for tone and fit.
+
+# Revision Checklist
+
+Before final submission, confirm that the chapter satisfies all of the following.
+
+- [ ] The chapter has a clear title and central question.
+- [ ] The motivating example genuinely motivates the mathematics.
+- [ ] Definitions appear before use.
+- [ ] Notation is stable and consistent.
+- [ ] The chapter develops one main mathematical theme.
+- [ ] Poker is treated as a mathematical model, not as strategy advice.
+- [ ] The beyond-poker section broadens the chapter without changing its core mathematics.
+- [ ] The homework problems are varied and aligned with the chapter.
+- [ ] All AI-generated material has been checked and revised by the group.
+
+# Submission Notes
+
+Submit the completed `.qmd` file along with any supporting figures, code, or data files. If you used AI in a substantial way, include the collaboration log above or a short appendix describing how it shaped the chapter.
+
+The goal is not to hide AI use. The goal is to use it well: as a tool for mathematical writing, revision, and exploration, while preserving your group's responsibility for the finished mathematics.
