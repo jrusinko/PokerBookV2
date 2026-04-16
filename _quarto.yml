@@ -26,6 +26,7 @@ book:
   - chapters/18-randomness-shuffling-rngs-and-verification.qmd
   - chapters/19-learning-from-data-hand-histories-and-statistical-inference.qmd
   - chapters/20-detecting-cheating-and-collusion.qmd
+  - chapters/21-tournament-dynamics-beyond-icm.qmd
 format:
   html:
     mermaid: {}
