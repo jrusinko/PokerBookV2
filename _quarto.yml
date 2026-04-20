@@ -16,16 +16,11 @@ book:
   - chapters/11-betting-as-optimization.qmd
   - chapters/15-learning-equilibria-regret-minimization-and-solvers.qmd
   - chapters/13-tournament-poker-and-icm-optimization-with-nonlinear-utility.qmd
-  - chapters/09-nash-equilibrium-and-indifference-conditions.qmd
-  - chapters/10-exploitative-play-vs-equilibrium-thinking.qmd
-  - chapters/12-the-value-of-information.qmd
   - chapters/extension_chapter_template.qmd
-  - chapters/14-game-trees-and-abstraction.qmd
-  - chapters/16-alternative-solver-perspectives-lp-qre-and-regularization.qmd
-  - chapters/17-variance-bankroll-and-risk-of-ruin.qmd
-  - chapters/18-randomness-shuffling-rngs-and-verification.qmd
   - chapters/19-learning-from-data-hand-histories-and-statistical-inference.qmd
-  - chapters/20-detecting-cheating-and-collusion.qmd
+  - chapters/Chapter_cheating_deception.qmd
+  - chapters/Exploitative_vs_Equilibrium_Play.qmd
+  - chapters/21-tournament_dynamics_beyond_icm.qmd
 format:
   html:
     mermaid: {}

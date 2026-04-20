@@ -1,0 +1,828 @@
+---
+title: "Tournament Dynamics Beyond ICM"
+chapter-id: "ch21"
+part: "Part VI: Multi-Player and Tournament Structure"
+format:
+  html: default
+  pdf: default
+---
+
+# Chapter Overview
+
+This file serves two purposes:
+
+1. It is the template for an extension chapter in *Mathematics of Poker*.
+2. It is the assignment guide for how your group should collaboratively build that chapter with the help of AI.
+
+Your task is not to ask AI to "write the chapter" all at once. Your task is to use AI as a mathematical drafting partner: to help you clarify definitions, test examples, strengthen proofs, organize exposition, and refine language while you remain responsible for the chapter's mathematical correctness, coherence, and voice.
+
+The finished chapter should read as a polished contribution to the book. It should develop one clear mathematical theme connected to poker, while also showing how that mathematics extends beyond poker.
+
+## Writing Mathematics in Quarto (LaTeX Guidelines)
+
+Mathematical writing in this text is done using LaTeX syntax embedded within Quarto. Clear and consistent formatting is essential for both readability and successful document compilation.
+
+### Core Conventions
+
+We adopt the following standards throughout the book:
+
+- **Inline mathematics** should be written using single dollar signs:
+
+  $x^2 + y^2 = 1$
+
+- **Displayed (centered) mathematics** should be written using double dollar signs:
+
+  $$
+  \mathbb{E}[X] = \sum_x x \, \mathbb{P}(X = x)
+  $$
+
+These are the *only* formats you should use for mathematical expressions in this project.
+
+### Avoid Alternative Syntax
+
+Although LaTeX supports other math delimiters, such as:
+
+- `\( ... \)` for inline math  
+- `\[ ... \]` for display math  
+
+**Do not use these forms.** In Quarto, they are more prone to rendering inconsistencies and compilation issues, especially when combined with Markdown and cross-format output (HTML/PDF).
+
+### Multi-Line Expressions
+
+For aligned or multi-line equations, use environments inside `$$ ... $$`:
+
+$$
+\begin{aligned}
+\mathrm{EV}(b)
+&= (1 - c(b))P \\
+&\quad + c(b)\big[e(P + b) - (1 - e)b\big]
+\end{aligned}
+$$
+
+Ensure:
+- Proper indentation for readability  
+- All environments are correctly opened and closed  
+
+### Common Pitfalls
+
+- Missing a closing `$` or `$$`  
+- Mixing math delimiters (e.g., starting with `$` and ending with `\)`)  
+- Using plain text where math mode is required (e.g., writing `E[X]` instead of $\mathbb{E}[X]$)  
+- Copying equations from external sources that use incompatible syntax  
+
+### Style Expectations
+
+Mathematics should be:
+
+- **Defined before use** (introduce variables clearly)  
+- **Consistently notated** across the chapter  
+- **Integrated into sentences**, not presented without explanation  
+
+For example:
+
+The expected value of the bet is given by
+$$
+\mathrm{EV}(b) = (1 - c(b))P + c(b)\big[e(P + b) - (1 - e)b\big].
+$$
+
+Avoid presenting equations without context.
+
+### Final Check
+
+Before submitting your chapter:
+
+- Render the `.qmd` file to ensure all math displays correctly  
+- Scan for formatting inconsistencies  
+- Verify that all symbols are defined and used consistently  
+
+Clear mathematical writing is not just about correctness—it is about communication.
+
+
+## How to Use This Template
+
+Work through the chapter in stages.
+
+### Stage 1: Define the chapter's scope
+
+Before drafting, your group should be able to answer the following questions.
+
+- What is the chapter's theme?
+- What is the central mathematical question?
+- Why does this topic belong in *Mathematics of Poker*?
+- What ideas from earlier chapters does it use?
+- What new definitions, results, or modeling tools will be needed?
+
+Write short answers here before you begin full drafting.
+
+**Chosen theme:** [Insert theme]
+
+**Central question:** [Insert the main mathematical question]
+
+**Connection to poker:** [Insert 2--4 sentences]
+
+**Connection to earlier chapters:** [Insert 2--4 sentences]
+
+**Core mathematical tools:**
+
+- [Tool / definition / theorem 1]
+- [Tool / definition / theorem 2]
+- [Tool / definition / theorem 3]
+
+### Stage 2: Use AI strategically
+
+AI should be used in ways that strengthen mathematical thinking rather than replace it. Productive uses include:
+
+- generating several candidate motivating examples;
+- proposing alternate chapter outlines;
+- drafting candidate definitions in precise mathematical language;
+- checking whether notation is consistent;
+- suggesting proof strategies;
+- identifying missing assumptions in an argument;
+- helping produce homework problems at different levels;
+- revising prose for clarity and flow.
+
+AI should not be treated as an unquestioned authority. Every claim, formula, proof step, and example must be checked by your group.
+
+### Stage 3: Draft section by section
+
+Do not draft the entire chapter in one prompt. Build it in pieces.
+
+A productive workflow is:
+
+1. Draft the motivating example.
+2. List the definitions that must come before any theorem or model.
+3. Draft the mathematical framework in subsections.
+4. Add one or two explicit poker connections.
+5. Draft the beyond-poker section.
+7. Create homework problems.
+9. Revise the whole chapter for consistency of notation and tone.
+
+### Stage 4: Revise with a checklist
+
+Before submission, verify the following.
+
+- Every term is defined before use.
+- Notation is consistent with the rest of the book.
+- The mathematics is correct and sufficiently justified.
+- The poker examples illuminate the mathematics rather than dominate it.
+- The chapter has one main intellectual arc.
+- The homework problems match the chapter's content.
+
+---
+
+## Suggested AI Collaboration Log
+
+Keep a brief record of how your group used AI. This does not need to be long, but it should be honest and specific.
+
+| Task | How AI Was Used | What the Group Revised or Verified |
+|---|---|---|
+| Example: definitions | Asked AI to draft 3 candidate definitions | Revised wording and checked against chapter notation |
+|  |  |  |
+|  |  |  |
+|  |  |  |
+
+---
+
+# Motivating Example
+
+[Write a concrete example that raises the central mathematical question of the chapter. This should be vivid, specific, and conceptually rich. It should not solve the chapter's main problem, but it should make the need for the mathematics feel necessary.]
+
+**Questions to guide drafting:**
+
+- What situation makes the chapter's mathematics unavoidable?
+- What is difficult or non-obvious here?
+- What would intuition alone get wrong?
+- What exact question will the rest of the chapter answer?
+
+**Possible AI uses for this section:**
+
+- Ask for 3--5 possible motivating examples tied to your theme.
+- Ask for help making the example more concrete without losing mathematical precision.
+- Ask for help identifying the precise mathematical question hidden inside the story.
+
+[Insert motivating example here.]
+
+# Mathematical Framework and Poker Theory
+
+[This is the core of the chapter. It should introduce definitions, notation, models, theorems, propositions, examples, and proofs in a mathematically coherent order. Poker should appear here as a modeling context, not as advice about how to play.]
+
+## Definitions and Setup
+
+We model a tournament with $n$ players and a fixed payout structure determined by finishing position. Let  
+- $c_i \in \mathbb{R}_+$ denote the chip stack of player $i$,  
+- $\mathbf{c} = (c_1, \dots, c_n)$ denote the full vector of chip stacks,  
+- $\mathbf{c}_{-i}$ denote the vector of all stacks except player $i$'s.
+
+Let
+$$
+U_i(\mathbf{c})
+$$
+denote the **tournament utility** of player $i$, defined as their expected monetary payout given the current stack configuration.
+
+Unlike in cash games, this utility depends on relative position rather than absolute chip counts.
+
+We define Nonlinear Utility Function, Risk Premium, and Bubble Factor. 
+
+### Definition 1 (Nonlinear Utility Function)
+
+**Definition.** A nonlinear utility function is a function
+$$
+U_i : \mathbb{R}_+^n \to \mathbb{R}
+$$
+such that the change in utility from gaining chips depends on the current stack size and the stacks of other players.
+
+Formally, for $\Delta > 0$,
+$$
+U_i(c_i + \Delta, \mathbf{c}_{-i}) - U_i(c_i, \mathbf{c}_{-i})
+$$
+is not constant in $c_i$.
+
+#### Explanation of Components
+
+- $U_i(\mathbf{c})$: expected payout of player $i$  
+- $c_i$: player $i$'s chip stack  
+- $\mathbf{c}_{-i}$: opponents’ stacks  
+- $\Delta$: change in chips  
+
+#### Interpretation
+
+In a linear system (such as a cash game), each chip has constant value:
+$$
+U_i(c_i + \Delta) - U_i(c_i) = \text{constant}.
+$$
+
+In tournaments, this is not true. For example:
+- Increasing from a short stack significantly improves survival probability  
+- Increasing an already large stack produces only a small gain in expected payout  
+
+This implies diminishing marginal returns, typically expressed as
+$$
+\frac{\partial^2 U_i}{\partial c_i^2} < 0.
+$$
+
+
+### Definition 2 (Risk Premium)
+
+**Definition.** Let $X$ be a random variable representing a change in player $i$'s chip stack. The risk premium $\pi$ is defined implicitly by
+$$
+U_i(\mathbb{E}[c_i + X] - \pi, \mathbf{c}_{-i})
+=
+\mathbb{E}[U_i(c_i + X, \mathbf{c}_{-i})].
+$$
+
+#### Explanation of Components
+
+- $X$: random chip outcome (e.g., $+\Delta$ or $-\Delta$)  
+- $\mathbb{E}[c_i + X]$: expected chip stack after the gamble  
+- $\mathbb{E}[U_i(c_i + X, \mathbf{c}_{-i})]$: expected tournament utility  
+- $\pi$: amount of chips the player would give up to avoid risk  
+
+#### Interpretation
+
+The risk premium measures how much a player dislikes uncertainty.
+
+- If $\pi = 0$, the player is risk-neutral  
+- If $\pi > 0$, the player is risk-averse  
+
+In tournaments, risk aversion arises because losing chips can lead to elimination, while gaining chips often provides limited additional benefit.
+
+### Definition 3 (Bubble Factor)
+
+**Definition.** For $\Delta > 0$, the bubble factor for player $i$ is
+$$
+B_i(\mathbf{c}, \Delta)
+=
+\frac{
+U_i(c_i, \mathbf{c}_{-i}) - U_i(c_i - \Delta, \mathbf{c}_{-i})
+}{
+U_i(c_i + \Delta, \mathbf{c}_{-i}) - U_i(c_i, \mathbf{c}_{-i})
+}.
+$$
+
+#### Explanation of Components
+
+The numerator
+$$
+U_i(c_i, \mathbf{c}_{-i}) - U_i(c_i - \Delta, \mathbf{c}_{-i})
+$$
+represents the utility lost when chips are lost.
+
+The denominator
+$$
+U_i(c_i + \Delta, \mathbf{c}_{-i}) - U_i(c_i, \mathbf{c}_{-i})
+$$
+represents the utility gained when chips are won.
+
+#### Interpretation
+
+- $B_i > 1$: losing chips is more costly than gaining chips is beneficial  
+- $B_i = 1$: symmetric value (cash-game case)  
+- $B_i \gg 1$: strong risk aversion (e.g., near payout thresholds)  
+
+This ratio captures how tournament incentives distort decision-making.
+
+### Connecting the Definitions
+
+These concepts are closely related.
+
+- Nonlinear utility creates diminishing marginal returns  
+- Diminishing returns lead to risk aversion  
+- Risk aversion is quantified by the risk premium  
+- The bubble factor measures the asymmetry between gains and losses  
+
+Together, they imply that chip value depends on both stack size and tournament context.
+
+## Main Mathematical Development
+
+[Break the chapter into subsections that develop one primary theme. Use theorem-style statements when appropriate. Include proofs when they illuminate structure or reasoning.]
+
+### Subsection A: Marginal Value of Chips
+
+A central feature of tournament poker is that the value of an additional chip is not constant. Instead, it depends on both a player’s current stack and the distribution of chips across all players.
+
+### Definition (Marginal Value of Chips)
+
+The **marginal value of chips** for player $i$ is defined as the rate at which tournament utility changes with respect to their chip stack:
+$$
+\frac{\partial U_i}{\partial c_i}(\mathbf{c}).
+$$
+
+This quantity measures how much a small increase in chips improves a player’s expected payout.
+
+---
+
+### Interpretation of the Derivative
+
+- If $\frac{\partial U_i}{\partial c_i}$ is large, gaining chips significantly increases expected payout  
+- If $\frac{\partial U_i}{\partial c_i}$ is small, additional chips provide little benefit  
+
+Thus, the derivative captures the **local value of chips** at a given stack size.
+
+---
+
+### Key Property: Diminishing Marginal Value
+
+In tournament settings, utility is typically concave in $c_i$, meaning:
+$$
+\frac{\partial^2 U_i}{\partial c_i^2}(\mathbf{c}) < 0.
+$$
+
+This implies that:
+- The first chips a player gains are very valuable  
+- Each additional chip contributes less than the previous one  
+
+#### Example (Qualitative)
+
+- A player with a very short stack gains substantial survival probability from doubling up  
+- A chip leader gains relatively little from increasing an already dominant stack  
+
+---
+
+### Dependence on Stack Distribution
+
+Unlike standard economic models, the marginal value of chips depends not only on $c_i$, but on the entire vector $\mathbf{c}$:
+$$
+\frac{\partial U_i}{\partial c_i}(\mathbf{c})
+=
+f(c_1, c_2, \dots, c_n).
+$$
+
+This reflects the fact that tournament outcomes depend on relative chip positions.
+
+#### Consequences
+
+- If many opponents are short-stacked, survival becomes more valuable  
+- If stacks are evenly distributed, accumulating chips becomes more valuable  
+- If one player dominates, marginal gains for that player are minimal  
+
+---
+
+### Discrete Approximation
+
+Since chips change in discrete amounts, the marginal value is often approximated by:
+$$
+U_i(c_i + \Delta, \mathbf{c}_{-i}) - U_i(c_i, \mathbf{c}_{-i}),
+$$
+for small $\Delta > 0$.
+
+This gives a practical way to estimate marginal value without calculus.
+
+---
+
+### Relation to Risk and Bubble Factor
+
+The marginal value of chips directly influences both risk premium and bubble factor:
+
+- When marginal value is high (short stacks), players are incentivized to take risks  
+- When marginal value is low (large stacks), players can apply pressure  
+- When losing chips significantly reduces marginal utility, the bubble factor increases  
+
+---
+
+### Result
+
+The marginal value of chips depends on the stack distribution:
+$$
+\frac{\partial U_i}{\partial c_i}(\mathbf{c})
+\text{ varies with both } c_i \text{ and } \mathbf{c}_{-i}.
+$$
+
+---
+
+### Implication for Strategy
+
+Because marginal chip value is not constant:
+
+- Decisions that maximize expected chips may not maximize expected payout  
+- Players must account for how chips translate into finishing probabilities  
+- Optimal play requires evaluating changes in utility, not just chip counts  
+
+This is the fundamental reason tournament strategy differs from cash-game strategy.
+
+### Subsection B: Tournament EV vs Chip EV
+
+## Tournament Expected Value vs. Chip Expected Value
+
+A central distinction in tournament poker is the difference between **chip expected value** and **tournament expected value**. While chip expected value measures gains and losses in chips, tournament expected value measures changes in expected payout. Because tournament utility is nonlinear, these two quantities can lead to different strategic decisions.
+
+---
+
+### Definition (Chip Expected Value)
+
+Consider a gamble in which player $i$ wins $\Delta > 0$ chips with probability $p$ and loses $\Delta$ chips with probability $1 - p$.
+
+The **chip expected value** (chip-EV) of this gamble is
+$$
+\mathrm{EV}_{\text{chips}} = p \cdot \Delta + (1 - p)(-\Delta) = (2p - 1)\Delta.
+$$
+
+#### Interpretation
+
+- $\mathrm{EV}_{\text{chips}} > 0$: the gamble is profitable in chips  
+- $\mathrm{EV}_{\text{chips}} = 0$: the gamble is fair  
+- $\mathrm{EV}_{\text{chips}} < 0$: the gamble loses chips on average  
+
+Chip-EV treats each chip as having equal value, independent of context.
+
+---
+
+### Definition (Tournament Expected Value)
+
+The **tournament expected value** (tournament-EV) evaluates the same gamble using the utility function $U_i$:
+$$
+\mathrm{EV}_{\text{tourn}}
+=
+p \cdot U_i(c_i + \Delta, \mathbf{c}_{-i})
++
+(1 - p) \cdot U_i(c_i - \Delta, \mathbf{c}_{-i})
+-
+U_i(\mathbf{c}).
+$$
+
+#### Explanation of Components
+
+- $U_i(c_i + \Delta, \mathbf{c}_{-i})$: utility if the gamble is won  
+- $U_i(c_i - \Delta, \mathbf{c}_{-i})$: utility if the gamble is lost  
+- $U_i(\mathbf{c})$: current utility baseline  
+- $p$: probability of winning the gamble  
+
+#### Interpretation
+
+Tournament-EV measures how a decision affects **expected payout**, not chip count.
+
+---
+
+### Key Difference
+
+Chip-EV assumes linear utility:
+$$
+U_i(c_i) = c_i,
+$$
+while tournament-EV uses a nonlinear utility function.
+
+Because of this,
+$$
+\mathbb{E}[U_i(c_i + X)] \neq U_i(\mathbb{E}[c_i + X]).
+$$
+
+This inequality is the mathematical source of the difference between the two frameworks.
+
+---
+
+### When the Two Agree
+
+If utility is linear, then:
+$$
+U_i(c_i + \Delta) - U_i(c_i) = \Delta,
+$$
+and therefore
+$$
+\mathrm{EV}_{\text{tourn}} = \mathrm{EV}_{\text{chips}}.
+$$
+
+This corresponds to cash-game settings.
+
+---
+
+### When the Two Differ
+
+In tournaments, utility is concave, implying risk aversion:
+$$
+U_i(\mathbb{E}[c_i + X]) > \mathbb{E}[U_i(c_i + X)].
+$$
+
+As a result, it is possible that:
+$$
+\mathrm{EV}_{\text{chips}} > 0
+\quad \text{but} \quad
+\mathrm{EV}_{\text{tourn}} < 0.
+$$
+
+#### Interpretation
+
+A gamble may gain chips on average but still reduce expected payout due to the risk of losing chips.
+
+---
+
+### Role of the Bubble Factor
+
+Using the bubble factor, we can rewrite the decision condition.
+
+A player should accept the gamble only if:
+$$
+p \cdot \big(U_i(c_i + \Delta) - U_i(c_i)\big)
+\geq
+(1 - p) \cdot \big(U_i(c_i) - U_i(c_i - \Delta)\big).
+$$
+
+Rearranging gives:
+$$
+\frac{p}{1 - p}
+\geq
+B_i(\mathbf{c}, \Delta).
+$$
+
+#### Interpretation
+
+- The required odds depend on the bubble factor  
+- When $B_i > 1$, the player needs better-than-even odds to justify the gamble  
+
+---
+
+### Strategic Implications
+
+The divergence between chip-EV and tournament-EV leads to systematic differences in play:
+
+- Players may fold positive chip-EV hands to avoid elimination  
+- Medium stacks avoid risk due to high bubble factors  
+- Large stacks can take advantage of others’ risk aversion  
+- Short stacks may accept marginal gambles due to high marginal utility  
+
+---
+
+### Insight
+
+Maximizing chip expected value is not equivalent to maximizing tournament expected value.
+
+Optimal tournament decisions must account for:
+- nonlinear utility,
+- risk premium,
+- and the asymmetry between gains and losses.
+
+This distinction is fundamental to understanding tournament dynamics beyond simple chip-based reasoning.
+
+
+### Subsection C: All-In Decision Thresholds
+
+A fundamental application of tournament utility is determining whether a player should accept an all-in gamble. This section derives a precise probability threshold that replaces chip-based intuition with utility-based reasoning.
+
+---
+
+### Setup
+
+Consider a binary gamble faced by player $i$:
+
+- With probability $p$, player $i$ wins $\Delta > 0$ chips  
+- With probability $1 - p$, player $i$ loses $\Delta$ chips  
+
+Let $\mathbf{c}_{-i}$ denote the fixed chip stacks of all other players.
+
+We compare tournament expected utility before and after the decision.
+
+---
+
+### Tournament Decision Condition
+
+The player should accept the gamble if and only if:
+$$
+\mathrm{EV}_{\text{tourn}} \geq 0,
+$$
+which expands to:
+$$
+p \cdot U_i(c_i + \Delta, \mathbf{c}_{-i})
++
+(1 - p) \cdot U_i(c_i - \Delta, \mathbf{c}_{-i})
+\geq
+U_i(\mathbf{c}).
+$$
+
+Rearranging terms gives:
+$$
+p \cdot \big(U_i(c_i + \Delta, \mathbf{c}_{-i}) - U_i(c_i, \mathbf{c}_{-i})\big)
+\geq
+(1 - p) \cdot \big(U_i(c_i, \mathbf{c}_{-i}) - U_i(c_i - \Delta, \mathbf{c}_{-i})\big).
+$$
+
+---
+
+### Probability Threshold Form
+
+Dividing both sides yields a clean decision rule:
+$$
+\frac{p}{1 - p}
+\geq
+\frac{
+U_i(c_i, \mathbf{c}_{-i}) - U_i(c_i - \Delta, \mathbf{c}_{-i})
+}{
+U_i(c_i + \Delta, \mathbf{c}_{-i}) - U_i(c_i, \mathbf{c}_{-i})
+}.
+$$
+
+Recognizing the right-hand side as the bubble factor, we obtain:
+
+$$
+\frac{p}{1 - p} \geq B_i(\mathbf{c}, \Delta).
+$$
+
+---
+
+### Solving for the Critical Probability
+
+We can express the condition directly in terms of a minimum required winning probability:
+
+$$
+p \geq \frac{B_i(\mathbf{c}, \Delta)}{1 + B_i(\mathbf{c}, \Delta)}.
+$$
+
+---
+
+### Interpretation
+
+This inequality provides a direct bridge between tournament structure and decision-making:
+
+- If $B_i = 1$, then $p \geq \frac{1}{2}$ (cash-game threshold)  
+- If $B_i > 1$, the required probability increases above $1/2$  
+- If $B_i \gg 1$, the player requires a very high chance of winning to justify calling  
+
+---
+
+### Strategic Meaning
+
+This result formalizes how tournament incentives distort standard pot-odds reasoning:
+
+- Chip EV would only require $p > \frac{1}{2}$ for a fair gamble  
+- Tournament EV requires adjusting this threshold upward by the bubble factor  
+- As a result, players near payout thresholds must demand significantly better odds than in cash games  
+
+---
+
+### Insight
+
+The bubble factor acts as a multiplier on required equity:
+
+$$
+\text{Required Equity} = \frac{B_i}{1 + B_i}.
+$$
+
+Thus, optimal tournament decisions depend not only on pot odds, but also on stack-dependent utility curvature.
+
+## Poker Connection
+
+The mathematical framework developed in this chapter directly explains several fundamental features of tournament poker strategy, particularly in situations where chip-based reasoning fails.
+
+At the most basic level, poker decisions are often initially analyzed using chip expected value (chip-EV), where outcomes are measured purely in terms of chips gained or lost. However, tournament play introduces payout-dependent nonlinearities that fundamentally alter optimal decision-making.
+
+---
+
+### Tournament Decisions and Stack Pressure
+
+The concept of nonlinear utility explains why identical chip situations can lead to different optimal decisions depending on stack sizes and payout structure.
+
+- A short-stacked player may correctly take a high-variance gamble that is slightly negative in chip-EV, because the marginal utility of survival is extremely high.
+- A medium-stacked player in the same spot may fold the same hand, since the risk of elimination carries a large utility penalty (high bubble factor).
+- A chip leader may take aggressive lines that are chip-EV neutral or slightly negative, because additional chips contribute relatively little to tournament utility.
+
+Thus, optimal strategy depends on the full stack distribution $\mathbf{c}$, not just individual hand strength.
+
+---
+
+### All-In Decisions as Utility Thresholds
+
+The all-in decision framework derived earlier translates directly into real poker situations such as calling or folding against a shove.
+
+Instead of comparing raw chip equity, players must compare:
+$$
+\mathrm{EV}_{\text{tourn}} = p \cdot U_i(c_i + \Delta, \mathbf{c}_{-i}) + (1 - p) \cdot U_i(c_i - \Delta, \mathbf{c}_{-i}) - U_i(\mathbf{c}),
+$$
+
+which leads to the threshold condition:
+$$
+\frac{p}{1 - p} \geq B_i(\mathbf{c}, \Delta).
+$$
+
+In practice, this means that the same hand may be:
+
+- a profitable call in chip-EV terms,
+- but a fold in tournament EV terms if the bubble factor is sufficiently large.
+
+---
+
+### Stack-Based Strategic Roles
+
+The mathematical structure also explains common strategic roles observed in tournament play:
+
+- **Short stacks** behave as high-risk optimizers, maximizing survival probability rather than chip accumulation.
+- **Medium stacks** are the most constrained, as they face the highest bubble factors and must avoid confrontation with both larger and smaller stacks.
+- **Large stacks** function as pressure agents, exploiting opponents’ asymmetric utility by applying aggression that forces others into high-risk decisions.
+
+These behaviors are not heuristic—they emerge directly from differences in marginal utility:
+$$
+\frac{\partial U_i}{\partial c_i}(\mathbf{c}).
+$$
+
+---
+
+### Key Insight
+
+Tournament poker cannot be fully understood through chip arithmetic alone. Instead, every decision reflects changes in a nonlinear utility landscape shaped by:
+
+- stack sizes,
+- opponent distributions,
+- and payout structure.
+
+The mathematics shows that poker strategy is fundamentally about optimizing expected utility under a changing and highly state-dependent valuation of chips.
+
+**Questions to guide drafting:**
+
+- What does the model say in poker terms?
+- What assumptions are being made?
+- Which features of actual poker does the model capture well?
+- Which features does it ignore?
+
+**Possible AI uses for this section:**
+
+- Ask for multiple ways to explain the poker connection at an undergraduate level.
+- Ask AI to generate a toy example using your notation.
+- Ask AI to identify hidden assumptions in your model.
+
+[Insert poker connection here.]
+
+# Beyond Poker
+
+[Situate the mathematics outside of poker. This section should show that the ideas matter more broadly: in economics, biology, computer science, statistics, operations research, social choice, or another area. Do not introduce major new machinery here.]
+
+**Questions to guide drafting:**
+
+- Where else does this mathematics appear?
+- What changes when the context is no longer poker?
+- What broader lesson does the chapter's mathematics teach?
+
+[Insert beyond-poker discussion here.]
+
+
+
+# Homework Problems
+
+[Include a small, curated problem set. Aim for variety rather than volume. Problems should reinforce definitions, encourage interpretation, and invite reasoning.]
+
+1. **Conceptual problem.** [Insert question.]
+2. **Computational problem.** [Insert question.]
+3. **Proof or derivation problem.** [Insert question.]
+4. **Modeling or interpretation problem.** [Insert question.]
+5. **Optional challenge problem.** [Insert question.]
+
+**Possible AI uses for this section:**
+
+- Ask for several candidate problems at different levels of difficulty.
+- Ask AI to check whether each problem can actually be solved using the chapter's content.
+- Ask AI to generate one or two extensions, then revise them for tone and fit.
+
+# Revision Checklist
+
+Before final submission, confirm that the chapter satisfies all of the following.
+
+- [ ] The chapter has a clear title and central question.
+- [ ] The motivating example genuinely motivates the mathematics.
+- [ ] Definitions appear before use.
+- [ ] Notation is stable and consistent.
+- [ ] The chapter develops one main mathematical theme.
+- [ ] Poker is treated as a mathematical model, not as strategy advice.
+- [ ] The beyond-poker section broadens the chapter without changing its core mathematics.
+- [ ] The homework problems are varied and aligned with the chapter.
+- [ ] All AI-generated material has been checked and revised by the group.
+
+# Submission Notes
+
+Submit the completed `.qmd` file along with any supporting figures, code, or data files. If you used AI in a substantial way, include the collaboration log above or a short appendix describing how it shaped the chapter.
+
+The goal is not to hide AI use. The goal is to use it well: as a tool for mathematical writing, revision, and exploration, while preserving your group's responsibility for the finished mathematics.
