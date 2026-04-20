@@ -1,0 +1,181 @@
+---
+title: "Multi-Board and Run-It-Twice Variants"
+chapter-id: "ch_multi_board"
+part: "Part X: Variance and Expectation in Poker Models"
+poker-topics:
+  - "multi-board variants"
+  - "run-it-twice"
+  - "variance reduction"
+applications:
+  - "statistics (sampling and averaging)"
+  - "probability theory (independence and expectation)"
+  - "finance (risk and variance reduction)"
+sidebar:
+  lens: "Probability and uncertainty"
+  title: "Risk vs Expectation"
+  theme: "Why do people prefer less variance even when expected value is unchanged?"
+---
+
+::: {.callout-note}
+**Chapter at a glance**
+
+- **Part:** Part X: Variance and Expectation in Poker Models  
+- **Poker topics:** multi-board variants, run-it-twice, variance reduction  
+- **Beyond poker:** statistics, probability theory, finance  
+
+:::
+
+## Motivating Example
+
+Two players are all-in on the turn with a pot of size $P$. Instead of running the river once, they agree to run it twice, splitting the pot evenly between the two outcomes.
+
+Let $X$ denote the payoff from a single run of the board. If the hand is run twice, the total payoff is
+
+$$
+S_2 = X_1 + X_2
+$$
+
+where $X_1$ and $X_2$ are the payoffs from two independent board runouts.
+
+Players often claim that running it twice reduces risk without affecting expected value. This motivates a precise mathematical analysis of expectation and variance under repeated independent outcomes.
+
+---
+
+## Mathematical Framework and Poker Theory
+
+### Definitions
+
+**independent random outcomes.**  
+Random variables $X_1, \dots, X_n$ are independent if
+
+$$
+\mathbb{P}(X_1 \in A_1, \dots, X_n \in A_n)
+=
+\prod_{i=1}^n \mathbb{P}(X_i \in A_i)
+$$
+
+for all measurable sets $A_1, \dots, A_n$. In this setting, each $X_i$ represents the payoff from one board runout.
+
+---
+
+**linearity of expectation.**  
+For any random variables $X_1, \dots, X_n$,
+
+$$
+\mathbb{E}\left[\sum_{i=1}^n X_i\right]
+=
+\sum_{i=1}^n \mathbb{E}[X_i]
+$$
+
+This property holds without requiring independence.
+
+---
+
+**variance reduction via averaging.**  
+Let $X_1, \dots, X_n$ be independent and identically distributed with variance $\sigma^2$. Define
+
+$$
+\bar{X}_n = \frac{1}{n} \sum_{i=1}^n X_i
+$$
+
+Then
+
+$$
+\mathrm{Var}(\bar{X}_n) = \frac{\sigma^2}{n}
+$$
+
+---
+
+### Core Results
+
+**additivity of expectation.**  
+For any random variables $X_1$ and $X_2$,
+
+$$
+\mathbb{E}[X_1 + X_2] = \mathbb{E}[X_1] + \mathbb{E}[X_2]
+$$
+
+*Proof.*
+
+$$
+\begin{aligned}
+\mathbb{E}[X_1 + X_2]
+&= \sum_{\omega} (X_1(\omega) + X_2(\omega)) \mathbb{P}(\omega) \\
+&= \sum_{\omega} X_1(\omega)\mathbb{P}(\omega)
++ \sum_{\omega} X_2(\omega)\mathbb{P}(\omega) \\
+&= \mathbb{E}[X_1] + \mathbb{E}[X_2]
+\end{aligned}
+$$
+
+---
+
+**expectation under multiple runs.**  
+Let
+
+$$
+S_n = \sum_{i=1}^n X_i
+$$
+
+Then
+
+$$
+\mathbb{E}[S_n] = \sum_{i=1}^n \mathbb{E}[X_i]
+$$
+
+If the runs are identically distributed,
+
+$$
+\mathbb{E}[S_n] = n \cdot \mathbb{E}[X_1]
+$$
+
+For the average payoff,
+
+$$
+\bar{X}_n = \frac{1}{n} S_n
+\quad \Rightarrow \quad
+\mathbb{E}[\bar{X}_n] = \mathbb{E}[X_1]
+$$
+
+---
+
+**variance under multiple runs.**  
+Assume $X_1, \dots, X_n$ are independent with variance $\sigma^2$. Then
+
+$$
+\mathrm{Var}(S_n) = n\sigma^2
+$$
+
+and
+
+$$
+\begin{aligned}
+\mathrm{Var}(\bar{X}_n)
+&= \mathrm{Var}\left(\frac{1}{n} S_n\right) \\
+&= \frac{1}{n^2} \mathrm{Var}(S_n) \\
+&= \frac{1}{n^2}(n\sigma^2) \\
+&= \frac{\sigma^2}{n}
+\end{aligned}
+$$
+
+---
+
+## Poker Connection
+
+Running a hand multiple times corresponds to sampling independent realizations of the same random variable.
+
+- Expected value remains unchanged:
+$$
+\mathbb{E}[\bar{X}_n] = \mathbb{E}[X]
+$$
+
+- Variance decreases:
+$$
+\mathrm{Var}(\bar{X}_n) = \frac{\sigma^2}{n}
+$$
+
+Thus, increasing the number of runs reduces outcome variability while preserving expected value. This provides a precise mathematical explanation for why multi-board variants reduce perceived risk without altering fairness.
+
+---
+
+
+> Even when outcomes are fair in expectation, their distribution can strongly influence decision-making.

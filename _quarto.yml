@@ -20,6 +20,10 @@ book:
   - chapters/Chapter_cheating_deception.qmd
   - chapters/Exploitative_vs_Equilibrium_Play.qmd
   - chapters/21-tournament_dynamics_beyond_icm.qmd
+  - chapters/Combinatorics_of_Card_Removal(1stDraft).qmd
+  - chapters/chapter-15-range-construction.qmd
+  - chapters/run-it-twice.qmd
+  - chapters/linear_programming_poker_chapter.qmd
 format:
   html:
     mermaid: {}
