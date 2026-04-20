@@ -24,6 +24,7 @@ book:
   - chapters/chapter-15-range-construction.qmd
   - chapters/run-it-twice.qmd
   - chapters/linear_programming_poker_chapter.qmd
+  - chapters/21-markov-decision-processes-and-multi-street-play.qmd
 format:
   html:
     mermaid: {}
