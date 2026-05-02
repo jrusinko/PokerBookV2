@@ -25,6 +25,7 @@ book:
   - chapters/run-it-twice.qmd
   - chapters/linear_programming_poker_chapter.qmd
   - chapters/21-markov-decision-processes-and-multi-street-play.qmd
+  - chapters/Bankroll_Management.qmd
 format:
   html:
     mermaid: {}
