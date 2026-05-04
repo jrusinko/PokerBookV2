@@ -1,0 +1,211 @@
+---
+title: "Optimal Stopping and Commitment Decisions"
+format: pdf
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+## Optimal Stopping and Commitment Decisions
+
+### Stopping Times
+
+A central idea in sequential decision-making is that a player must
+decide whether to continue or stop based only on the information
+currently available. In poker, this occurs constantly: a player may
+fold, call, raise, or commit chips based on the cards seen so far,
+previous betting actions, and beliefs about an opponent's range.
+
+::: {.theorem name="Stopping Time"}
+Let $(\Omega, \mathcal{F}, \mathbb{P})$ be a probability space together
+where $$
+\mathcal{F}_0 \subseteq \mathcal{F}_1 \subseteq \mathcal{F}_2 \subseteq \cdots
+$$
+
+represents the information available over time.
+
+A random variable $\tau$ taking values in $\{0,1,2,\dots\}$ is called a
+stopping time if, for every time $t$, $$
+\{\tau = t\} \in \mathcal{F}_t
+$$
+
+Equivalently, the event that the process stops at time $t$ can be
+determined using only the information available up to time $t$.
+:::
+
+In poker, a player's decision to fold on the turn, call on the river, or
+shove all-in preflop is naturally modeled as a stopping time because the
+decision depends only on information currently revealed.
+
+For example, suppose a player commits to the following strategy:
+
+-   Continue playing while the estimated probability of winning exceeds
+    $0.35$.
+-   Fold immediately once the estimated winning probability falls below
+    $0.35$.
+
+Then the time at which the player folds is a stopping time, since the
+choice is based only on currently observed cards and betting actions.
+
+------------------------------------------------------------------------
+
+### Optimal Stopping Problems
+
+::: {.theorem name="Optimal Stopping Problem"}
+Let $X_t$, with $t \geq 0$, be a process representing the reward
+obtained by stopping at time $t$. The optimal stopping problem is to
+find a stopping time $\tau$ that maximizes $$
+\mathbb{E}[X_\tau]
+$$
+
+The objective is to stop at the best possible time.
+:::
+
+In poker, $X_t$ may represent the expected payoff from continuing to
+play until stage $t$. The player seeks to maximize the expected value of
+the hand by choosing when to stop investing chips.
+
+For example:
+
+-   Folding corresponds to stopping immediately.
+-   Calling corresponds to continuing for one more stage.
+-   Betting or raising corresponds to continuing while increasing the
+    amount at risk.
+
+This framework is useful because poker decisions are rarely isolated. A
+player often sacrifices immediate value in exchange for a potentially
+larger future payoff.
+
+As a simple example, suppose a player faces a river bet of $20$ into a
+pot of $80$. If the player calls, the final pot becomes $120$. Let $p$
+denote the probability that the player wins the hand.
+
+The expected value of calling is $$
+EV(\text{call}) = 120p - 20.
+$$
+
+Folding has expected value $$
+EV(\text{fold}) = 0.
+$$
+
+The player should call whenever $$
+120p - 20 > 0.
+$$
+
+Solving gives $$
+p > \frac{1}{6}.
+$$
+
+Thus, if the player believes they win more than approximately $16.7\%$
+of the time, calling is the optimal stopping decision.
+
+------------------------------------------------------------------------
+
+### The Snell Envelope
+
+::: {.theorem name="Snell Envelope"}
+Let $Y_t$ be a process defined recursively by $$
+Y_t = X_t
+$$
+
+where $X_t$ is a process representing the payoff at stopping time $t$.
+For previous times $t$, $$
+Y_t = \max\left(X_t, \mathbb{E}[Y_{t+1} \mid \mathcal{F}_t]\right)
+$$
+
+Here, $Y_t$ is called the Snell Envelope of $X_t$.
+:::
+
+The theorem states that at every stage, the player compares:
+
+-   The value of stopping immediately, $X_t$.
+-   The expected value of continuing,
+    $\mathbb{E}[Y_{t+1} \mid \mathcal{F}_t]$.
+
+The optimal decision is whichever is larger.
+
+This theorem closely mirrors real poker play. A player facing a
+difficult river decision compares the payoff from folding immediately
+against the expected payoff from calling.
+
+------------------------------------------------------------------------
+
+### Continuation Value Versus Stopping Value
+
+The main principle of optimal stopping is simple:
+
+> Continue only when the expected continuation value exceeds the
+> immediate stopping value.
+
+Mathematically, a player should continue whenever $$
+\mathbb{E}[Y_{t+1} \mid \mathcal{F}_t] > X_t
+$$
+
+Otherwise, the player should stop.
+
+In poker, the stopping value is often the value of folding, which is
+usually normalized to $0$. The continuation value is the expected value
+of calling, betting, or raising.
+
+Suppose a player faces a turn bet and estimates:
+
+-   Folding gives payoff $0$.
+-   Calling has expected value $4$.
+-   Raising has expected value $7$.
+
+Since raising has the highest continuation value, it is the optimal
+decision. However, if future information changes and calling becomes
+worth only $-2$, then stopping immediately by folding becomes optimal.
+
+This shows that poker decisions are dynamic. The best action can change
+as more information becomes available.
+
+------------------------------------------------------------------------
+
+### Commitment Decisions in Poker
+
+Optimal stopping theory is especially relevant when players commit chips
+to a pot.
+
+A commitment decision occurs when a player invests enough chips that
+folding later becomes difficult or impossible. For example, an all-in
+bet is a commitment decision because the player cannot revise the
+strategy after additional cards are revealed.
+
+Suppose a player has already invested $50$ chips in a hand and now faces
+a final bet of $25$. Even though the previous $50$ chips are sunk costs,
+players often incorrectly allow those earlier investments to influence
+the current decision.
+
+Mathematically, however, the correct decision depends only on the future
+value of continuing.
+
+If calling the extra $25$ produces positive expected value, then the
+player should continue. Otherwise, the player should fold regardless of
+the amount already invested.
+
+This demonstrates an important principle:
+
+> Optimal stopping decisions depend on future expected value, not past
+> sunk costs.
+
+As a result, strong poker players avoid “pot commitment” mistakes caused
+by emotional attachment to chips already invested.
+
+------------------------------------------------------------------------
+
+### Summary
+
+Optimal stopping provides a rigorous mathematical framework for
+sequential poker decisions.
+
+-   A stopping time formalizes when a player decides to act.\
+-   An optimal stopping problem identifies the stopping rule that
+    maximizes expected payoff.\
+-   The Snell envelope shows that the correct idea is obtained by
+    comparing the value of stopping immediately with the expected value
+    of continuing.
+
+In poker, folding, calling, betting, and raising can all be viewed as
+stopping decisions. The best choice depends not on past investments, but
+on whether the continuation value exceeds the stopping value.

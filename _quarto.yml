@@ -17,6 +17,7 @@ book:
   - chapters/15-learning-equilibria-regret-minimization-and-solvers.qmd
   - chapters/13-tournament-poker-and-icm-optimization-with-nonlinear-utility.qmd
   - chapters/extension_chapter_template.qmd
+  - chapters/23-optimal-stopping-and-commitment-decisions.qmd
   - chapters/Chapter_cheating_deception.qmd
   - chapters/Exploitative_vs_Equilibrium_Play.qmd
   - chapters/21-tournament_dynamics_beyond_icm.qmd
