@@ -1,0 +1,983 @@
+---
+title: "Linear Programming and Optimal Play"
+chapter-id: "lp-equilibria-simplex-poker"
+part: "Part X: Game Theory, Optimization, and Poker"
+format:
+  html: default
+  pdf: default
+---
+
+# Chapter Overview
+
+This chapter studies how linear programming gives a practical method for finding equilibrium strategies in zero-sum poker models. The main point is not only that optimal play exists, but that it can be computed using optimization tools such as the simplex method.
+
+**Chosen theme:** Linear programming as a computational tool for finding equilibrium strategies in zero-sum games.
+
+**Central question:**  
+How can a poker decision be converted into a linear program, and how can an algorithm such as the simplex method solve for an equilibrium strategy?
+
+**Connection to poker:**  
+Poker contains uncertainty, hidden information, and strategic randomization. A player who always chooses the same action can be exploited. A mixed strategy, where actions are chosen with certain probabilities, is a mathematical way to avoid being predictable. Linear programming lets us find the correct probabilities by optimizing against an opponent who is also trying to play optimally.
+
+**Connection to earlier chapters:**  
+This chapter uses expected value, probability distributions, mixed strategies, and zero-sum games. Earlier chapters often ask whether a single action has positive expected value. Here, the question becomes larger: what entire strategy should a player use so that no opponent strategy can exploit it?
+
+**Core mathematical tools:**
+
+- Mixed strategy simplex
+- Zero-sum payoff matrices
+- Primal and dual linear programs
+- Strong duality
+- Nash equilibrium
+- Simplex method
+- Complementary slackness
+
+
+
+# Motivating Example
+
+Suppose a poker hand reaches the river. Player 1 is first to act and has two possible strategic actions:
+
+- **Bet**
+- **Check**
+
+Player 2 has two possible responses:
+
+- **Call**
+- **Fold**
+
+In real poker, the exact payoff depends on the pot size, bet size, hand strength, and range assumptions. To focus on the game-theoretic structure, we use the following simplified payoff matrix for Player 1:
+
+$$
+A =
+\begin{pmatrix}
+2 & -1 \\
+-2 & 1
+\end{pmatrix}.
+$$
+
+Rows are Player 1's actions and columns are Player 2's actions.
+
+$$
+\begin{array}{c|cc}
+ & \text{Call} & \text{Fold} \\
+\hline
+\text{Bet} & 2 & -1 \\
+\text{Check} & -2 & 1
+\end{array}
+$$
+
+The entries represent Player 1's payoff. Since this is a zero-sum game, Player 2's payoff is the negative of Player 1's payoff.
+
+This example is useful because neither pure strategy is obviously safe. If Player 1 always bets, Player 2 can adjust. If Player 1 always checks, Player 2 can adjust. The question is not simply "Should Player 1 bet?" The better question is:
+
+> With what probability should Player 1 bet so that Player 2 cannot exploit the strategy?
+
+This is the type of question linear programming is designed to answer.
+
+
+
+# Mathematical Framework and Poker Theory
+
+## Mixed Strategies
+
+A pure strategy chooses one action with probability $1$. A mixed strategy assigns probabilities to several actions.
+
+**Definition.** The mixed strategy polytope for $n$ actions is
+
+$$
+\Delta_n = \{x \in \mathbb{R}^n : x_i \ge 0,\ \sum_{i=1}^n x_i = 1\}.
+$$
+
+For a two-action poker decision, a mixed strategy has the form
+
+$$
+x =
+\begin{pmatrix}
+p \\
+1-p
+\end{pmatrix},
+$$
+
+where $p$ is the probability of choosing the first action.
+
+## Zero-Sum Payoff Matrices
+
+A zero-sum game can be represented by a payoff matrix $A$. If Player 1 uses mixed strategy $x$ and Player 2 uses mixed strategy $y$, then Player 1's expected payoff is
+
+$$
+x^T A y.
+$$
+
+Player 1 wants to maximize this quantity. Player 2 wants to minimize it.
+
+The value of the game is
+
+$$
+v = \max_{x \in \Delta_m} \min_{y \in \Delta_n} x^T A y.
+$$
+
+This expression means that Player 1 chooses the strategy that gives the best worst-case outcome.
+
+Player 2's version is
+
+$$
+w = \min_{y \in \Delta_n} \max_{x \in \Delta_m} x^T A y.
+$$
+
+The minimax theorem says that, in finite zero-sum games,
+
+$$
+\max_{x \in \Delta_m} \min_{y \in \Delta_n} x^T A y
+=
+\min_{y \in \Delta_n} \max_{x \in \Delta_m} x^T A y.
+$$
+
+This shared number is the equilibrium value of the game.
+
+
+
+# Equilibrium
+
+## Nash Equilibrium in a Zero-Sum Game
+
+**Definition.** A pair of mixed strategies $(x^*, y^*)$ is a Nash equilibrium if neither player can improve by changing strategy alone. In a zero-sum game, this means
+
+$$
+x^T A y^* \le (x^*)^T A y^* \le (x^*)^T A y
+$$
+
+for all mixed strategies $x$ and $y$.
+
+### What Each Symbol Means
+
+- $A$ = payoff matrix for Player 1  
+- $x$ = any possible strategy Player 1 could switch to  
+- $y$ = any possible strategy Player 2 could switch to  
+- $x^*$ = Player 1's equilibrium strategy  
+- $y^*$ = Player 2's equilibrium strategy  
+- $x^T A y$ = expected payoff to Player 1 when strategies $x$ and $y$ are played  
+
+### Meaning of the Inequality
+
+The middle term
+
+$$
+(x^*)^T A y^*
+$$
+
+is the payoff when **both players use equilibrium strategies**.
+
+The left side says:
+
+$$
+x^T A y^* \le (x^*)^T A y^*
+$$
+
+This means if Player 2 stays at equilibrium strategy $y^*$, then Player 1 cannot improve by switching from $x^*$ to any other strategy $x$.
+
+So Player 1 has no incentive to deviate.
+
+The right side says:
+
+$$
+(x^*)^T A y^* \le (x^*)^T A y
+$$
+
+This means if Player 1 stays at equilibrium strategy $x^*$, then Player 2 cannot lower Player 1's payoff by switching from $y^*$ to any other strategy $y$.
+
+So Player 2 also has no incentive to deviate.
+
+### Poker Interpretation
+
+In poker terms, equilibrium means both players are balanced.
+
+- If Player 1 bluffs too much, Player 2 can call more.
+- If Player 1 bluffs too little, Player 2 can fold more.
+
+At $(x^*, y^*)$, neither player can exploit the other by changing strategy alone.
+
+### Key Takeaway
+
+A Nash equilibrium does **not** mean winning every hand.
+
+It means:
+
+> No player can gain an advantage by unilaterally changing strategy.
+
+## Why Equilibrium Matters in Poker
+
+
+In poker, a player may bluff some of the time and value bet some of the time. If the bluffing frequency is too high, the opponent calls more often. If the bluffing frequency is too low, the opponent folds too often. Equilibrium is the point where the opponent is indifferent between their best responses.
+
+> At equilibrium, the opponent's best available responses often have equal expected value.
+
+This is one reason poker solvers often output mixed strategies instead of one simple answer.
+
+
+# Linear Programming Formulation
+
+This section explains how a poker strategy problem can be rewritten as a mathematical optimization problem. Instead of asking, "What move feels best?", we ask:
+
+> What strategy gives the best guaranteed result against any opponent response?
+
+That question leads directly to linear programming.
+
+## What Is Linear Programming?
+
+A linear program is a problem where we:
+
+1. Choose decision variables  
+2. Maximize or minimize an objective  
+3. Satisfy linear constraints  
+
+In this chapter, instead of using generic symbols, we use poker-specific notation.
+
+For Player 1:
+
+- $x$ = mixed strategy vector (probabilities of each action)  
+- $x_i$ = probability of using action $i$  
+- $v$ = guaranteed payoff value  
+- $A$ = payoff matrix  
+
+So the poker linear program becomes:
+
+$$
+\begin{aligned}
+\max \quad & v \\
+\text{subject to} \quad & A^T x \ge v\mathbf{1}, \\
+& \sum_{i=1}^{m} x_i = 1, \\
+& x_i \ge 0.
+\end{aligned}
+$$
+
+## Why Poker Fits This Model
+
+In poker, players choose frequencies:
+
+- bluff frequency  
+- call frequency  
+- fold frequency  
+- bet sizing frequency  
+
+These are probabilities, so they naturally become variables.
+
+The opponent also responds strategically, so we need constraints that protect us from every possible response.
+
+That is exactly what linear programming does.
+
+
+
+## Player 1's Primal Linear Program
+
+Let $A$ be an $m \times n$ payoff matrix.
+
+- $m$ = number of Player 1 actions  
+- $n$ = number of Player 2 actions  
+
+Let
+
+$$
+x =
+\begin{pmatrix}
+x_1 \\
+x_2 \\
+\vdots \\
+x_m
+\end{pmatrix}
+$$
+
+be Player 1's mixed strategy, where:
+
+- $x_i$ = probability of using action $i$
+- $x_i \ge 0$
+- probabilities must sum to 1
+
+So:
+
+$$
+\sum_{i=1}^{m} x_i = 1.
+$$
+
+## Meaning of the Objective
+
+Player 1 wants to guarantee at least value $v$ no matter what Player 2 does.
+
+So we solve:
+
+$$
+\begin{aligned}
+\max \quad & v \\
+\text{subject to} \quad & A^T x \ge v\mathbf{1}, \\
+& \sum_{i=1}^{m} x_i = 1, \\
+& x_i \ge 0.
+\end{aligned}
+$$
+
+
+
+## What Each Part Means
+
+### Objective:
+
+$$
+\max v
+$$
+
+Choose a strategy that makes the guaranteed payoff as large as possible.
+
+### Constraint:
+
+$$
+A^T x \ge v\mathbf{1}
+$$
+
+This means:
+
+Every possible response from Player 2 gives Player 1 at least payoff $v$.
+
+So no matter what opponent does, Player 1 earns at least $v$.
+
+### Probability Constraint:
+
+$$
+\sum x_i = 1
+$$
+
+Probabilities must add to 1.
+
+### Nonnegativity:
+
+$$
+x_i \ge 0
+$$
+
+No negative probabilities.
+
+
+
+## Poker Interpretation
+
+Suppose Player 1 chooses between:
+
+- Bet
+- Check
+
+Then:
+
+$$
+x =
+\begin{pmatrix}
+p \\
+1-p
+\end{pmatrix}
+$$
+
+where:
+
+- $p$ = probability of betting
+- $1-p$ = probability of checking
+
+The linear program finds the best value of $p$.
+
+So instead of guessing how often to bluff, math computes it.
+
+
+
+## Player 2's Dual Linear Program
+
+Player 2 tries to minimize Player 1's payoff.
+
+Let
+
+$$
+y =
+\begin{pmatrix}
+y_1 \\
+y_2 \\
+\vdots \\
+y_n
+\end{pmatrix}
+$$
+
+where $y_j$ are Player 2 response probabilities.
+
+Then Player 2 solves:
+
+$$
+\begin{aligned}
+\min \quad & w \\
+\text{subject to} \quad & Ay \le w\mathbf{1}, \\
+& \sum_{j=1}^{n} y_j = 1, \\
+& y_j \ge 0.
+\end{aligned}
+$$
+
+
+
+## Meaning of This Problem
+
+Player 2 asks:
+
+> How can I keep Player 1's payoff as low as possible?
+
+So:
+
+- Player 1 maximizes value
+- Player 2 minimizes value
+
+This creates the game-theory balance.
+
+
+
+## Strong Duality
+
+At optimal solutions:
+
+$$
+v^* = w^*
+$$
+
+This means:
+
+- Player 1's best guaranteed value
+=
+- Player 2's best defensive limit
+
+When these meet, equilibrium is reached.
+
+
+
+## Key Takeaway
+
+Linear programming turns poker strategy into math.
+
+Instead of saying:
+
+> “I think bluffing 40% is good”
+
+we solve:
+
+> What bluffing frequency maximizes guaranteed value against all responses?
+
+# The Simplex Method: The Solving Algorithm
+
+Linear programming is not just a way to write the problem. It also gives algorithms for solving the problem. The classical algorithm is the **simplex method**.
+
+## Geometric Idea
+
+A linear program optimizes a linear objective over a polytope. A polytope is a geometric region created by linear inequalities.
+
+> If a linear program has an optimal solution, at least one optimal solution occurs at a vertex of the feasible polytope.
+
+The simplex method moves from vertex to vertex, improving the objective value until no neighboring vertex improves it.
+
+## Simplex Method in Words
+
+The simplex method follows this general pattern:
+
+1. Convert the linear program into standard form.
+2. Add slack variables to turn inequalities into equalities.
+3. Start at a feasible vertex.
+4. Choose an entering variable that improves the objective.
+5. Choose a leaving variable so feasibility is preserved.
+6. Pivot to a new vertex.
+7. Stop when no entering variable can improve the objective.
+
+This is similar to coding an algorithm:
+
+```text
+start with a feasible solution
+while improvement is possible:
+    choose a variable to increase
+    choose a constraint that becomes tight
+    pivot to the next feasible solution
+return optimal solution
+```
+## Geometric Interpretation of Simplex
+
+The feasible region is formed by linear constraints.
+
+Each corner point (vertex) is a candidate solution.
+
+The simplex method moves from one vertex to another, improving the objective value each step until no better neighboring vertex exists.
+
+In the poker example, the optimal point occurs where two binding constraints intersect:
+
+
+The key idea is that the algorithm does not check every possible mixed strategy. It checks strategically chosen corner points of the feasible region.
+
+## Coding Parallel
+
+In code, a linear program usually has three ingredients:
+
+```text
+objective function
+constraints
+nonnegativity restrictions
+```
+
+In our poker setting, the linear program is written using the same notation as the rest of the chapter:
+
+$$
+\max v
+$$
+
+subject to
+
+$$
+A^T x \ge v\mathbf{1}, \quad \sum_{i=1}^{m} x_i = 1, \quad x_i \ge 0.
+$$
+
+Here, $x$ is Player 1's mixed strategy, $A$ is the payoff matrix, and $v$ is the guaranteed payoff Player 1 is trying to maximize.
+
+In code, these become arrays:
+
+```python
+A = payoff_matrix
+x = strategy_vector
+v = guaranteed_value
+solution = simplex_solver(A)
+```
+
+For poker, this means:
+
+| Mathematical object | Coding object |
+|---|---|
+| Payoff matrix $A$ | 2D array or matrix |
+| Mixed strategy $x$ | probability array |
+| Constraint $A^T x \ge v\mathbf{1}$ | inequality system |
+| Objective $\max v$ | optimization target |
+| Simplex method | algorithm that pivots through feasible solutions |
+| Equilibrium | returned optimal strategy |
+
+This is why poker solvers are connected to computer science. A solver is not guessing. It is using algorithms to search a mathematical space efficiently.
+
+---
+
+# Worked Poker Example Using Linear Programming
+
+We return to the payoff matrix
+
+$$
+A =
+\begin{pmatrix}
+2 & -1 \\
+-2 & 1
+\end{pmatrix}.
+$$
+
+Let Player 1 use
+
+$$
+x =
+\begin{pmatrix}
+p \\
+1-p
+\end{pmatrix}.
+$$
+
+Here, $p$ is the probability of Bet and $1-p$ is the probability of Check.
+
+## Expected Payoff Against Each Pure Response
+
+If Player 2 chooses Call, Player 1's expected payoff is
+
+$$
+2p + (-2)(1-p).
+$$
+
+Simplifying,
+
+$$
+2p - 2 + 2p = 4p - 2.
+$$
+
+If Player 2 chooses Fold, Player 1's expected payoff is
+
+$$
+(-1)p + 1(1-p).
+$$
+
+Simplifying,
+
+$$
+-p + 1 - p = 1 - 2p.
+$$
+
+Therefore Player 1 wants to maximize the guaranteed value $v$ subject to
+
+$$
+4p - 2 \ge v
+$$
+
+and
+
+$$
+1 - 2p \ge v.
+$$
+
+Also,
+
+$$
+0 \le p \le 1.
+$$
+
+So the linear program becomes
+
+$$
+\begin{aligned}
+\max \quad & v \\
+\text{subject to} \quad & v \le 4p - 2, \\
+& v \le 1 - 2p, \\
+& 0 \le p \le 1.
+\end{aligned}
+$$
+
+## Solving by Equating Binding Constraints
+
+At the optimum, both opponent responses are equally good against Player 1. So the best strategy balances the constraints:
+
+$$
+4p - 2 = 1 - 2p.
+$$
+
+Solving,
+
+$$
+6p = 3.
+$$
+
+Thus,
+
+$$
+p = \frac{1}{2}.
+$$
+
+The value is
+
+$$
+v = 4\left(\frac{1}{2}\right)-2 = 0.
+$$
+
+So Player 1's equilibrium strategy is
+
+$$
+x^* =
+\begin{pmatrix}
+1/2 \\
+1/2
+\end{pmatrix}.
+$$
+
+Player 1 should Bet half the time and Check half the time in this toy game.
+
+## Player 2's Strategy
+
+Let Player 2 use
+
+$$
+y =
+\begin{pmatrix}
+q \\
+1-q
+\end{pmatrix}.
+$$
+
+Here, $q$ is the probability of Call and $1-q$ is the probability of Fold.
+
+If Player 1 chooses Bet, the expected payoff is
+
+$$
+2q + (-1)(1-q) = 3q - 1.
+$$
+
+If Player 1 chooses Check, the expected payoff is
+
+$$
+(-2)q + 1(1-q) = 1 - 3q.
+$$
+
+At equilibrium, Player 1 is indifferent between Bet and Check:
+
+$$
+3q - 1 = 1 - 3q.
+$$
+
+Solving,
+
+$$
+6q = 2.
+$$
+
+Thus,
+
+$$
+q = \frac{1}{3}.
+$$
+
+So Player 2's equilibrium strategy is
+
+$$
+y^* =
+\begin{pmatrix}
+1/3 \\
+2/3
+\end{pmatrix}.
+$$
+
+The value of the game is
+
+$$
+v^* = 0.
+$$
+
+---
+
+# Showing the Simplex Method on the Poker Example
+
+The previous section solved the example using indifference. Now we connect it to the simplex method.
+
+Player 1's linear program was
+
+$$
+\begin{aligned}
+\max \quad & v \\
+\text{subject to} \quad & v \le 4p - 2, \\
+& v \le 1 - 2p, \\
+& 0 \le p \le 1.
+\end{aligned}
+$$
+
+The feasible region is the set of points $(p,v)$ satisfying all constraints. The simplex method searches vertices of this region.
+
+The important boundary lines are
+
+$$
+v = 4p - 2
+$$
+
+and
+
+$$
+v = 1 - 2p.
+$$
+
+Their intersection is
+
+$$
+p = \frac{1}{2}, \quad v = 0.
+$$
+
+That intersection is a vertex of the feasible region. Since the objective is to maximize $v$, the simplex method moves toward the feasible vertex with the highest $v$-value. It stops at
+
+$$
+(p,v) = \left(\frac{1}{2}, 0\right).
+$$
+
+Therefore the simplex method returns the same optimal strategy:
+
+$$
+x^* =
+\begin{pmatrix}
+1/2 \\
+1/2
+\end{pmatrix}.
+$$
+
+## What Is the Pivot Idea Here?
+
+In larger games, there are many constraints, not just two. Each constraint represents one possible opponent response. A constraint becomes **binding** when it holds with equality.
+
+In this example, both constraints are binding:
+
+$$
+v = 4p - 2
+$$
+
+and
+
+$$
+v = 1 - 2p.
+$$
+
+That means both opponent responses matter at equilibrium. In poker terms, Player 1's strategy makes Player 2 indifferent between the relevant responses. That is why Player 2 cannot exploit the strategy.
+
+
+# A More Poker-Like Bluffing Model
+
+Consider a river situation where the pot is $P$ and Player 1 may bet size $B$. Player 1 has value hands and bluffs. Player 2 must decide how often to call.
+
+If Player 1 bluffs and Player 2 folds, the bluff wins the pot. If Player 2 calls, the bluff loses the bet.
+
+Suppose a bluff has expected value
+
+$$
+\mathrm{EV}_{\text{bluff}} = fP - (1-f)B,
+$$
+
+where $f$ is the probability that Player 2 folds.
+
+The break-even bluffing condition is
+
+$$
+fP - (1-f)B = 0.
+$$
+
+Solving,
+
+$$
+f(P+B) = B.
+$$
+
+So the required fold frequency is
+
+$$
+f = \frac{B}{P+B}.
+$$
+
+Linear programming generalizes this idea from one bluffing equation to many possible actions, hands, ranges, and opponent responses.
+
+---
+
+# Solving Algorithm in Pseudocode
+
+A poker equilibrium solver for a small zero-sum matrix game can be described as follows:
+
+```text
+input: payoff matrix A
+
+construct Player 1 linear program:
+    variables: x_1, x_2, ..., x_m, v
+    maximize v
+    subject to:
+        A^T x >= v * 1
+        sum(x_i) = 1
+        x_i >= 0
+
+construct Player 2 linear program:
+    variables: y_1, y_2, ..., y_n, w
+    minimize w
+    subject to:
+        A y <= w * 1
+        sum(y_j) = 1
+        y_j >= 0
+
+run simplex method:
+    convert constraints to standard form
+    add slack variables
+    choose entering and leaving variables
+    pivot until optimal
+
+output:
+    optimal mixed strategies x*, y*
+    game value v*
+```
+
+This shows the coding connection clearly. The math defines the object, and the algorithm computes it.
+
+---
+
+# Why This Matters for Poker Solvers
+
+Modern poker solvers do not literally solve all of no-limit poker as one small matrix. Real poker is too large. However, the core idea is similar:
+
+1. Represent strategies as probability distributions.
+2. Represent payoffs using expected value.
+3. Search for strategies that cannot be exploited.
+4. Use optimization algorithms to improve strategies.
+5. Stop when the remaining exploitability is small.
+
+Linear programming gives the cleanest version of this idea for finite zero-sum games. More advanced solvers may use methods such as counterfactual regret minimization, but the conceptual goal is still equilibrium computation.
+
+---
+
+# Beyond Poker
+
+The same mathematics appears in many areas.
+
+## Economics
+
+Firms choose strategies while competitors respond. A pricing decision can be modeled as a strategic game. Equilibrium means no firm can improve by changing alone.
+
+## Security
+
+A defender randomizes patrol routes or inspection times. An attacker observes patterns and tries to exploit them. Mixed strategies prevent predictability.
+
+## Computer Science and Artificial Intelligence
+
+Algorithms for game playing, reinforcement learning, and adversarial machine learning all use the idea of optimizing against an opponent or environment.
+
+## Operations Research
+
+Linear programming is used to allocate scarce resources. The simplex method is one of the historical tools that made large-scale optimization practical.
+
+The broader lesson is:
+
+> When decisions must be made against uncertainty or opposition, optimal behavior often becomes an optimization problem.
+
+---
+
+# Homework Problems
+
+1. **Conceptual problem.** Explain why a poker player who always chooses the same action in a repeated strategic situation can be exploited.
+
+2. **Mixed strategy problem.** Let
+
+$$
+x =
+\begin{pmatrix}
+p \\
+1-p
+\end{pmatrix}.
+$$
+
+Explain why $x$ belongs to $\Delta_2$ exactly when $0 \le p \le 1$.
+
+3. **Computational problem.** For the game
+
+$$
+A =
+\begin{pmatrix}
+3 & -1 \\
+-2 & 2
+\end{pmatrix},
+$$
+
+let Player 1 play the first row with probability $p$. Write the expected payoff against each pure column response and find the value of $p$ that makes Player 2 indifferent.
+
+4. **Linear programming problem.** Write Player 1's primal linear program for
+
+$$
+A =
+\begin{pmatrix}
+1 & -2 & 0 \\
+-1 & 3 & 2
+\end{pmatrix}.
+$$
+
+Do not solve it. Just correctly identify the variables, objective, and constraints.
+
+5. **Simplex interpretation problem.** In your own words, explain why the simplex method searches vertices of the feasible region instead of checking every possible point.
+
+6. **Poker modeling problem.** Suppose the pot is $P = 100$ and the bet size is $B = 50$. Use
+
+$$
+f = \frac{B}{P+B}
+$$
+
+to find the break-even fold frequency for a bluff. Interpret the answer in poker language.
+
+7. **Challenge problem.** Explain the relationship between complementary slackness and mixed strategies. Why should an action played with positive probability have the same expected value as the other actions in the player's support?
+
+
+# AI Collaboration Log
+
+| Task | How AI Was Used | What the Group Revised or Verified |
+|---|---|---|
+| Chapter scope | AI helped connect linear programming to equilibrium computation | Group checked that the chapter followed the assignment theme |
+| Definitions | AI drafted definitions of mixed strategies, primal, dual, and equilibrium | Group verified notation and rewrote explanations in their own voice |
+| Poker example | AI generated a small two-action payoff matrix | Group checked the arithmetic and interpretation |
+| Simplex section | AI explained the algorithm and connected it to feasible vertices | Group verified the simplex description against class notes |
+| Coding parallel | AI helped translate math objects into coding objects | Group adjusted wording to match the class project |
+---

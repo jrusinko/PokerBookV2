@@ -6,15 +6,38 @@ number-sections: true
 toc: true
 ---
 
-# Mathematical Framework and Poker Theory (DRAFT)
+## Motivating Example: The Danger of One-Street Thinking
 
-\[This is the core of the chapter. It should introduce definitions, notation, models, theorems, propositions, examples, and proofs in a mathematically coherent order. Poker should appear here as a modeling context, not as advice about how to play.\]
+Before formalizing the mathematics of sequential decision-making, consider a classic poker scenario.
 
-## Definitions and Setup
+Hero is on the Turn holding a flush draw. The pot is 10 Big Blinds (BB). Villain bets 10 BB (a pot-sized bet). Hero must decide whether to Fold or Call.
 
-\[Insert the foundational definitions here. Every later claim should rest on material introduced in this section.\]
+### The Myopic View {.unnumbered}
 
-### Definition 1: Markov Decision Process (MDP)
+If Hero only evaluates this exact moment in time, the math looks simple. Hero has to pay 10 BB to win a pot of 20 BB, requiring 33% pot equity to break even. However, a flush draw on the Turn will only hit on the River about 20% of the time. If Hero only looks at the immediate mathematical reward, $20\% < 33\%$, so the correct decision seems to be a clear *Fold*.
+
+### The Multi-Street View {.unnumbered}
+
+Good poker players know this logic is flawed because it ignores the future. If Hero calls, the hand does not end; it transitions to the River.
+
+-   When Hero *misses* the flush (80% of the time), they can simply fold to a River bet, losing $0$ additional chips.
+-   When Hero *hits* the flush (20% of the time), they have a highly disguised strong hand and might extract an additional 30 BB from the Villain on the River.
+
+When we factor in the expected value of this *future* street (known in poker as "Implied Odds"), the value of calling on the Turn skyrockets. The 20% of the time Hero hits, they aren't just winning the 20 BB pot; they are winning the 20 BB pot *plus* the future 30 BB River bet. This makes the Turn call highly profitable.
+
+### The Need for a Framework {.unnumbered}
+
+This intuition—that a current action must be evaluated by the future situations it creates—is central to strong multi-street poker reasoning. However, doing this by feel becomes impossible when considering complex ranges, mixed strategies, and multiple bet sizes.
+
+To solve multi-street poker, we need a rigorous mathematical framework that systematically calculates immediate rewards and adds them to optimal future values. A useful first framework for this kind of sequential reasoning is the **Markov Decision Process (MDP)**. Full poker models also need to handle hidden information and strategic opponents, but MDPs capture the key idea of evaluating current actions through their future consequences.
+
+## Mathematical Framework and Poker Theory
+
+### Definitions and Setup
+
+This section introduces the foundational mathematical concepts used to model sequential decision-making. Rather than viewing poker simply as a game of intuition, we formulate it as a precise mathematical system. Every later theorem in this chapter builds upon these core definitions.
+
+#### Definition 1: Markov Decision Process (MDP)
 
 A **Markov Decision Process (MDP)** is a mathematical model for sequential decision-making under uncertainty. It consists of a tuple
 
@@ -22,13 +45,30 @@ $$
 (S, A, P, R)
 $$
 
-where: - $S$ is the set of states. - $A$ is the set of actions available to the decision-maker. - $P(s' \mid s, a)$ is the transition probability, meaning the probability of moving from state $s$ to state $s'$ after taking action $a$. - $R(s, a)$ or $R(s, a, s')$ is the reward, meaning the payoff received when action $a$ is taken in state $s$ and possibly transitions to state $s'$.
+where:
 
-### Definition 2: Markov Property
+-   $S$ is the set of states.
+-   $A$ is the set of actions available to the decision-maker.
+-   $P(s' \mid s, a)$ is the transition probability, meaning the probability of moving from state $s$ to state $s'$ after taking action $a$.
+-   $R(s, a)$ or $R(s, a, s')$ is the reward, meaning the payoff received when action $a$ is taken in state $s$ and possibly transitions to state $s'$.
+
+##### Poker Interpretation {.unnumbered}
+
+-   *State* $S$: The complete current snapshot of the game. In poker, a state includes the board cards, your hole cards, the current pot size, effective stack sizes, position, and the perceived ranges of the players.
+
+-   *Actions* $A$: The legal options available to a player at that exact node (e.g., Fold, Check, Call, Bet 50% Pot, All-in).
+
+-   *Transition Probability* $P$: The likelihood of what happens next. This includes chance events, such as the probability of a specific turn or river card falling. If an opponent strategy is fixed or modeled probabilistically, it can also include the probability that the opponent folds, calls, or raises.
+
+-   *Reward* $R$: The actual chips or money won or lost. In most poker models, the reward is 0 during the intermediate betting rounds, and the chips are only awarded at terminal states (when someone folds, or at showdown).
+
+#### Definition 2: Markov Property
 
 **Markov Property**: The characteristic feature of an MDP is the **Markov property**: once the current state $s$ is known and an action $a$ is chosen, the distribution of the next state $s'$ and the reward depend only on $(s,a)$, and not on the earlier history of states and actions.
 
-### Definition 3: Policy
+The Markov property tells us that the future of a hand depends only on the current situation, not on how we arrived there. If two different betting sequences result in the exact same pot size, stack sizes, board cards, and player ranges, the mathematically optimal decision will be identical in both cases. The past only matters insofar as it shapes the current state (specifically, how past actions narrow down opponent ranges). Once those ranges and the pot size are established, the history is mathematically irrelevant.
+
+#### Definition 3: Policy
 
 A **policy** $\pi$ assigns to each state $s \in S$ an action in the set of available actions $A(s)$, or more generally a probability distribution over $A(s)$.
 
@@ -42,11 +82,15 @@ So there are two common cases:
     \pi(a \mid s)
     $$ meaning the player chooses action $a$ in state $s$ with probability $\pi(a \mid s)$.
 
-### Definition 4: Value function $V^\pi(s)$
+In poker terms, a policy is simply a *strategy*—a rule that tells you how to act in different situations. A **deterministic policy** corresponds to what poker players call a **pure strategy**, where you always take the same action in a given scenario, such as consistently making a continuation bet when you hold top pair on a specific flop. In contrast, a **stochastic policy** aligns with a **mixed strategy**, which is widely used in modern poker; here, you deliberately randomize your decisions, taking different actions with the same hand—for example, betting a flush draw 70% of the time and checking it the remaining 30%—to remain unpredictable and harder to exploit.
+
+#### Definition 4: Value function $V^\pi(s)$
 
 Let $\pi$ be a policy. The **value function** $V^\pi(s)$ is the expected total reward obtained when the process starts in state $s$ and the player follows policy $\pi$ from that point onward.
 
-### Definition 5: Action-Value Function (Q-function)
+In poker terms, the value function is the global Expected Value (EV) of a specific spot, assuming you play your chosen strategy for the rest of the hand. It answers the question: "Given the current board, pot, and ranges, how many chips will I win on average by the end of the hand if I execute my strategy $\pi$ ?"
+
+#### Definition 5: Action-Value Function (Q-function)
 
 Let $\pi$ be a policy. The **action-value function** $Q^\pi(s,a)$ is the expected total reward obtained by first taking action $a$ in state $s$, and then following policy $\pi$ thereafter.
 
@@ -56,11 +100,19 @@ $$
 Q^\pi(s,a)=\mathbb{E}^\pi[\text{total reward} \mid S_0=s,\ A_0=a].
 $$
 
-## Main Mathematical Development
+While the **Value Function** measures the expected value (EV) of the whole situation, the **Q-function** measures the EV of a specific action.
 
-\[Break the chapter into subsections that develop one primary theme. Use theorem-style statements when appropriate. Include proofs when they illuminate structure or reasoning.\]
+For example, if calling has an expected value of +1.5 big blinds while folding has an expected value of 0 big blinds, then these are the Q-values for those actions: Q(Call) and Q(Fold).
 
-### Subsection A: Bellman Equations and Optimality
+In this model, a rational player should choose an action with the **highest Q-value**.
+
+### Main Mathematical Development
+
+#### Bellman Equations and Optimality
+
+To play poker well, a player cannot merely consider the immediate result of an action; they must consider what situations that action creates on future betting rounds. The **Bellman Equation** is the mathematical formalization of this concept, breaking down a complex, multi-step problem into immediate consequences and future continuation values.
+
+##### Bellman equation
 
 **Theorem: Bellman Equation**\
 Let $\pi$ be a policy on an MDP. Then the value function $V^\pi(s)$ satisfies
@@ -74,74 +126,27 @@ $$
 
 In words, the value of a state under policy $\pi$ is the expected immediate reward plus the expected value of the next state, assuming the policy $\pi$ is followed thereafter.
 
-*Proof:* Start from the definition of the value function:
+###### Mathematical intuition {.unnumbered}
 
-$$
-V^\pi(s)=\mathbb{E}^\pi[\text{total future reward} \mid S_0=s].
-$$
+Instead of calculating the total reward from the current state all the way to the end of the game in one giant leap, the Bellman Equation breaks the problem into just two parts: *today* and *tomorrow*.
 
-Now split the total reward into
+1.  The immediate reward you get from taking an action right now ($R(s,a,s')$).
 
-$$
-\text{total future reward}
-=
-\text{immediate reward}
-+
-\text{all later rewards}.
-$$
+2.  The expected value of the exact state you land in next ($V^\pi(s')$).
 
-So,
+By weighting these outcomes by the probability of taking the action $\pi$ and the probability of moving to that next state $P$, we get the total expected value of the current state.
 
-$$
-V^\pi(s)
-=
-\mathbb{E}^\pi\bigl[R_0 + \text{future reward after the next state} \mid S_0=s\bigr].
-$$
+###### Poker interpretation {.unnumbered}
 
-But once we move to the next state $S_1=s'$, the expected future reward from then on is exactly $V^\pi(s')$. Hence
+The *Bellman Equation* is the mathematical definition of *Expected Value (EV) across multiple streets*. Imagine you continuation bet on the Flop. The Bellman equation dictates that the total EV of this strategy ($V^\pi(s)$) is the sum of two things:
 
-$$
-V^\pi(s)
-=
-\mathbb{E}^\pi\bigl[R_0 + V^\pi(S_1) \mid S_0=s\bigr].
-$$
+1.  *Immediate Reward:* The chips you win immediately when the opponent folds on the Flop.
 
-That is the compact Bellman form.
+2.  *Future Value:* The EV of the Turn situations ($s'$) you will face when the opponent calls or raises, assuming you continue to play your strategy on the Turn and River ($V^\pi(s')$).
 
-Now expand this expectation. First condition on the action chosen in state $s$. Under policy $\pi$, action $a$ is chosen with probability $\pi(a \mid s)$. So by the law of total expectation,
+You cannot evaluate the Flop without knowing the value of the Turn scenarios it generates.
 
-$$
-V^\pi(s)
-=
-\sum_{a \in A(s)} \pi(a \mid s)\,
-\mathbb{E}\bigl[R_0 + V^\pi(S_1) \mid S_0=s,\ A_0=a\bigr].
-$$
-
-Next condition on the next state $s'$. The transition probability is $P(s' \mid s,a)$, so
-
-$$
-\mathbb{E}\bigl[R_0 + V^\pi(S_1) \mid S_0=s,\ A_0=a\bigr]
-=
-\sum_{s' \in S} P(s' \mid s,a)\,
-\mathbb{E}\bigl[R_0 + V^\pi(S_1) \mid S_0=s,\ A_0=a,\ S_1=s'\bigr].
-$$
-
-Since $S_1=s'$, we have $V^\pi(S_1)=V^\pi(s')$. If the immediate reward is written as $R(s,a,s')$, then
-
-$$
-\mathbb{E}\bigl[R_0 + V^\pi(S_1) \mid S_0=s,\ A_0=a,\ S_1=s'\bigr]
-=
-R(s,a,s') + V^\pi(s').
-$$
-
-Substitute this back in:
-
-$$
-V^\pi(s)
-=
-\sum_{a \in A(s)} \pi(a \mid s)
-\sum_{s' \in S} P(s' \mid s,a)\bigl(R(s,a,s') + V^\pi(s')\bigr).
-$$
+##### Bellman optimality equation
 
 **Theorem: Bellman Optimality Equation** Let $V^*(s)$ denote the maximum expected total reward obtainable from state $s$. Then, for each state $s$,
 
@@ -156,127 +161,19 @@ In words, the optimal value of a state is obtained by choosing the action that m
 
 That is the direct analogue of the ordinary Bellman equation, except that instead of averaging according to a fixed policy, we now maximize over actions.
 
-**Proof:**
+###### Poker interpretation {.unnumbered}
 
-Let $s \in S$ be fixed. For each action $a \in A(s)$, define
+This equation represents the basic logic behind optimal decision-making in a sequential game. When you are on the Turn deciding whether to check, bet small, or bet large, you are trying to find $V^*(s)$. The equation compares each available action:
 
-$$
-F(s,a)
-=
-\sum_{s' \in S} P(s' \mid s,a)\bigl(R(s,a,s') + V^*(s')\bigr).
-$$
+-   What is my immediate chip gain + future River EV if I check?
 
-We will show that
+-   What is my immediate chip gain + future River EV if I bet small?
 
-$$
-V^*(s)=\max_{a \in A(s)} F(s,a).
-$$
+-   What is my immediate chip gain + future River EV if I bet large?
 
-*Step 1: We show that:* $$
-V^*(s)\leq \max_{a \in A(s)} F(s,a).
-$$
+The Bellman Optimality Equation states that the optimal EV of the Turn is strictly equal to whichever of these options produces the highest number ($\max_{a \in A(s)}$).
 
-Take any policy $\pi$. Suppose that in state $s$, the policy first chooses action $a$. After that first step, it continues according to some continuation policy. Then
-
-$$
-V^\pi(s)
-=
-\sum_{s' \in S} P(s' \mid s,a)\bigl(R(s,a,s') + V^\pi(s')\bigr).
-$$
-
-Since $V^*(s')$ is the maximum expected reward obtainable from $s'$, we have
-
-$$
-V^\pi(s') \leq V^*(s')
-\qquad \text{for all } s' \in S.
-$$
-
-Therefore,
-
-$$
-V^\pi(s)
-\leq
-\sum_{s' \in S} P(s' \mid s,a)\bigl(R(s,a,s') + V^*(s')\bigr)
-=
-F(s,a).
-$$
-
-This is true for every policy $\pi$, and the first action $a$ chosen by $\pi$ must be some action in $A(s)$. Hence
-
-$$
-V^\pi(s)\leq \max_{a \in A(s)} F(s,a)
-\qquad \text{for every policy } \pi.
-$$
-
-Now take the maximum over all policies $\pi$. Since
-
-$$
-V^*(s)=\max_\pi V^\pi(s),
-$$
-
-it follows that
-
-$$
-V^*(s)\leq \max_{a \in A(s)} F(s,a).
-$$
-
-*Step 2: We show that* $$
-V^*(s)\geq \max_{a \in A(s)} F(s,a).
-$$
-
-Now choose an action $a^* \in A(s)$ such that
-
-$$
-F(s,a^*)=\max_{a \in A(s)} F(s,a).
-$$
-
-Consider a policy that:
-
--   first takes action $a^*$ in state $s$, and
--   thereafter acts optimally from every next state $s'$.
-
-Under this policy, the expected total reward from state $s$ is
-
-$$
-\sum_{s' \in S} P(s' \mid s,a^*)\bigl(R(s,a^*,s') + V^*(s')\bigr)
-=
-F(s,a^*).
-$$
-
-But $V^*(s)$ is the largest expected reward achievable from $s$, so
-
-$$
-V^*(s)\geq F(s,a^*)=\max_{a \in A(s)} F(s,a).
-$$
-
-*Step 3: We conclude the equality:*
-
-From Step 1 and Step 2 we get
-
-$$
-V^*(s)\leq \max_{a \in A(s)} F(s,a)
-\qquad \text{and} \qquad
-V^*(s)\geq \max_{a \in A(s)} F(s,a).
-$$
-
-Therefore,
-
-$$
-V^*(s)=\max_{a \in A(s)} F(s,a).
-$$
-
-Substituting back the definition of $F(s,a)$, we obtain
-
-$$
-V^*(s)
-=
-\max_{a \in A(s)}
-\sum_{s' \in S} P(s' \mid s,a)\bigl(R(s,a,s') + V^*(s')\bigr).
-$$
-
-This proves the Bellman optimality equation. $\square$
-
-*Corollary:* From the Bellman optimality equation, an optimal policy $\pi^*$ must satisfy:
+**Corollary:** From the Bellman optimality equation, an optimal policy $\pi^*$ must satisfy:
 
 $$
 \pi^*(s)
@@ -285,17 +182,15 @@ $$
 \sum_{s' \in S} P(s' \mid s,a)\bigl(R(s,a,s') + V^*(s')\bigr).
 $$
 
-This is exactly the statement that optimal policies satisfy a recursive structure: at each state, they choose an action that maximizes immediate reward plus optimal continuation value.
+In poker terms, this corollary proves a fundamental law of Game Theory Optimal (GTO) play: *At any decision point, a mathematically optimal player must exclusively choose actions that maximize their overall Expected Value.* If betting yields $+2.5$ BBs and checking yields $+1.0$ BBs, an optimal strategy *never* checks, because checking does not satisfy the $\arg\max$ condition. (In cases where betting and checking both yield exactly $+2.5$ BBs, a mixed strategy between the two is optimal).
 
-In poker, this means that the best action on the current street is the one that maximizes current EV plus the best achievable EV on later streets.
+#### Finite-Horizon MDPs and Poker Hands
 
-### Subsection B: Finite-Horizon MDPs and Poker Hands
+A single poker hand is modeled not as an infinite, ongoing process, but as a **finite-horizon Markov Decision Process**. A hand contains a strict, limited number of stages (preflop, flop, turn, river) and ends with a terminal resolution (a fold or a showdown).
 
-A single poker hand is modeled as a **finite-horizon Markov Decision Process**. Unlike an infinite sequential problem, a hand contains only finitely many stages: preflop, flop, turn, river, and then a terminal resolution such as folding or showdown. Thus, the relevant decision problem is not an arbitrary MDP on an unbounded time horizon, but a finite-horizon one in which the value of a current action is determined by a finite chain of future transitions and future decisions.
+Because the game must eventually end, the value of any action can be calculated by looking at a finite chain of future events. This finite structure explains why poker decisions can be analyzed by working backward from the river.
 
-This finite structure is especially well suited to poker. At each stage, the player sees the current state of the hand, chooses an action from the legally available betting options, and then the hand moves to a new state according to chance events and opponent responses. Since the hand must end after finitely many steps, the corresponding value function can be computed recursively from the terminal stage backward. This is the formal reason that multi-street poker can be analyzed by backward induction.
-
-#### Mathematical setup
+##### Mathematical setup
 
 Let the stages of the hand be indexed by
 
@@ -303,306 +198,96 @@ $$
 t = 0,1,\dots,T,
 $$
 
-where $T$ is the terminal stage. For each stage $t$, let:
+where $T$ is the terminal stage. For each stage $t$:
 
--   $S_t$ be the set of states at stage $t$,
--   $A_t(s)$ be the set of actions available at state $s \in S_t$,
--   $P_t(s' \mid s,a)$ be the transition probability from state $s \in S_t$ to state $s' \in S_{t+1}$ after action $a \in A_t(s)$,
--   $R_t(s,a,s')$ be the one-step reward associated with that transition.
+-   $S_t$ is the set of states at stage $t$.
+-   $A_t(s)$ is the set of actions available at state $s \in S_t$,
+-   $P_t(s' \mid s,a)$ is the transition probability from state $s \in S_t$ to state $s' \in S_{t+1}$ after action $a \in A_t(s)$,
+-   $R_t(s,a,s')$ is the one-step reward associated with that transition.
 
-A policy in the finite-horizon setting is a sequence
+The terminal stage has no further actions. It is simply described by a terminal payoff function $g(s_T)$, so that if the hand ends in terminal state $s_T$, the final payoff is $g(s_T)$.
 
-$$
-\pi = (\pi_0,\pi_1,\dots,\pi_{T-1}),
-$$
+###### Poker interpretation {.unnumbered}
 
-where each $\pi_t$ specifies how actions are chosen at stage $t$. If the policy is randomized, then $\pi_t(a \mid s)$ denotes the probability of choosing action $a$ in state $s$ at stage $t$.
+The index $t$ directly translates to the **Streets** in poker:
 
-The terminal stage is described by a terminal payoff function
+-   $t=0$: Preflop
+-   $t=1$: Flop
+-   $t=2$: Turn
+-   $t=3$: River
+-   $t=T$: The Terminal Stage (the hand is over).
 
-$$
-g : S_T \to \mathbb{R},
-$$
+The terminal payoff $g(s_T)$ represents the final allocation of the pot. It is the moment the dealer pushes the chips to the winner—either because all opponents folded, or because a player had the best hand at showdown.
 
-so that if the hand ends in terminal state $s_T$, the final payoff is $g(s_T)$.
+##### Terminal condition and finite-horizon recursion
 
-#### Definition (finite-horizon value function)
+At the final stage $T$, there are no further decisions to make. The value of the state is simply the terminal payoff: $$
+V_T^\pi(s) = V_T^*(s) = g(s)
+$$ This serves as the "base case" or anchor for our calculations.
 
-Given a policy $\pi$, define the stage-$t$ value function by
+###### Proposition: Finite-Horizon Bellman Recursion {.unnumbered}
 
-$$
-V_t^\pi(s)
-=
-\text{expected total reward obtained from stage } t \text{ onward},
-$$
-
-conditional on the current state being $s \in S_t$ and policy $\pi$ being followed from that point forward.
-
-Similarly, define the stage-$t$ action-value function by
-
-$$
-Q_t^\pi(s,a),
-$$
-
-the expected total reward obtained by taking action $a$ immediately in state $s$, and then following policy $\pi$ thereafter.
-
-In the same way, the optimal value function is
-
-$$
-V_t^*(s)=\sup_\pi V_t^\pi(s).
-$$
-
-#### Terminal condition
-
-At the final stage there are no further decisions to make, so the value is simply the terminal payoff:
-
-$$
-V_T^\pi(s)=g(s),
-\qquad s \in S_T.
-$$
-
-Since no future choice remains, this also equals the optimal value:
-
-$$
-V_T^*(s)=g(s).
-$$
-
-This is the base case of the recursion.
-
-#### Proposition (finite-horizon Bellman recursion)
-
-For every policy $\pi$, the value functions satisfy
-
-$$
-V_T^\pi(s)=g(s),
-$$
-
-and for each stage $t=0,1,\dots,T-1$,
-
-$$
-V_t^\pi(s)
-=
-\sum_{a \in A_t(s)} \pi_t(a \mid s)
-\sum_{s' \in S_{t+1}} P_t(s' \mid s,a)\bigl(R_t(s,a,s') + V_{t+1}^\pi(s')\bigr).
-$$
-
-**Proof:**
-
-Fix $t < T$ and $s \in S_t$. Starting from state $s$, the policy first selects an action $a$ according to $\pi_t(\cdot \mid s)$, then the process moves to a next state $s' \in S_{t+1}$ according to the transition law $P_t(s' \mid s,a)$. The total reward from stage $t$ onward can therefore be decomposed as
-
-$$
-\text{total reward}
-=
-R_t(s,a,s')
-+
-\text{future reward from stage } t+1.
-$$
-
-By definition, the expected future reward from stage $t+1$ onward is $V_{t+1}^\pi(s')$. Hence
-
-$$
-V_t^\pi(s)
-=
-\sum_{a \in A_t(s)} \pi_t(a \mid s)
-\sum_{s' \in S_{t+1}} P_t(s' \mid s,a)\bigl(R_t(s,a,s') + V_{t+1}^\pi(s')\bigr).
-$$
-
-The terminal identity $V_T^\pi(s)=g(s)$ follows because once a terminal state is reached, the payoff is already determined. $\square$
-
-#### Bellman optimality in finite horizon
-
-In the finite-horizon case, the Bellman optimality equation becomes
-
-$$
-V_T^*(s)=g(s),
-$$
-
-and for $t=0,1,\dots,T-1$,
-
-$$
+Because the game ends at $T$, for every stage $t = 0, 1, \dots, T-1$, the optimal value function simplifies to a strictly backward-stepping equation: $$
 V_t^*(s)
 =
 \max_{a \in A_t(s)}
 \sum_{s' \in S_{t+1}} P_t(s' \mid s,a)\bigl(R_t(s,a,s') + V_{t+1}^*(s')\bigr).
 $$
 
-This equation shows that optimal play at stage $t$ is determined by comparing the available actions using two ingredients:
+###### Mathematical intuition {.unnumbered}
 
--   the immediate reward produced by the action, and
--   the optimal continuation value of the next state.
+In infinite games, calculating value requires complex algebra to account for loops that never end. In a finite-horizon MDP, no such loops exist. Because we know the exact value at the end of the game $V_T = g(s)$, we can easily calculate the value of the step right before the end $V_{T-1}$, and then plug that value into the step before it $V_{T-2}$, repeating until we reach the beginning.
 
-Thus, in a finite-horizon poker hand, optimal play is obtained recursively from the end of the hand backward.
+##### Special case: terminal-payoff model
 
-#### Special case: terminal-payoff model
-
-In many poker models, it is convenient to place all chip gain or loss at the terminal stage. In that case,
-
-$$
-R_t(s,a,s')=0
-\qquad \text{for } t<T,
-$$
-
-and the entire payoff is encoded by $g$ at the end of the hand. The recursion then simplifies to
-
-$$
-V_t^\pi(s)
-=
-\sum_{a \in A_t(s)} \pi_t(a \mid s)
-\sum_{s' \in S_{t+1}} P_t(s' \mid s,a)\,V_{t+1}^\pi(s'),
-$$
-
-and
-
-$$
+In many mathematical models of poker, it is highly convenient to define the immediate rewards during the betting rounds as zero: $$
+R_t(s,a,s')=0 \qquad \text{for } t<T,
+$$ meaning the entire payoff is encoded solely by $g(s)$ at the end of the hand. The optimality equation then simplifies beautifully to: $$
 V_t^*(s)
 =
 \max_{a \in A_t(s)}
 \sum_{s' \in S_{t+1}} P_t(s' \mid s,a)\,V_{t+1}^*(s').
 $$
 
-This formulation is often natural in poker because the hand’s true chip outcome is only fully determined when the hand ends.
+###### Poker interpretation {.unnumbered}
 
-#### Poker interpretation
+Why is this "Terminal-Payoff Model" so important for poker? Because chips wagered during a hand do not go into your pocket; they go into the pot.
 
-To interpret this model in poker terms, the state $s$ may include the current street, pot size, effective stack sizes, board cards, betting history, and any strategically relevant summary of beliefs. The available actions $A_t(s)$ may be a discretized set such as
+If you bet the Flop and your opponent calls, your immediate reward $R_t$ is technically $0$. You haven't won anything yet; the chips are simply held in escrow (the pot). The true gain or loss of chips is only determined at $T$ (showdown or fold). Therefore, the EV of a Flop bet is *entirely* derived from the probabilities $P_t$ of reaching various winning or losing Terminal States.
 
-$$
-A_t(s) \subseteq \{\text{fold},\text{check},\text{call},\text{bet},\text{raise}\}.
-$$
+##### Consequence: street-by-street recursion
 
-The transition probabilities $P_t(s' \mid s,a)$ incorporate both chance events, such as future card reveals, and strategic responses by the opponent. Terminal states correspond to the end of the hand: fold, showdown, or full commitment of chips followed by resolution.
-
-For example, on the turn, if Hero is deciding whether to fold or call, then the value of calling may be written as
-
-$$
-Q_t^\pi(s,\text{call})
-=
-\sum_{s' \in S_{t+1}} P_t(s' \mid s,\text{call})
-\bigl(R_t(s,\text{call},s') + V_{t+1}^\pi(s')\bigr).
+This finite-horizon structure perfectly matches the mechanics of poker. It mathematically dictates the order in which a poker strategy must be evaluated: $$
+V_T \to V_{\text{River}} \to V_{\text{Turn}} \to V_{\text{Flop}} \to V_{\text{Preflop}}
 $$
 
-Here, the next-state sum averages over all possible river developments and opponent continuations. The comparison between folding and calling is therefore not a one-step comparison, but a comparison between their induced continuation values.
+###### Poker interpretation {.unnumbered}
 
-#### Consequence: street-by-street recursion
+To know if a Preflop raise is profitable, you must know how it performs on the Flop. To know how it performs on the Flop, you must know how it performs on the Turn.
 
-The finite-horizon structure matches the streets of poker naturally. River decisions are evaluated first, since they are closest to terminal payoff. Once river values are known, turn decisions can be evaluated; once turn values are known, flop decisions can be evaluated; and so on. Formally, the recursion proceeds in the order
+River decisions are evaluated first because they are adjacent to the terminal payoff (showdown/fold). Once all River EVs are known, Turn decisions can be evaluated. Once Turn EVs are known, Flop decisions can be evaluated. This stepping-stone process is explored deeply in the next section: Backward Induction.
 
-$$
-V_T \to V_{T-1} \to \cdots \to V_1 \to V_0.
-$$
+#### Backward Induction and the Recursive Structure of Optimal Play
 
-### Subsection C: Backward Induction and the Recursive Structure of Optimal Play
+The finite-horizon structure of a poker hand dictates that optimal play can be determined recursively from the end of the hand backward. This is the mathematical principle of backward induction: first evaluate terminal outcomes, then evaluate the states immediately before them, then the states before those, and so on until the initial decision is reached.
 
-The finite-horizon structure of a poker hand implies that optimal play can be determined recursively from the end of the hand backward. This is the principle of **backward induction**: first evaluate terminal outcomes, then evaluate the states immediately before them, then the states before those, and so on until the initial decision is reached.
+##### Proposition (Backward Induction Formula)
 
-This procedure is natural in poker. A river decision can often be evaluated directly, since little or no future uncertainty remains. Once river values are known, turn decisions can be evaluated by averaging over river outcomes and comparing available actions. Once turn values are known, flop decisions can be evaluated in the same way. Thus the value of an earlier street is determined by the continuation values of the later streets.
-
-Formally, suppose the hand is modeled as a finite-horizon MDP with stages
+Let the terminal values be given by $V_T^*(s)=g(s)$ for all terminal states. For each preceding stage $t = T-1, T-2, \dots, 0$, the optimal value is:
 
 $$
-t = 0,1,\dots,T.
+V_t^*(s) = \max_{a \in A_t(s)} Q_t^*(s,a),
 $$
 
-From the previous subsection, the optimal value functions satisfy
+where the action-value (Q-value) is defined as:
 
 $$
-V_T^*(s)=g(s),
+Q_t^*(s,a) = \sum_{s' \in S_{t+1}} P_t(s' \mid s,a) \bigl(R_t(s,a,s') + V_{t+1}^*(s')\bigr).
 $$
 
-and for
+An action $a$ is optimal if it belongs to the set $\arg\max Q_t^*(s,a)$.
 
-$$
-t = 0,1,\dots,T-1,
-$$
-
-$$
-V_t^*(s)
-=
-\max_{a \in A_t(s)}
-\sum_{s' \in S_{t+1}} P_t(s' \mid s,a)
-\bigl(R_t(s,a,s') + V_{t+1}^*(s')\bigr).
-$$
-
-This equation is recursive: the value at stage $t$ is defined in terms of the values at stage $t+1$. Since the terminal values $V_T^*$ are known, the earlier values can be computed by working backward.
-
-#### Proposition (Backward Induction Formula)
-
-Let the terminal values be given by
-
-$$
-V_T^*(s)=g(s),
-\qquad s \in S_T.
-$$
-
-For each stage
-
-$$
-t = T-1,T-2,\dots,0,
-$$
-
-define
-
-$$
-V_t^*(s)
-=
-\max_{a \in A_t(s)} Q_t^*(s,a),
-$$
-
-where
-
-$$
-Q_t^*(s,a)
-=
-\sum_{s' \in S_{t+1}} P_t(s' \mid s,a)
-\bigl(R_t(s,a,s') + V_{t+1}^*(s')\bigr).
-$$
-
-Then $V_t^*(s)$ is the optimal value at stage $t$, and any action $a_t^*(s)$ satisfying
-
-$$
-a_t^*(s)
-\in
-\arg\max_{a \in A_t(s)} Q_t^*(s,a)
-$$
-
-is an optimal action at state $s$.
-
-#### Proof
-
-We argue backward in time.
-
-At the terminal stage $T$, there are no further decisions, so the value is simply the terminal payoff:
-
-$$
-V_T^*(s)=g(s).
-$$
-
-Now suppose that for some stage $t+1$, the optimal values $V_{t+1}^*(s')$ are already known for every $s' \in S_{t+1}$. Fix a state $s \in S_t$. If action $a \in A_t(s)$ is chosen now, then the next state is $s' \in S_{t+1}$ with probability $P_t(s' \mid s,a)$, and the total payoff from this point equals the immediate reward plus the optimal continuation value:
-
-$$
-R_t(s,a,s') + V_{t+1}^*(s').
-$$
-
-Taking expectation over all possible next states gives
-
-$$
-Q_t^*(s,a)
-=
-\sum_{s' \in S_{t+1}} P_t(s' \mid s,a)
-\bigl(R_t(s,a,s') + V_{t+1}^*(s')\bigr).
-$$
-
-Since optimal play at state $s$ must choose the action with the greatest expected total reward, it follows that
-
-$$
-V_t^*(s)
-=
-\max_{a \in A_t(s)} Q_t^*(s,a).
-$$
-
-Thus the optimal value at stage $t$ is obtained from the known optimal values at stage $t+1$. Repeating this argument backward from $T-1$ to $0$ determines all optimal values and optimal actions. $\square$
-
-#### Interpretation
+##### Interpretation
 
 The proposition says that the optimal decision at a given state is not chosen by looking only at its immediate effect. Instead, each action must be evaluated by
 
@@ -614,7 +299,7 @@ This is the recursive structure of optimal play.
 
 In poker language, this means that a bet on the flop is valuable not only because of what it does immediately, but because of the turn and river situations it creates. Likewise, a call on the turn must be evaluated by the expected value of the river states it leads to. A current action is therefore judged by the future it induces.
 
-#### River-Turn-Flop Recursion
+##### River-Turn-Flop Recursion
 
 The street structure of poker makes the recursion especially transparent.
 
@@ -630,7 +315,7 @@ $$
 
 Thus later-street solutions are inputs into earlier-street decisions.
 
-#### Example: One-Step Turn Comparison
+##### Example: One-Step Turn Comparison
 
 Suppose that at a turn state $s$, Hero has two available actions:
 
@@ -661,7 +346,7 @@ $$
 
 This inequality makes explicit that the turn decision depends on the full continuation value of the river.
 
-#### Theorem: Recursive Structure of Optimal Policies
+##### Theorem: Recursive Structure of Optimal Policies
 
 For each stage $t$ and state $s \in S_t$, an optimal policy may be chosen so that
 
@@ -673,19 +358,7 @@ $$
 \bigl(R_t(s,a,s') + V_{t+1}^*(s')\bigr).
 $$
 
-#### Proof
-
-By the backward induction formula, the optimal value at state $s$ is
-
-$$
-V_t^*(s)
-=
-\max_{a \in A_t(s)} Q_t^*(s,a).
-$$
-
-Therefore any action attaining this maximum gives the optimal value. Choosing, for each state $s$, one such maximizing action defines an optimal policy $\pi_t^*$ at stage $t$. Since this can be done at every stage, the resulting policy is optimal and is determined recursively from the continuation values. $\square$
-
-#### Consequence for Poker
+##### Consequence for Poker
 
 This theorem formalizes a central principle of multi-street poker:
 
@@ -693,17 +366,17 @@ This theorem formalizes a central principle of multi-street poker:
 
 So the mathematics of backward induction is exactly the mathematics of planning across streets. The value of a flop bet depends on the turn and river states it can generate; the value of a turn call depends on the river distribution it induces; and the value of a river action depends on the terminal payoffs it produces. Optimal multi-street play is therefore recursive by necessity.
 
-#### Relation to Chapter 7
+##### Relation to Chapter 7
 
 This subsection is the finite-horizon MDP version of the backward-induction reasoning developed earlier through decision trees. There, one begins at terminal nodes, computes expected values at chance nodes, and then chooses the best branch at decision nodes. Here the same logic appears in Bellman form:
 
--   terminal nodes correspond to $V_T^*(s)=g(s)$,
--   chance nodes correspond to the expectation over $P_t(s' \mid s,a)$,
--   decision nodes correspond to the maximization over $a \in A_t(s)$.
+-   Terminal nodes correspond to $V_T^*(s)=g(s)$,
+-   Chance nodes correspond to the expectation over $P_t(s' \mid s,a)$,
+-   Decision nodes correspond to the maximization over $a \in A_t(s)$.
 
-Thus backward induction in a poker decision tree and Bellman recursion in a finite-horizon MDP are two formulations of the same mathematical principle.
+Thus, backward induction in a poker decision tree and Bellman recursion in a finite-horizon MDP are two formulations of the same mathematical principle.
 
-### Subsection D: Existence of Optimal Markov Policies
+#### Existence of Optimal Markov Policies
 
 The previous subsection showed that optimal play in a finite-horizon MDP has a recursive structure: at each stage, one compares actions by immediate reward plus optimal continuation value. However, one further question remains. A policy could in principle depend on the entire past history of the process, not just the current state. The issue is whether such history dependence is actually needed for optimality.
 
@@ -729,7 +402,7 @@ $$
 
 for every history $h_t$ ending in state $s_t$. If each $\pi_t(\cdot \mid s)$ assigns probability $1$ to a single action, then the policy is called a **deterministic Markov policy**.
 
-#### Theorem: Existence of Optimal Markov Policies
+##### Theorem: Existence of Optimal Markov Policies
 
 Consider a finite-horizon MDP with stages
 
@@ -755,94 +428,7 @@ $$
 
 In other words, there exists an optimal policy obtained by choosing, at each state, an action that attains the Bellman maximum.
 
-#### Proof
-
-From the previous subsection, the optimal value functions satisfy
-
-$$
-V_T^*(s)=g(s),
-$$
-
-and for each stage
-
-$$
-t = T-1,T-2,\dots,0,
-$$
-
-$$
-V_t^*(s)
-=
-\max_{a \in A_t(s)}
-\sum_{s' \in S_{t+1}} P_t(s' \mid s,a)
-\bigl(R_t(s,a,s') + V_{t+1}^*(s')\bigr).
-$$
-
-Because each action set $A_t(s)$ is finite, the maximum is attained. Hence for every stage $t$ and every state $s \in S_t$, we may choose an action $a_t^*(s)$ such that
-
-$$
-a_t^*(s)
-\in
-\arg\max_{a \in A_t(s)}
-\sum_{s' \in S_{t+1}} P_t(s' \mid s,a)
-\bigl(R_t(s,a,s') + V_{t+1}^*(s')\bigr).
-$$
-
-Now define a policy $\pi^*$ by declaring that at stage $t$ and state $s$, the chosen action is exactly $a_t^*(s)$. By construction, this policy depends only on the current stage $t$ and current state $s$, so it is a deterministic Markov policy.
-
-It remains to prove that $\pi^*$ is optimal. Let $W_t(s)$ denote the value of state $s \in S_t$ under the policy $\pi^*$. We show by backward induction that
-
-$$
-W_t(s)=V_t^*(s)
-$$
-
-for every $t$ and every $s \in S_t$.
-
-At the terminal stage,
-
-$$
-W_T(s)=g(s)=V_T^*(s).
-$$
-
-Now assume that for some stage $t+1$,
-
-$$
-W_{t+1}(s')=V_{t+1}^*(s')
-\qquad \text{for all } s' \in S_{t+1}.
-$$
-
-Fix a state $s \in S_t$. Since $\pi_t^*(s)=a_t^*(s)$, the Bellman equation for the policy $\pi^*$ gives
-
-$$
-W_t(s)
-=
-\sum_{s' \in S_{t+1}} P_t(s' \mid s,\pi_t^*(s))
-\bigl(R_t(s,\pi_t^*(s),s') + W_{t+1}(s')\bigr).
-$$
-
-Using the induction hypothesis, this becomes
-
-$$
-W_t(s)
-=
-\sum_{s' \in S_{t+1}} P_t(s' \mid s,\pi_t^*(s))
-\bigl(R_t(s,\pi_t^*(s),s') + V_{t+1}^*(s')\bigr).
-$$
-
-But $\pi_t^*(s)$ was chosen to maximize exactly this quantity, so
-
-$$
-W_t(s)
-=
-\max_{a \in A_t(s)}
-\sum_{s' \in S_{t+1}} P_t(s' \mid s,a)
-\bigl(R_t(s,a,s') + V_{t+1}^*(s')\bigr)
-=
-V_t^*(s).
-$$
-
-Thus $W_t(s)=V_t^*(s)$. By backward induction, this holds for every stage $t$. Therefore the policy $\pi^*$ is optimal. $\square$
-
-#### Why history dependence is unnecessary
+##### Why history dependence is unnecessary
 
 The theorem shows that an optimal Markov policy can be constructed by backward induction. The reason this works is the Markov property itself. Suppose two different histories $h_t$ and $\tilde{h}_t$ both end in the same current state $s \in S_t$. Then once the current state $s$ and action $a$ are fixed, the distribution of the next state is the same in both cases:
 
@@ -860,10 +446,150 @@ $$
 
 Therefore, the continuation problem from stage $t$ onward is identical for all histories that terminate in the same current state $s$. So no additional advantage is gained by conditioning decisions on the full past history. The current state is already a sufficient summary of the past for future optimization.
 
-#### Consequence for Poker
+##### Consequence for Poker
 
 In poker, this means that an optimal strategy does not need to depend on the entire raw sequence of previous actions once the state has been defined properly. If the state records the current street, pot size, effective stacks, board cards, betting history, and any other strategically relevant information, then optimal play can be chosen as a function of that state alone.
 
 Thus, two different lines of play that lead to the same modeled state face the same continuation problem and may be assigned the same optimal action. In this sense, optimal multi-street poker play may be represented by an optimal Markov policy.
 
 This also shows why state design is crucial. If the chosen state omits strategically relevant information, then the model is no longer truly Markov, and a policy depending only on that reduced state may fail to be optimal. The existence theorem applies only when the state space captures all information relevant for future play.
+
+## Beyond Poker
+
+While this chapter uses poker as a modeling context, the mathematical framework of sequential decision-making under uncertainty extends far beyond the card table. The tools we have defined—Markov Decision Processes (MDPs), the Bellman Equation, and Backward Induction—are the foundational engines for modern economics, artificial intelligence, and operations research.
+
+Whenever a problem involves making a choice today that yields both an immediate consequence and a probabilistically uncertain future, this exact math applies.
+
+### Artificial Intelligence and Reinforcement Learning
+
+The entire field of modern **Reinforcement Learning (RL)**—the technology behind self-driving cars, robotics, and AI systems is built directly on top of Markov Decision Processes.
+
+When an AI is trained to navigate a self-driving car through traffic, it is essentially solving the *Bellman Optimality Equation*:
+
+-   *State* $S$: The current camera feeds, lidar data, speed, and position of surrounding cars.
+-   *Actions* $A$: Steer left, steer right, accelerate, or brake.
+-   *Transition probability* $P$: The physics of the car and the predicted behavior of human drivers.
+-   *Reward* $R$: Positive points for making progress toward the destination; massive negative points for crashing.
+
+Just as a poker player can evaluate the Q-value of a Turn bet by anticipating the River, a self-driving AI calculates the Q-value of hitting the brakes by anticipating the future traffic states it will induce. The AI continuously seeks the policy $\pi^*$ that maximizes total expected reward.
+
+### Finance and Investment Strategy
+
+In quantitative finance, evaluating when to buy, sell, or hold an asset is a classic **Finite-Horizon MDP**. A perfect example is the pricing of an "American Option" (a financial contract that allows the holder to buy or sell a stock at a specific price, which can be exercised at any time before a strict expiration date).
+
+Financial engineers use *Backward Induction* to solve this problem, using a model known as a Binomial Options Pricing Tree. The logic is identical to a poker hand's River-Turn-Flop recursion:
+
+1.  *Terminal Stage* $T$: The expiration date. The value of the option is perfectly known based on the stock's final price.
+2.  *Backward Recursion:* The mathematician steps backward day by day. On any given day $t$, the investor faces a choice: exercise the option now (Immediate Reward) or hold onto it for another day (Continuation Value).
+3.  *Optimality:* By applying the Bellman equation from the expiration date backward to the present day, the exact mathematical value of holding the option today $V_0^*$ can be calculated.
+
+### Medical Decision-Making and Dynamic Treatment
+
+MDPs are heavily used in medical research to design optimal, multi-stage treatment plans for chronic illnesses, such as cancer or HIV.
+
+-   *State* $S$: The patient's current biomarkers, symptoms, and lab results.
+-   *Actions* $A$: Administering Drug X, scheduling surgery, or watchful waiting.
+-   *Transition probability* $P$: The clinical probabilities of the patient's health improving, worsening, or developing side effects.
+-   *Reward* $R$: Measured in Quality-Adjusted Life Years (QALYs), where survival and comfort yield positive rewards.
+
+This field beautifully highlights the importance of the *Markov Property and State Design*. Just as a poker model must encode the history of betting into the current "ranges" of the players, a medical MDP must encode a patient's medical history into their current "state." If a patient has already developed a resistance to a certain antibiotic, that history must be explicitly included in today's state $s$. Once the state accurately captures the patient's current biological reality, the physician does not need to worry about the past; they can apply an *Optimal Markov Policy* to maximize the patient's future lifespan and health.
+
+### Supply Chain and Inventory Management
+
+A warehouse manager deciding how much inventory to order faces a continuous battle between immediate costs and future uncertainty.
+
+-   If they order too much, they pay high immediate storage costs.
+-   If they order too little, a sudden spike in consumer demand (a probabilistic transition) results in missed sales (lost future reward).
+
+Using the Bellman Equation, businesses optimize supply chains by balancing the immediate reward (saving money on storage today) against the continuation value (having enough stock to fulfill probabilistic future demand).
+
+## Homework Problems
+
+The following problems test your understanding of the mathematical frameworks introduced in this chapter. They require you to apply the definitions of MDPs, the Bellman equation, and backward induction to both poker and real-world scenarios.
+
+#### Problem 1: Formulating an MDP {.unnumbered}
+
+In the "Beyond Poker" section, we briefly discussed how medical decision-making can be modeled as a Markov Decision Process. Imagine a doctor treating a patient with a chronic infection over a 3-month period, with appointments once a month. At each appointment, the doctor can either prescribe a mild antibiotic, a strong antibiotic, or no medication.
+
+1.  Explicitly define the components of the MDP tuple $(S, A, P, R)$ for this specific scenario.
+2.  What makes this a Finite-Horizon MDP, and what does the terminal stage $T$ represent?
+3.  Give an example of an immediate reward vs. a continuation value in this context.
+
+#### Problem 2: Calculating Q-Values on the Turn {.unnumbered}
+
+Hero is facing a Turn decision. The current pot is $50$. Villain bets $25$. Hero has a flush draw and must choose from the action set $A = \{\text{Fold}, \text{Call}\}$. (Assume Hero cannot raise).
+
+Assume a reward convention where the call cost is treated as an immediate negative reward, and the river outcome is treated as the continuation value.
+
+-   If Hero folds, the hand ends. $R(\text{Fold}) = 0$.
+-   If Hero calls, it costs $25$ chips ($R(\text{Call}) = -25$). The hand moves to the River.
+-   The probability of hitting the flush on the River is $20\%$. The probability of missing is $80\%$.
+-   If Hero hits the flush, the optimal River strategy yields an expected final pot capture and implied odds of $+150$ chips ($V_{\text{River}}^*(\text{Hit}) = 150$).
+-   If Hero misses the flush, Hero will fold to any River bet and win nothing ($V_{\text{River}}^*(\text{Miss}) = 0$).
+
+1.  Write out the formal Q-function equation for calling: $Q_{\text{Turn}}^*(\text{Call})$.
+2.  Calculate the numerical value of $Q_{\text{Turn}}^*(\text{Call})$.
+3.  Calculate the numerical value of $Q_{\text{Turn}}^*(\text{Fold})$.
+4.  Applying the $\arg\max$ operator defined by the Bellman Optimality Equation, what is the optimal policy $\pi^*$ for Hero on the Turn?
+
+#### Problem 3: Backward Induction in a Toy Game {.unnumbered}
+
+Consider a simplified 2-stage game (Stage 1 and Stage 2).
+
+-   *At Stage 2 (Final decision stage):* You are in State $X$. You can choose Action $L$ (Reward = $10$) or Action $R$ (Reward = $4$).
+-   *At Stage 2 (Final decision stage):* You are in State $Y$. You can choose Action $L$ (Reward = $2$) or Action $R$ (Reward = $8$).
+-   *At Stage 1:* You are in the starting State $S$. You must choose Action $A$ or Action $B$.
+    -   Action $A$ has a $50\%$ chance of transitioning to State $X$ and a $50\%$ chance of transitioning to State $Y$.
+    -   Action $B$ has a $100\%$ chance of transitioning to State $X$.
+    -   The immediate reward for both Action $A$ and Action $B$ is $0$.
+
+Using the principle of Backward Induction:
+
+1.  What is the optimal value of State $X$ ($V^*(X)$)?
+2.  What is the optimal value of State $Y$ ($V^*(Y)$)?
+3.  Use the Bellman Optimality Equation to calculate $Q^*(S, A)$ and $Q^*(S, B)$.
+4.  What is the optimal action to take at Stage 1?
+
+#### Problem 4: The Markov Property and State Design {.unnumbered}
+
+Two different poker hands reach the exact same Flop situation: The pot is $10$ BB, the effective stacks are $100$ BB, and the board is $A\diamondsuit \ K\diamondsuit \ 7\clubsuit$.
+
+-   In *Hand 1*, the Preflop action was a standard raise and a call.
+-   In *Hand 2*, the Preflop action was a chaotic sequence of four separate re-raises (a 4-bet pot).
+
+A novice player argues: *"The Markov Property says that history doesn't matter. Since the pot size, stacks, and board cards are identical in both hands, my optimal Flop strategy must be exactly the same in Hand 1 as it is in Hand 2."*
+
+1.  Explain why this player's conclusion is incorrect and will lead to heavily flawed poker strategy.
+2.  How do modern poker models fix this problem? Specifically, what missing variable must be added to the mathematical definition of the "State" $S$ to satisfy the Markov Property and make the preflop history truly irrelevant?
+
+#### Problem 5: Evaluating a Mixed Strategy (Policy vs. Optimality) {.unnumbered}
+
+On the River, Hero faces a bet and has a bluff-catcher. The state is $s$. The available actions are $A = \{\text{Fold}, \text{Call}\}$.
+
+Based on the opponent's range and the pot odds, suppose the expected action-values (Q-values) for Hero are:
+
+-   $Q(s, \text{Fold}) = 0$ BB
+-   $Q(s, \text{Call}) = +2.5$ BB
+
+Suppose Hero ignores the optimal action and instead plays a *stochastic policy* $\pi$, using a randomizer to Call $40\%$ of the time and Fold $60\%$ of the time.
+
+1.  Using the formula for the Value Function $V^\pi(s) = \sum_{a} \pi(a \mid s) Q(s,a)$, calculate the exact Expected Value of Hero's mixed strategy.
+2.  What is the optimal value of this state, $V^*(s)$, according to the Bellman Optimality Equation?
+3.  Compare your answers from Question 1 and Question 2. In Game Theory Optimal (GTO) poker, why is it mathematically incorrect to use a mixed strategy when the Q-values of the available actions are not exactly equal?
+
+#### Problem 6: Operations Research and Future Trade-offs {.unnumbered}
+
+A factory manager is using an MDP to decide how to treat a piece of heavy machinery this month. The machine is currently in the state $s = \text{Working}$. The manager has two available actions: $A = \{\text{Run}, \text{Maintain}\}$.
+
+-   *Action 1: Run.* The immediate profit from running the machine at maximum capacity is $\$10,000$. However, the transition probability of the machine breaking down next month ($s' = \text{Broken}$) is $40\%$, and the probability it stays working ($s' = \text{Working}$) is $60\%$.
+-   *Action 2: Maintain.* The immediate profit from running the machine at a lower capacity to allow for maintenance is only $\$4,000$. However, the transition probability of breaking down next month drops to $5\%$, and the probability it stays working is $95\%$.
+
+Through backward induction, the manager already knows the optimal continuation values for next month's states:
+
+-   $V_{t+1}^*(\text{Working}) = \$50,000$
+-   $V_{t+1}^*(\text{Broken}) = \$15,000$
+
+1.  Calculate the Q-value of Running the machine: $Q(\text{Working}, \text{Run})$. *(Hint: Immediate Reward + Expected Future Value)*
+2.  Calculate the Q-value of Maintaining the machine: $Q(\text{Working}, \text{Maintain})$.
+3.  Based on the Bellman Optimality Equation, which action should the manager choose today, and what is the current optimal value $V_t^*(\text{Working})$?
+4.  How does this non-poker problem illustrate the concept of "Implied Odds" or "Reverse Implied Odds" from poker?

@@ -1,0 +1,619 @@
+---
+title: "Bankroll Management & Gambler's Ruin"
+format: html
+---
+
+## Motivating Example: A Winning Player at Risk of Ruin
+
+Consider a poker player who regularly plays in a \$1/\$2 cash game and maintains a bankroll of \$1,000. To structure their play, they divide time into sessions, where each session results in either a gain or a loss of \$100. Based on past results, the player estimates that they win a session with probability $0.55$ and lose with probability $0.45$.
+
+At first glance, this player appears to be profitable. The expected profit from a single session is
+
+$$
+E[X] = (0.55)(100) + (0.45)(-100) = 10.
+$$
+
+Suppose the player participates in (n) independent sessions, and let
+
+$$
+S_n = \sum_{i=1}^{n} X_i
+$$
+
+represent the player’s total profit after (n) sessions. By the linearity of expectation,
+
+$$
+E[S_n] = \sum_{i=1}^{n} E[X_i] = 10n.
+$$
+
+Thus, after $n$ sessions, the player expects to earn $10n$ dollars on average. In particular, the expected profit grows linearly with the number of sessions played.
+
+If the expected value is close to zero, then the player’s average long-term profit is also close to zero. This does not mean the player’s actual results will remain near break-even, since variance may still produce large swings in either direction, especially over shorter time horizons. Although the player wins more often than they lose, losses still occur frequently, and losing streaks are inevitable over a long enough time horizon. For example, losing five sessions in a row results in a loss of \$500, and ten consecutive losses would completely deplete the player’s bankroll in this scenario.
+
+To model this situation mathematically, let $X_i$ represent the outcome of the $i$-th session, where
+
+$$
+X_i =
+\begin{cases}
++100 & \text{with probability } 0.55, \\
+-100 & \text{with probability } 0.45.
+\end{cases}
+$$
+
+Let $B_n$ denotes the player’s bankroll after (n) sessions. Then
+
+$$
+B_n = 1000 + \sum_{i=1}^{n} X_i.
+$$
+
+Here, the player begins with an initial bankroll of
+
+$$
+B_0 = 1000.
+$$
+
+We say that **ruin** occurs if the bankroll ever reaches zero. In other words, the player is ruined if there exists some $n$ such that
+
+$$
+B_n = 0.
+$$
+
+The central question is therefore not simply whether the player has positive expected profit, but whether that advantage is large enough to overcome the randomness created by repeated wins and losses.
+
+This highlights a key idea: even a winning player faces a nonzero probability of going broke. Understanding and managing this risk is the goal of **bankroll management.**
+
+Following that logic, we recognize that a player’s win probability is not necessarily fixed. In practice, poker players often move between games with different stakes depending on the size of their bankroll. A player who performs well in a \$1/\$2 game may face stronger opponents in a \$5/\$10 game, reducing their probability of winning. Conversely, moving to lower-stakes games may increase a player’s edge while decreasing the amount of money won per session.
+
+As a result, both the player’s expected return and the variability of outcomes may change over time. We also see how bankroll size can influence the level of risk a player takes, which in turn may affect the probability of winning itself. In this chapter, we simplify the analysis by assuming that the probabilities of winning and losing remain constant throughout play. Although this assumption does not capture every feature of real poker, it allows us to isolate the relationship between variance, bankroll size, and the probability of ruin.
+
+Now we can state a central question clearly:
+
+> If the player continues playing indefinitely what is the probability they go bankrupt, given their bankroll and win probability?
+
+### Bankroll Management
+
+A key principle in poker is:
+
+> Never risk a large fraction of your bankroll in a single session.
+
+Instead, players often follow guidelines such as: Risking only between 1% and 5% of bankroll per session, maintaining enough buy-ins to withstand losing streaks.
+
+Smaller bets reduce variance and increase the likelihood of long-term survival.
+
+------------------------------------------------------------------------
+
+## Mathematical Framework and Poker Theory
+
+### Random Walk Model
+
+To study how a player’s bankroll changes over time, we model the bankroll as a **random walk**. A random walk is a stochastic process that moves step-by-step according to specified probabilities.
+
+Suppose a player begins with a bankroll of $i$ betting units. After each session:
+
+-   the bankroll increases by one unit with probability $p$,
+-   the bankroll decreases by one unit with probability $q = 1-p$.
+
+Let $B_n$ denote the bankroll after $n$ sessions. Then the bankroll evolves according to
+
+$$
+B_n = i + \sum_{k=1}^{n} X_k,
+$$
+
+where the random variables $X_k$ are independent and satisfy
+
+$$
+X_k =
+\begin{cases}
++1 & \text{with probability } p, \\
+-1 & \text{with probability } q.
+\end{cases}
+$$
+
+Thus, each session corresponds to one step of the random walk. A winning session moves the bankroll upward, while a losing session moves it downward.
+
+In the gambler’s ruin model, two boundary states are especially important:
+
+-   $B_n = 0$: the player is ruined,
+-   $B_n = N$: the player reaches a target bankroll.
+
+Therefore, the primary question is:
+
+> Starting from bankroll $i$, what is the probability that the random walk reaches $0$ before reaching $N$?
+
+This probability is called the **risk of ruin** and will be denoted by $R_i$.
+
+#### Biased Random Walks
+
+We just considered the case where the probabilities of winning and losing are equal. In many poker situations, however, a skilled player may win slightly more often than they lose. When
+
+$$
+p \neq q,
+$$
+
+the random walk is called a **biased random walk**.
+
+-   If $p > q$, the bankroll has an upward drift.
+-   If $p < q$, the bankroll has a downward drift.
+
+In poker applications, the most important case is $p > q$, since a profitable player is expected to win more often than they lose. Even in this setting, however, the player may still experience ruin because of random fluctuations in the bankroll process.
+
+For a biased random walk with absorbing states at $0$ and $N$, the probability of ruin starting from bankroll $i$ is
+
+$$
+R_i =
+\frac{
+\left(\frac{q}{p}\right)^i
+-
+\left(\frac{q}{p}\right)^N
+}{
+1-
+\left(\frac{q}{p}\right)^N
+}.
+$$
+
+This formula gives the probability that the bankroll reaches $0$ before reaching the target bankroll $N$.
+
+------------------------------------------------------------------------
+
+Now we will transition to examine Gambler's Ruin more specifically. The following theorem gives the probability that a player starting with bankroll $i$ reaches $0$ before reaching a target bankroll $N$. For simplicity, we measure bankroll in units of one wager. Thus, a gain of \$100 corresponds to a step of $+1$, and a loss of \$100 corresponds to a step of $-1$.
+
+### Gambler’s Ruin Theorem
+
+Suppose a player’s bankroll changes by $+1$ with probability $p$ and by $-1$ with probability $q = 1-p$.
+
+Let $R_i$ denote the probability that a player starting with bankroll $i$ is ruined before reaching bankroll $N$.
+
+Then
+
+$$
+R_i =
+\begin{cases}
+1-\dfrac{i}{N}, & p=q=\frac12, \\\\
+\dfrac{\left(\frac{q}{p}\right)^i-\left(\frac{q}{p}\right)^N}
+{1-\left(\frac{q}{p}\right)^N}, & p\neq q.
+\end{cases}
+$$
+
+Starting from bankroll $i$, the player’s next move depends on the outcome of the next session.
+
+\
+- With probability $p$, the bankroll increases to $i+1$
+
+\
+- With probability $q$, the bankroll decreases to $i-1$\
+\
+Since these are the only two possible outcomes, the total risk of ruin can be computed by conditioning on the first step. This gives the recurrence relation:\
+\
+$$
+R_i = pR_{i+1} + qR_{i-1}$$\
+\
+This equation states that the current ruin probability equals the weighted average of the ruin probabilities after the next step.
+
+Continuing from the recurrence relation, we now derive the formula in the fair-game case where $p=q=\frac12$.
+
+$$
+R_i = \frac12 R_{i+1} + \frac12 R_{i-1},
+$$
+
+we rearrange to obtain
+
+$$
+R_{i+1} - R_i = R_i - R_{i-1}.
+$$
+
+In the fair-game case $p=q=0.5$, the recurrence relation becomes\
+\
+$$R_i = \frac12 R_{i+1} + \frac12 R_{i-1}.
+$$
+
+Rearranging gives
+
+$$R_{i+1} - R_i = R_i - R_{i-1}.
+$$\
+Thus, consecutive differences are equal, which implies that the sequence $R_i$ is linear. Therefore, we write
+
+$$
+R_i = A + Bi
+$$
+
+for constants $A$ and $B$.
+
+Using the boundary conditions:
+
+$$
+R_0 = 1
+\quad \text{and} \quad
+R_N = 0,
+$$
+
+we solve for the constants.
+
+From $R_0 = 1$,
+
+$$
+1 = A + B(0),
+$$
+
+so
+
+$$
+A = 1.
+$$
+
+From $R_N = 0$,
+
+$$
+0 = 1 + BN,
+$$
+
+which implies
+
+$$
+B = -\frac{1}{N}.
+$$
+
+Substituting $A=1$ and $B=-\frac{1}{N}$ into the general solution
+
+$$
+R_i = A + Bi,
+$$
+
+gives
+
+$$
+R_i = 1 + \left(-\frac{1}{N}\right)i.
+$$
+
+Simplifying,
+
+$$
+R_i = 1 - \frac{i}{N}.
+$$
+
+------------------------------------------------------------------------
+
+The Gambler’s Ruin Theorem allows us to revisit the motivating example from the beginning of the chapter. Recall that the player began with a bankroll of \$1000 and either gained or lost \$100 per session. Measuring bankroll in units of \$100, the player starts with
+
+$$
+i = 10.
+$$
+
+Suppose the player’s goal is to double their bankroll to \$2000, corresponding to
+
+$$
+N = 20.
+$$
+
+From the motivating example, the player wins each session with probability
+
+$$
+p = 0.55
+$$
+
+and loses with probability
+
+$$
+q = 0.45.
+$$
+
+Since $p \neq q$, we use the biased random walk formula:
+
+$$
+R_i =
+\frac{
+\left(\frac{q}{p}\right)^i
+-
+\left(\frac{q}{p}\right)^N
+}{
+1-
+\left(\frac{q}{p}\right)^N
+}.
+$$
+
+Substituting the values $i=10$, $N=20$, $p=0.55$, and $q=0.45$,
+
+$$
+R_{10} =
+\frac{
+\left(\frac{0.45}{0.55}\right)^{10}
+-
+\left(\frac{0.45}{0.55}\right)^{20}
+}{
+1-
+\left(\frac{0.45}{0.55}\right)^{20}
+}.
+$$
+
+Evaluating this expression gives
+
+$$
+R_{10} \approx 0.116.
+$$
+
+Thus, even though the player is profitable on average, there is still approximately an 11.6% probability that the player goes broke before doubling their bankroll.
+
+This example illustrates an important principle: a positive expected value reduces the probability of ruin, but it does not eliminate it entirely. Variance continues to create the possibility of substantial losing streaks, even for a winning player.
+
+------------------------------------------------------------------------
+
+### Infinite-Horizon Risk of Ruin
+
+The finite gambler’s ruin model assumes that play stops once the player reaches either $0$ or a target bankroll $N$. However, in many poker settings there is no fixed upper target. Instead, the player may continue indefinitely unless ruin occurs. We call this quantity the infinite-horizon risk of ruin.
+
+To study this situation, we define the **infinite-horizon risk of ruin** as a limit:
+
+$$
+R_i = \lim_{N \to \infty}
+\frac{\left(\frac{q}{p}\right)^i - \left(\frac{q}{p}\right)^N}
+{1 - \left(\frac{q}{p}\right)^N}.
+$$
+
+Suppose $p > q$. Then
+
+$$
+0 < \frac{q}{p} < 1.
+$$
+
+As $N \to \infty$,
+
+$$
+\left(\frac{q}{p}\right)^N \to 0.
+$$
+
+Therefore,
+
+$$
+R_i = \left(\frac{q}{p}\right)^i.
+$$
+
+This formula shows that even when a player has positive expected value $p>q$, the probability of ruin is still positive whenever $p<1$.
+
+The formula also illustrates the importance of bankroll size. Since the ruin probability decreases exponentially as $i$ increases, even modest increases in bankroll can substantially reduce long-term risk.
+
+Additionally, we can create a concrete example from this:
+
+If $p=0.55$ and $i=10$, then
+
+$$
+R_i = \left(\frac{0.45}{0.55}\right)^{10} \approx 0.13.
+$$
+
+Thus, even a winning player still faces approximately a 13% chance of eventual ruin.
+
+------------------------------------------------------------------------
+
+### Distribution of Bankroll Outcomes
+
+The random walk model does more than predict the probability of ruin. It also describes the distribution of possible bankroll values after a fixed number of sessions.
+
+Suppose a player completes $n$ sessions, winning each session with probability $p$. Let $W_n$ denote the number of winning sessions after $n$ plays. Then
+
+$$
+W_n \sim \text{Binomial}(n,p).
+$$
+
+Since each win increases the bankroll by \$100 and each loss decreases it by \$100, the bankroll after $n$ sessions is
+
+$$
+B_n = B_0 + 100(W_n - (n-W_n)).
+$$
+
+Simplifying,
+
+$$
+B_n = B_0 + 100(2W_n - n).
+$$
+
+This equation shows that the bankroll is determined entirely by the number of wins.
+
+For example, suppose the player begins with a bankroll of \$1000 and plays $20$ sessions with win probability $p=0.55$. Different numbers of wins produce different final bankrolls:
+
+-   $10$ wins gives a bankroll of \$1000,
+-   $12$ wins gives a bankroll of \$1400,
+-   $8$ wins gives a bankroll of \$600.
+
+Because $W_n$ follows a binomial distribution, probability theory allows us to compute the likelihood of each possible bankroll outcome.
+
+This perspective emphasizes that bankroll evolution is not deterministic. Even players with positive expected value may experience substantial fluctuations over finite periods of play.
+
+------------------------------------------------------------------------
+
+### Bankroll Simulation 
+
+The following simulation illustrates how bankroll volatility changes as a player risks larger fractions of their bankroll per hand:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#| fig-width: 11
+#| fig-height: 7
+
+library(ggplot2)
+library(dplyr)
+
+set.seed(123)
+
+# Function to simulate one bankroll path
+simulate_bankroll <- function(
+  initial_bankroll = 1000,
+  p_win = 0.55,
+  bankroll_fraction = 0.05,
+  n_hands = 200
+) {
+  
+  bankroll <- numeric(n_hands + 1)
+  bankroll[1] <- initial_bankroll
+  
+  for(i in 1:n_hands) {
+    
+    bet_size <- bankroll_fraction * bankroll[i]
+    
+    outcome <- sample(
+      c(1, -1),
+      size = 1,
+      prob = c(p_win, 1 - p_win)
+    )
+    
+    bankroll[i + 1] <- bankroll[i] + outcome * bet_size
+    
+    # Prevent negative bankroll
+    if(bankroll[i + 1] <= 0) {
+      bankroll[(i + 1):(n_hands + 1)] <- 0
+      break
+    }
+  }
+  
+  data.frame(
+    Hand = 0:n_hands,
+    Bankroll = bankroll
+  )
+}
+
+# Function to generate many simulations
+generate_many_paths <- function(bankroll_fraction, strategy_name, n_sim = 200) {
+  
+  bind_rows(
+    lapply(1:n_sim, function(sim) {
+      
+      simulate_bankroll(
+        bankroll_fraction = bankroll_fraction
+      ) %>%
+        mutate(
+          Strategy = strategy_name,
+          Simulation = sim
+        )
+    })
+  )
+}
+
+# Generate simulations
+sim_1 <- generate_many_paths(0.01, "1% Buy-in")
+sim_5 <- generate_many_paths(0.05, "5% Buy-in")
+sim_20 <- generate_many_paths(0.20, "20% Buy-in")
+
+# Combine all data
+sim_data <- bind_rows(sim_1, sim_5, sim_20)
+
+# Plot
+p <- ggplot(
+  sim_data,
+  aes(x = Hand, y = Bankroll, group = Simulation)
+) +
+  geom_line(alpha = 0.15) +
+  facet_wrap(~Strategy, scales = "free_y") +
+  labs(
+    title = "Bankroll Volatility Under Different Risk Strategies",
+    subtitle = "Higher bankroll risk produces larger swings and greater risk of ruin",
+    x = "Number of Hands",
+    y = "Bankroll ($)"
+  ) +
+  theme_minimal(base_size = 14)
+
+print(p)
+```
+
+The simulations illustrate how increasing the fraction of bankroll risked per hand dramatically increases volatility. Although all three strategies have positive expected value, the more aggressive betting strategies experience substantially larger swings and more frequent ruin. This demonstrates that long-term survival depends not only on expected value but also on controlling variance.
+
+------------------------------------------------------------------------
+
+### Interpretation
+
+These results reveals several important mathematical properties of the ruin probability model.
+
+First, for fixed values of $p$ and $N$, the ruin probability $R_i$ decreases as the initial bankroll $i$ increases. In other words, players who begin farther from the absorbing state at $0$ are less likely to be ruined before reaching the target bankroll $N$.
+
+Second, when $p>q$, we have
+
+$$
+\frac{q}{p} < 1.
+$$
+
+As a result, the term
+
+$$
+\left(\frac{q}{p}\right)^i
+$$
+
+decreases exponentially as $i$ increases. Therefore, a player with a positive expected value experiences a rapidly decreasing probability of ruin as bankroll grows. However, the probability never becomes exactly zero for finite $i$, meaning that even skilled players remain vulnerable to sufficiently long losing streaks as we have mentioned before.
+
+The model also illustrates the relationship between bet size and variance. Suppose a player with bankroll $B_0$ risks a fixed fraction of that bankroll each session. Larger bets produce larger step sizes in the random walk, increasing the magnitude of fluctuations in the bankroll process. Consequently, aggressive betting strategies increase the likelihood that the bankroll reaches $0$ before substantial long-term gains can accumulate.
+
+In the motivating example, the player risks \$100 per session with an initial bankroll of \$1000, corresponding to 10% of the bankroll per play. Because the bankroll changes in relatively large increments, short-term variance has a substantial effect on the player’s trajectory. This explains why a player with positive expected value may still face a meaningful probability of ruin.
+
+------------------------------------------------------------------------
+
+## Beyond Poker
+
+The mathematics of ruin extends far beyond poker. Many real-world systems involve repeated gains and losses over time, and in each case the central question is similar:
+
+> How large is the probability that resources are eventually exhausted?
+
+Although the terminology of “ruin” originates in gambling, the same mathematical ideas appear throughout finance, insurance, economics, and risk management.
+
+### Insurance
+
+Insurance companies must maintain sufficient reserves to avoid ruin due to large or unexpected claims. Each policyholder pays premiums into the company, creating a steady positive inflow of money over time. However, the company must also pay claims, which can occur unpredictably and sometimes in very large amounts.
+
+This creates a stochastic process similar to the random walk model studied in poker. At any given time:
+
+-   premium payments increase reserves,
+-   insurance claims decrease reserves.
+
+If claims exceed reserves, the company becomes insolvent. In actuarial science, one major objective is therefore to estimate the probability of ruin and determine how much capital must be held to keep this probability sufficiently small.
+
+Just as poker players manage bankrolls by limiting risk relative to available funds, insurance companies manage risk by: - maintaining large reserve pools, - diversifying policies, - limiting exposure to catastrophic losses.
+
+In both settings, long-term survival depends not only on positive expected value, but also on controlling variability.
+
+### Finance and Investing
+
+Similar ideas appear in finance and investing. An investor may hold a portfolio with positive expected return, yet still face substantial short-term volatility. If losses become too large before long-term gains materialize, the investor may be forced to sell assets, default on obligations, or exit the market entirely.
+
+Leverage provides an especially strong connection to the gambler’s ruin framework. Borrowing money increases both potential gains and potential losses, effectively increasing the “step size” of the financial random walk. Larger fluctuations increase the probability of financial ruin, even when investments have favorable expected returns.
+
+For this reason, risk management strategies such as diversification, position sizing, and reserve capital play a central role in modern finance.
+
+### Broader Mathematical Lesson
+
+Across all of these examples, the same mathematical principle emerges:
+
+> Positive expected value alone does not guarantee long-term success.
+
+A system may have favorable average outcomes while still experiencing enough variability to produce catastrophic losses. The mathematics of random walks and ruin probabilities therefore provides a framework for understanding how expectation, variance, and resource limits interact over time.
+
+### Additional Mathematical Ideaology
+
+A related idea in probability and finance is the Kelly Criterion, which studies how much of a bankroll should be wagered repeatedly in order to maximize long-term growth. Unlike the fixed-step gambler’s ruin model, the Kelly framework assumes that each wager is a fixed fraction of the current bankroll. Although the mathematical details differ, both models emphasize the same principle: aggressive betting increases the risk of large losses and potential ruin.
+
+------------------------------------------------------------------------
+
+## Homework Problems
+
+### Problem 1 (Basic)
+
+A player starts with a bankroll of \$500 and bets \$50 per session. If $p = 0.5$, what is the probability of ruin before reaching $1000$?
+
+### Problem 2 (Computation)
+
+A player has a bankroll of \$1000 and bets \$100 per session with $p = 0.55$. Compute the probability of ruin before doubling their bankroll.
+
+### Problem 3 (Conceptual)
+
+Explain why a player with a positive expected value can still go broke.
+
+### Problem 4 (Comparison)
+
+Two players each have a \$1000 bankroll and $p = 0.55$: Player A bets \$100 per session and Player B bets \$20 per session
+
+Which player has a higher probability of ruin? Explain your reasoning.
+
+### Problem 5 (Extension)
+
+Simulate 1000 bankroll paths for a player with $p = 0.55$ and an initial bankroll of 10 units. Estimate the probability of ruin empirically.
+
+------------------------------------------------------------------------
+
+## Summary
+
+Bankroll management is essential for long-term success in poker and other stochastic environments. Even players with a positive edge face the risk of ruin if they take on too much variance. By modeling bankroll as a random walk and applying results from probability theory, we can quantify this risk and make informed decisions about how much to wager.
+
+The key takeaway is simple but powerful:
+
+> Winning is not just about having an edge, it is about surviving long enough for that edge to matter.

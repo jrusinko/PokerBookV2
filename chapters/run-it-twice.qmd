@@ -35,9 +35,9 @@ $$
 S_2 = X_1 + X_2
 $$
 
-where $X_1$ and $X_2$ are the payoffs from two independent board runouts.
+where $X_1$ and $X_2$ are independent realizations of the same random variable.
 
-Players often claim that running it twice reduces risk without affecting expected value. This motivates a precise mathematical analysis of expectation and variance under repeated independent outcomes.
+This raises the central question: why does running a hand multiple times reduce variance while leaving expected value unchanged?
 
 ---
 
@@ -54,7 +54,7 @@ $$
 \prod_{i=1}^n \mathbb{P}(X_i \in A_i)
 $$
 
-for all measurable sets $A_1, \dots, A_n$. In this setting, each $X_i$ represents the payoff from one board runout.
+for all measurable sets $A_1, \dots, A_n$.
 
 ---
 
@@ -66,8 +66,6 @@ $$
 =
 \sum_{i=1}^n \mathbb{E}[X_i]
 $$
-
-This property holds without requiring independence.
 
 ---
 
@@ -88,28 +86,16 @@ $$
 
 ### Core Results
 
-**additivity of expectation.**  
-For any random variables $X_1$ and $X_2$,
+**additivity of expectation.**
 
 $$
 \mathbb{E}[X_1 + X_2] = \mathbb{E}[X_1] + \mathbb{E}[X_2]
 $$
 
-*Proof.*
-
-$$
-\begin{aligned}
-\mathbb{E}[X_1 + X_2]
-&= \sum_{\omega} (X_1(\omega) + X_2(\omega)) \mathbb{P}(\omega) \\
-&= \sum_{\omega} X_1(\omega)\mathbb{P}(\omega)
-+ \sum_{\omega} X_2(\omega)\mathbb{P}(\omega) \\
-&= \mathbb{E}[X_1] + \mathbb{E}[X_2]
-\end{aligned}
-$$
-
 ---
 
-**expectation under multiple runs.**  
+**expectation under multiple runs.**
+
 Let
 
 $$
@@ -119,63 +105,253 @@ $$
 Then
 
 $$
-\mathbb{E}[S_n] = \sum_{i=1}^n \mathbb{E}[X_i]
-$$
-
-If the runs are identically distributed,
-
-$$
-\mathbb{E}[S_n] = n \cdot \mathbb{E}[X_1]
-$$
-
-For the average payoff,
-
-$$
-\bar{X}_n = \frac{1}{n} S_n
-\quad \Rightarrow \quad
-\mathbb{E}[\bar{X}_n] = \mathbb{E}[X_1]
+\mathbb{E}[S_n] = n\mu
+\quad \text{and} \quad
+\mathbb{E}[\bar{X}_n] = \mu
 $$
 
 ---
 
-**variance under multiple runs.**  
-Assume $X_1, \dots, X_n$ are independent with variance $\sigma^2$. Then
+**variance under multiple runs.**
 
 $$
 \mathrm{Var}(S_n) = n\sigma^2
 $$
 
-and
+$$
+\mathrm{Var}(\bar{X}_n) = \frac{\sigma^2}{n}
+$$
+
+---
+
+## Double Board Bomb Pots
+
+In a double board bomb pot, the total pot $P$ is split evenly across two independent boards.
+
+Each board is therefore worth $\frac{P}{2}$. Let $X_1$ and $X_2$ denote the payoffs from each board.
+
+Since payoffs scale linearly with pot size, we can write:
 
 $$
-\begin{aligned}
-\mathrm{Var}(\bar{X}_n)
-&= \mathrm{Var}\left(\frac{1}{n} S_n\right) \\
-&= \frac{1}{n^2} \mathrm{Var}(S_n) \\
-&= \frac{1}{n^2}(n\sigma^2) \\
-&= \frac{\sigma^2}{n}
-\end{aligned}
+X_1 = \frac{1}{2} Y_1, \quad X_2 = \frac{1}{2} Y_2
+$$
+
+where $Y_1, Y_2$ are independent copies of the single-board payoff with pot $P$.
+
+### Expectation
+
+$$
+\mathbb{E}[X_1] = \frac{1}{2}\mu, \quad \mathbb{E}[X_2] = \frac{1}{2}\mu
+$$
+
+Thus,
+
+$$
+\mathbb{E}[S] = \mathbb{E}[X_1 + X_2] = \mu
+$$
+
+### Variance
+
+$$
+\mathrm{Var}(X_1) = \frac{1}{4}\sigma^2, \quad \mathrm{Var}(X_2) = \frac{1}{4}\sigma^2
+$$
+
+By independence,
+
+$$
+\mathrm{Var}(S)
+=
+\frac{1}{4}\sigma^2 + \frac{1}{4}\sigma^2
+=
+\frac{1}{2}\sigma^2
+$$
+
+---
+
+## General $k$-Board Model
+
+Both run-it-twice and double board bomb pots suggest a general structure. We now formalize a model that captures both as special cases.
+
+Let $X_1, \dots, X_k$ be independent and identically distributed with
+
+$$
+\mathbb{E}[X_i] = \mu, \quad \mathrm{Var}(X_i) = \sigma^2
+$$
+
+---
+
+### Model A: Run-It-$k$-Times
+
+$$
+\bar{X}_k = \frac{1}{k} \sum_{i=1}^k X_i
+$$
+
+$$
+\mathbb{E}[\bar{X}_k] = \mu
+$$
+
+$$
+\mathrm{Var}(\bar{X}_k) = \frac{\sigma^2}{k}
+$$
+
+---
+
+### Model B: $k$-Board Split Pot
+
+Each board is worth $\frac{P}{k}$, so
+
+$$
+X_i^{(k)} = \frac{1}{k} X_i
+$$
+
+Total payoff:
+
+$$
+S_k^{(split)} = \frac{1}{k} \sum_{i=1}^k X_i
+$$
+
+Thus,
+
+$$
+\mathbb{E}[S_k^{(split)}] = \mu
+$$
+
+$$
+\mathrm{Var}(S_k^{(split)}) = \frac{\sigma^2}{k}
+$$
+
+---
+
+### Theorem (Expectation Invariance and Variance Scaling)
+
+Let $X_1, \dots, X_k$ be i.i.d. with mean $\mu$ and variance $\sigma^2$. Then
+
+$$
+\mathbb{E}\left[\frac{1}{k}\sum_{i=1}^k X_i\right] = \mu
+$$
+
+$$
+\mathrm{Var}\left(\frac{1}{k}\sum_{i=1}^k X_i\right) = \frac{\sigma^2}{k}
+$$
+
+---
+
+### Remark (Role of Independence)
+
+$$
+\mathrm{Var}\left(\sum_{i=1}^k X_i\right)
+=
+\sum_{i=1}^k \mathrm{Var}(X_i)
++
+2 \sum_{i < j} \mathrm{Cov}(X_i, X_j)
+$$
+
+If the variables are independent, then
+
+$$
+\mathrm{Cov}(X_i, X_j) = 0
+$$
+
+---
+
+### Example (Binary Payoff Model)
+
+Suppose a player wins $P$ with probability $p$ and loses $P$ with probability $1-p$.
+
+$$
+\mathbb{E}[X] = P(2p - 1)
+$$
+
+$$
+\mathrm{Var}(X) = 4P^2 p(1-p)
+$$
+
+For $k$ boards:
+
+$$
+\mathrm{Var}(\bar{X}_k) = \frac{4P^2 p(1-p)}{k}
+$$
+
+---
+
+### Limiting Behavior
+
+As $k \to \infty$,
+
+$$
+\mathrm{Var}(\bar{X}_k) \to 0
+$$
+
+Thus,
+
+$$
+\bar{X}_k \to \mu
 $$
 
 ---
 
 ## Poker Connection
 
-Running a hand multiple times corresponds to sampling independent realizations of the same random variable.
+Running a hand multiple times or splitting across multiple boards produces independent outcomes.
 
-- Expected value remains unchanged:
-$$
-\mathbb{E}[\bar{X}_n] = \mathbb{E}[X]
-$$
+- Expected value remains unchanged  
+- Variance decreases as $\frac{1}{k}$  
 
-- Variance decreases:
-$$
-\mathrm{Var}(\bar{X}_n) = \frac{\sigma^2}{n}
-$$
-
-Thus, increasing the number of runs reduces outcome variability while preserving expected value. This provides a precise mathematical explanation for why multi-board variants reduce perceived risk without altering fairness.
+This explains why multi-board variants reduce volatility without affecting fairness.
 
 ---
 
+## Beyond Poker
 
-> Even when outcomes are fair in expectation, their distribution can strongly influence decision-making.
+### Sampling and Averaging in Statistics
+
+Let
+
+$$
+\bar{X}_k = \frac{1}{k} \sum_{i=1}^k X_i
+$$
+
+Then
+
+$$
+\mathbb{E}[\bar{X}_k] = \mu
+\quad \text{and} \quad
+\mathrm{Var}(\bar{X}_k) = \frac{\sigma^2}{k}
+$$
+
+---
+
+### Risk Diversification in Finance
+
+Dividing capital across $k$ independent investments yields
+
+$$
+\bar{X}_k = \frac{1}{k} \sum_{i=1}^k X_i
+$$
+
+with
+
+$$
+\mathbb{E}[\bar{X}_k] = \mu, \quad \mathrm{Var}(\bar{X}_k) = \frac{\sigma^2}{k}
+$$
+
+---
+
+### Conceptual Connection
+
+Across domains:
+
+- expectation is invariant  
+- variance decreases with independent aggregation  
+
+---
+
+## Liberal Arts Sidebar
+
+**Risk vs Expectation**
+
+*Lens:* Probability and uncertainty  
+
+*Theme:* Why do people prefer less variance even when expected value is unchanged?
+
+> Even when outcomes are fair in expectation, their distribution strongly influences decision-making.
