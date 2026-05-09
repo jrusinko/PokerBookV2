@@ -23,9 +23,9 @@ book:
   - chapters/LinearProgramming.qmd
   - chapters/21-markov-decision-processes-and-multi-street-play.qmd
   - chapters/Bankroll_Management.qmd
-  - chapters/extension_chapter_template.qmd
+  - chapters/chapter-19-range-construction.qmd
   - chapters/Exploitative_vs_Equilibrium_Play.qmd
-  - chapters/chapter-15-range-construction.qmd
+
 format:
   html:
     mermaid: {}

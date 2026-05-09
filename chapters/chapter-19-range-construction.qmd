@@ -1,0 +1,327 @@
+# Range Construction and Strategy Spaces {#sec-range-construction}
+
+## Motivating Example
+
+Imagine you are sitting on the river in a no-limit hold'em hand. The board has run out and you hold one of three possible types of hands: a strong value hand that beats most of your opponent's range, a missed draw that has almost no showdown value, or a medium-strength bluff-catcher sitting somewhere in between.
+
+The pot is \$100. You may bet \$75. Should you simply bet every strong hand and check everything else?
+
+At first glance, this "naïve" strategy seems reasonable—why would you ever check a hand that is ahead of your opponent's range? The trouble is that a deterministic strategy of this form is deeply exploitable. If your opponent knows that you *always* bet your strong hands and *never* bet your weak ones, the strategy of your betting range is transparent: every bet signals strength, and your opponent can respond by folding whenever you bet. You win the pot uncontested far too rarely, and you forfeit the ability to extract value when your opponent should be calling.
+
+The core insight of modern poker theory is that an optimal strategy is not a single action assigned to a single hand. It is a **probability distribution over many possible hands and actions**. This chapter develops the mathematical foundations of this idea: how to represent a player's holdings as a range, how to partition that range into strategically meaningful classes, and why equilibrium play requires structured probabilistic mixing rather than deterministic choices.
+
+---
+
+## Mathematical Framework and Poker Theory
+
+### Hands, Ranges, and Strategy Spaces
+
+We begin by fixing notation. In any given situation—characterized by the board, the action sequence, and the position in the hand—a player may hold one of many possible hands.
+
+Let
+$$
+H = \{h_1, h_2, \dots, h_n\}
+$$
+denote the set of all hands a player could possibly hold in a given situation.
+
+
+In full generality, $H$ consists of all $\binom{52}{2} = 1326$ possible starting hand combinations. However, once we condition on the observed board cards and any information revealed by the action sequence—including which cards are *blocked* by community cards—only a subset of hands remains possible. The effective hand space is therefore much smaller in practice.
+
+A player's *range* formalizes this idea by assigning a probability to each hand.
+
+The quantity $R(h)$ represents the probability that a player arrives at the current decision point holding hand $h$.
+$$
+R : H \to [0, 1], \quad \sum_{h \in H} R(h) = 1.
+$$
+
+
+Note carefully what a range does and does not represent. $R(h)$ is not the probability that $h$ is a "good" hand—it is the probability that the player is *holding* hand $h$, given everything that has happened so far. This is a statement about frequencies, not strength.
+
+**Example 19.1.** Suppose a player's range on the river is described by the following distribution:
+
+| Hand | Frequency $R(h)$ |
+|------|-----------------|
+| $\text{AA}$ | 0.10 |
+| $\text{AK}$ | 0.20 |
+| $\text{KQ}$ | 0.25 |
+| $\text{76s}$ | 0.19 |
+| Missed Flush Draw | 0.30 |
+
+This tells us that 10% of the time the player holds pocket aces, 30% of the time they hold a missed flush draw with no showdown value, and so on. When we reason about how the player should act, we must think about *all* of these hands simultaneously—not just the one hand we happen to hold at this moment.
+
+This is the fundamental difference between thinking about a single hand and thinking about a range: a strategy must perform well *in expectation* across the entire distribution $R$, not just for one specific hand.
+
+---
+
+### Strategy Spaces
+
+Given a range $R$ over hand space $H$, a *strategy* specifies how the player acts with each hand.
+
+Let $A = \{a_1, a_2, \dots, a_k\}$ be the set of available actions. A *strategy* $\sigma$ assigns to each hand $h \in H$ a probability distribution over actions:
+$$
+\sigma(h) = \bigl(p_1(h),\, p_2(h),\, \dots,\, p_k(h)\bigr), \quad \sum_{i=1}^{k} p_i(h) = 1, \quad p_i(h) \geq 0.
+$$
+
+
+For a simple river spot with only two actions—bet or check—this reduces to:
+$$
+\sigma(h) = \bigl(p_{\text{bet}}(h),\, p_{\text{check}}(h)\bigr), \quad p_{\text{bet}}(h) + p_{\text{check}}(h) = 1.
+$$
+
+We can visualize this geometrically. The pair $(p_{\text{bet}}, p_{\text{check}})$ is a point in the *probability simplex* $\Delta^1$—the line segment from $(0,1)$ to $(1,0)$. The two endpoints correspond to *pure strategies*: always check or always bet. Points in the interior correspond to *mixed strategies* that randomize between the two actions.
+
+```
+       (0,1)
+         ●  Check only
+         |
+         |  ← Mixed strategies
+         |
+         ●  Bet only
+       (1,0)
+```
+
+*Figure 19.1. The 2-action probability simplex. Pure strategies sit at the endpoints; mixed strategies lie in the interior.*
+
+When the action space includes three options—fold, call, raise—the strategy simplex becomes a triangle in $\mathbb{R}^3$, with pure strategies at the three corners and mixed strategies forming the full interior.
+
+A *deterministic* (pure) strategy assigns $p_i(h) \in \{0, 1\}$ for every hand and action. The principal argument of this chapter is that pure strategies are often suboptimal: equilibrium play in poker generically requires mixed strategies, where $p_i(h) \in (0,1)$ for at least some hands.
+
+---
+
+### Range Partitioning
+
+Not all hands in a range are strategically equivalent. To organize our analysis, we introduce a canonical three-way partition.
+
+ Given a hand space $H$ and a board, we write
+$$
+H = V \cup B \cup M,
+$$
+where $V$, $B$, and $M$ are pairwise disjoint subsets defined as follows:
+
+- **$V$ (Value Region):** Hands that profit primarily because they are *called* by worse hands. These are hands strong enough to bet for value.
+- **$B$ (Bluff Region):** Hands that profit primarily because *better* hands fold. These are hands weak enough that they need opponents to fold to win.
+- **$M$ (Middling Region):** Hands that fall between the two extremes—too weak to comfortably value bet, too strong to use as a bluff, and whose optimal play is ambiguous.
+
+
+The middling region $M$ deserves special attention. These hands typically have some showdown value—perhaps a weak top pair or a second pair—but calling with them leaves us uncertain about whether betting or checking achieves a higher expected value. As we will see, it is precisely in this region that strategic mixing is most pronounced.
+
+**Example 19.2.** Consider a river board of $K\heartsuit\, 9\clubsuit\, 4\diamondsuit\, 2\spadesuit\, 7\clubsuit$. A typical range partition might look as follows:
+
+| Hand | Class |
+|------|-------|
+| Set of kings, top two pair | $V$ (Value) |
+| Nut flush draw (missed) | $B$ (Bluff) |
+| $K\spadesuit J\spadesuit$ (top pair, weak kicker) | $M$ (Middling) |
+| Nut straight (J-T) | $V$ (Value) |
+| $A\clubsuit 5\clubsuit$ (ace-high, no pair) | $B$ (Bluff) |
+| $99$ (middle set → full house) | $V$ (Value) |
+| $K\diamondsuit Q\diamondsuit$ (top pair, mediocre kicker) | $M$ (Middling) |
+
+*Table 19.2. Range partition on a river board.*
+
+Notice that "top pair" hands are classified as middling rather than value. With a weak kicker on a paired board, top pair may lose to two pair, sets, or straights—and our opponent's calling range will include such hands. Betting this hand for value is uncertain, yet checking it surrenders equity against bluffs.
+
+---
+
+### Support of a Distribution
+
+Before stating our main result, we need one more definition that clarifies which hands actually matter in a strategy.
+
+ The *support* of a range $R$ is the set of hands that appear with positive probability:
+$$
+\operatorname{supp}(R) = \{h \in H : R(h) > 0\}.
+$$
+
+
+Only hands in the support can be held by the player; any hand outside the support has been effectively ruled out by prior action, blockers, or other information.
+
+**Example 19.3.** Suppose
+$$
+R(\text{AA}) = 0.30, \quad R(\text{KK}) = 0.20, \quad R(\text{72o}) = 0, \quad R(\text{T9s}) = 0.
+$$
+Then $\operatorname{supp}(R) = \{\text{AA}, \text{KK}\}$. The hands 72o and T9s do not appear in this player's range at this decision point.
+
+The support of a range is important for two reasons. First, it constrains what strategies are well-defined: we only need to specify $\sigma(h)$ for $h \in \operatorname{supp}(R)$. Second, and more subtly, the support shapes a player's ability to balance. A player who has removed *all* bluffs from their support at a given node cannot bluff—and is therefore exploitable. We return to this theme in the next section.
+
+---
+
+### Main Result: Structured Mixing Across Hand Classes
+
+We are now ready to state the central result of this chapter.
+
+::: {.callout-important}
+**Result 19.1 (Structured Mixing).** Optimal poker strategies require *structured* probabilistic mixing across hand classes rather than deterministic play. In particular:
+
+1. Some value hands $h \in V$ mix between betting and checking.
+2. Some bluff hands $h \in B$ mix between betting and checking.
+3. Middling hands $h \in M$ often form the boundary between the two actions, playing either at mixed frequencies or with a sharp threshold.
+:::
+
+The argument for this result is not difficult to sketch. Suppose, for contradiction, that a player bets every hand in $V$ and $B$ deterministically, and checks every hand in $M$.
+
+**Too many bluffs.** If the betting range contains more bluffs than the opponent can profitably call against (in the sense that calling is not +EV), the opponent should fold more. But if the opponent folds more, every bluff in $B$ becomes immediately profitable—including bluffs that might otherwise be breakeven. This means bluffing is unexploitedly profitable, contradicting the assumption that the strategy is optimal (since the opponent has a profitable deviation).
+
+**Too few bluffs.** Conversely, if the betting range is too value-heavy (all of $V$, none of $B$), the opponent can profitably fold all but their very best hands whenever we bet. We lose the ability to extract value with thin bets because our opponent only calls with hands that beat us.
+
+**Too transparent a value range.** If we always bet *every* value hand and never check any, our betting range reveals that we are strong. An opponent facing a bet knows they need a strong hand to continue. By checking *some* value hands—often called a *slow play* or *trapping*—we keep weaker hands in our opponent's range on later streets and preserve the ability to check-raise.
+
+The conclusion is that an equilibrium strategy must *balance* the proportions of value hands, bluffs, and middling hands appearing in any given action. This is connected to the classical notion of *indifference conditions*: at a Nash equilibrium, the opponent must be indifferent between calling and folding, which is achieved precisely when the bet-to-bluff ratio falls in a specific range determined by pot odds.
+
+If a player's strategy assigns a pure action (bet or check) to every hand in $V \cup B$, then the opponent has a profitable deviation with positive probability. Therefore, any Nash equilibrium strategy generically assigns mixed probabilities to a positive measure of hands in $V$ and/or $B$.
+
+
+**Sketch of proof.** Fix pot size $P$ and bet size $b$. The opponent's *pot odds* for calling a bet are $b / (P + b)$; the opponent should call if and only if they win more than this fraction of the time. If the player bets only value hands ($V$ only), the opponent wins 0% of the time when calling, so folding dominates—and the player's bluffs, if they had any, would win the pot uncontested. If the player bets with *any* proportion of bluffs greater than $b / (P + b)$, calling becomes profitable for the opponent. At equilibrium, the proportion of bluffs among bets must equal exactly $b / (P + b)$, making the opponent indifferent. This indifference is achieved through mixing: some hands in $B$ bet, some check, and the ratio is calibrated to leave the opponent with no profitable deviation. $\square$
+
+This bluff-to-value ratio is a fundamental constraint on any balanced strategy. Letting $\beta$ denote the proportion of bluffs among all betting combinations, equilibrium requires:
+$$
+\beta = \frac{b}{P + b}.
+$$
+For example, with a pot of \$100 and a bet of \$75, we get:
+$$
+\beta = \frac{75}{100 + 75} = \frac{75}{175} \approx 0.43.
+$$
+Roughly 43% of our betting range should be bluffs (hands in $B$) and 57% should be value hands (hands in $V$) for the opponent to be exactly indifferent.
+
+---
+
+## Worked Example
+
+We now construct a concrete river spot to illustrate these ideas.
+
+**Setup.** Suppose Hero's range at the river contains 12 hand combinations:
+
+| Hand | Class | Combinations |
+|------|-------|-------------|
+| Nut flush | $V$ | 3 |
+| Two pair | $V$ | 3 |
+| Missed straight draw | $B$ | 3 |
+| Second pair | $M$ | 3 |
+
+Hero may bet \$75 into a \$100 pot, or check. We assign the following initial strategy:
+
+- Value hands ($V$): bet 100%
+- Bluff hands ($B$): bet with probability $p_B$
+- Middling hands ($M$): check 100%
+
+**Step 1: Compute the bluff ratio.**
+
+We have 6 value combinations betting, and $3 p_B$ bluff combinations betting, for a total betting range of:
+$$
+6 + 3p_B \text{ combinations.}
+$$
+The fraction of bluffs in the betting range is:
+$$
+P(\text{bluff} \mid \text{bet}) = \frac{3 p_B}{6 + 3 p_B}.
+$$
+
+**Step 2: Find the equilibrium $p_B$.**
+
+The equilibrium requires $P(\text{bluff} \mid \text{bet}) = \beta = 75/175 \approx 0.4286$. Solving:
+$$
+\frac{3 p_B}{6 + 3 p_B} = \frac{3}{7}
+$$
+$$
+21 p_B = 18 + 9 p_B \implies 12 p_B = 18 \implies p_B = \frac{3}{2}.
+$$
+
+This exceeds 1, which tells us something important: **given this range shape, we do not have enough bluffs to achieve the required bluff ratio even if we bluff 100% of our bluff hands.** With $p_B = 1$ (all bluff hands betting):
+$$
+P(\text{bluff} \mid \text{bet}) = \frac{3}{9} = 0.333 < 0.4286.
+$$
+
+We are still too value-heavy. The fix is to also mix some *middling* hands into the bluffing range, or to reduce the frequency at which value hands bet (checking some for deception). This illustrates precisely why the middling and value regions must participate in mixing.
+
+**Step 3: Introduce mixing in the value region.**
+
+Suppose we check some value hands with probability $q_V$. The betting range becomes:
+$$
+6(1 - q_V) + 3 \text{ (all bluffs betting)} = 6 - 6q_V + 3 = 9 - 6q_V.
+$$
+Setting the bluff fraction equal to $\beta = 3/7$:
+$$
+\frac{3}{9 - 6q_V} = \frac{3}{7} \implies 9 - 6q_V = 7 \implies q_V = \frac{1}{3}.
+$$
+So Hero checks approximately 33% of value hands—a slow play frequency—to balance the bluff-to-value ratio. This shows that value hand mixing is not arbitrary: it is *forced* by the requirement to maintain indifference in the opponent's calling strategy.
+
+**Step 4: How changing one frequency changes the opponent's best response.**
+
+If Hero increases $p_B$ from the equilibrium without adjusting $q_V$, the betting range becomes too bluff-heavy. The opponent's best response shifts from calling indifferently to calling with *any* hand, since calling is now +EV against a bluff-heavy range. Hero's value bets then receive excessive calls, and bluffs become unprofitable—an exploitable deviation.
+
+The worked example demonstrates the key lesson: partial mixing across all three hand classes (value, bluff, and middling) creates a robust strategy that leaves the opponent without a profitable deviation.
+
+---
+
+## Beyond Poker
+
+The mathematical ideas developed in this chapter—strategy spaces, probability distributions over actions, and structured mixing—appear throughout applied game theory. We highlight two applications.
+
+### Security and Randomization
+
+Consider a security agency responsible for screening passengers at an airport. Resources are finite, so only a fraction of passengers can receive enhanced screening at any given time. If the agency always screens the same demographic or always focuses on the same checkpoint, adversaries learn the pattern and route threats accordingly.
+
+The solution mirrors the poker framework. The agency maintains a *screening range*—a probability distribution over possible screening procedures—and randomizes its choices to prevent adversaries from identifying which targets are inspected. Just as a poker player who always bets value hands reveals their hand class, a security agency that screens predictably reveals its gaps. Mixing screening protocols is the equilibrium response.
+
+More formally, this is an instance of the *Colonel Blotto* family of games, where defenders allocate limited resources across multiple potential attack sites and must balance coverage to prevent adversaries from concentrating on unguarded positions. The range partitioning framework translates directly: *high-value targets* ($V$) receive baseline coverage, *decoy targets* ($B$) absorb adversary attention, and *ambiguous targets* ($M$) must be covered with mixed probabilities calibrated to adversarial incentives.
+
+### Sports Strategy and Play-Calling
+
+American football provides a compelling parallel. An offensive coordinator calls plays from a playbook with two broad categories: running plays and passing plays. Running plays tend to gain consistent yardage but are slow and predictable; passing plays have higher variance but are harder to defend against if the defense commits to stopping the run.
+
+Mapping to our framework:
+- **Pass plays** correspond to bluffs $B$: they work primarily because the defense has *over-committed* to defending against something else.
+- **Run plays** correspond to value hands $V$: they gain expected yards regardless of what the defense does, as long as the defense is not fully prepared.
+- **Screen passes and draws** correspond to the middling region $M$: they borrow from both categories and are most effective when mixed in at moderate frequency.
+
+A defense that knows the offense will always pass in third-and-long will load the secondary and crowd the line of scrimmage on first-and-ten. Mixing run and pass plays—even in situations where one is marginally stronger—keeps the defense uncertain and prevents them from optimizing against a predictable strategy. The optimal play-calling distribution is, formally, the Nash equilibrium of the play-calling subgame, exactly as in poker.
+
+---
+
+## Summary
+
+This chapter developed the mathematical foundations of range-based poker strategy. We defined:
+
+- A **range** as a probability distribution $R : H \to [0,1]$ over possible hands.
+- A **strategy** $\sigma(h)$ as a probability distribution over actions for each hand.
+- A canonical **range partition** $H = V \cup B \cup M$ into value, bluff, and middling regions.
+- The **support** $\operatorname{supp}(R)$ as the set of hands appearing with positive probability.
+
+The central result is that optimal strategies require structured mixing: deterministic play is almost always exploitable, and equilibrium play requires probabilistic mixing across all three hand classes, calibrated to maintain the opponent's indifference between actions.
+
+These ideas—strategy as a distribution, mixing to prevent exploitation, and indifference at equilibrium—are not special to poker. They are the core of equilibrium theory in any zero-sum game.
+
+---
+
+## Homework Problems
+
+**Problem 19.1.** A player's range contains 6 value hands, 3 bluff hands, and 5 middling hands. All value hands bet and half the bluff hands bet. What fraction of the betting range consists of bluffs? Is this fraction above or below the equilibrium bluff frequency for a pot-sized bet?
+
+**Problem 19.2.** Let
+$$
+R(\text{AK}) = 0.25, \quad R(\text{QQ}) = 0.19, \quad R(\text{76s}) = 0, \quad R(\text{A5s}) = 0.60.
+$$
+Find $\operatorname{supp}(R)$. Verify that the probabilities sum to 1.
+
+**Problem 19.3.** A player always bets every value hand and every bluff hand in their range. Explain why this strategy may be exploitable. Specifically, what information does the opponent gain from observing a bet, and how can they use it?
+
+**Problem 19.4.** Partition the following river hands into value ($V$), bluff ($B$), or middling ($M$) on a board of $A\spadesuit\, K\heartsuit\, 7\diamondsuit\, 2\clubsuit\, 3\heartsuit$:
+
+(a) Top set (AAA)  
+(b) Missed flush draw ($J\heartsuit\, T\heartsuit$)  
+(c) Second pair, top kicker ($K\clubsuit\, Q\diamondsuit$)  
+(d) Nut straight (5-4)  
+(e) Ace-high, no pair ($A\clubsuit\, 9\spadesuit$)  
+(f) Third pair ($7\spadesuit\, 6\spadesuit$)
+
+**Problem 19.5.** A player mixes a bluff hand by betting with probability 0.4 and checking with probability 0.6. Write this as a strategy vector $\sigma(h)$ using the notation from Definition 19.3. If the player faces an additional action (raise) after betting, explain what additional information would be needed to fully specify $\sigma(h)$.
+
+**Problem 19.6.** Prove or explain informally: if a player removes all bluff hands from their betting range (i.e., $\operatorname{supp}(R) \cap B = \emptyset$ among bets), then the opponent has a dominant strategy when facing a bet. What is that dominant strategy, and why does it make the player's value bets less profitable?
+
+**Problem 19.7.** The equilibrium bluff frequency when betting $b$ into a pot of $P$ is:
+$$
+\beta^* = \frac{b}{P + b}.
+$$
+(a) Show that as $b \to 0$ (a very small bet), $\beta^* \to 0$. Interpret this in terms of the incentive to bluff.  
+(b) Show that as $b \to \infty$ (an overbet), $\beta^* \to 1$. Interpret this result.  
+(c) At what bet size does $\beta^* = 1/2$?
+
+**Challenge Problem.** Construct a 10-hand range (specifying the classification of each hand as $V$, $B$, or $M$) and assign betting frequencies for each hand such that exactly 30% of the total betting combinations are bluffs. Show your work and verify the bluff frequency. Then determine whether this frequency is above or below the equilibrium level for a 75% pot-sized bet.
